@@ -64,12 +64,11 @@ render(
         <Router>
             <Route path="/" component={Home}/>
             <Route path="/page" component={PageIndex}>
-                <Route path="/test" component={Page}/>
                 <Route path="/:pageId" component={Page}/>
             </Route>
         </Router>
     ),
-    document.getElementById('post')
+    document.getElementById('app')
 );
 ```
 
