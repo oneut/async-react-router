@@ -57,3 +57,6 @@ typings/
 # dotenv environment variables file
 .env
 
+# For Module
+build
+.DS_Store
