@@ -1,0 +1,48 @@
+{
+  "name": "async-react-router",
+  "version": "0.0.1",
+  "description": "Client side react router with async. It like next.js!",
+  "main": "build/index.js",
+  "scripts": {
+    "build": "rimraf build && babel -d build/ src/",
+    "prepublish": "rimraf build && babel -d build/ src/",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "peerDependencies": {
+    "react": "^15"
+  },
+  "dependencies": {
+    "history": "^4.6.1",
+    "path-to-regexp": "^1.7.0"
+  },
+  "devDependencies": {
+    "babel-cli": "^6.24.1",
+    "babel-eslint": "^7.2.3",
+    "babel-loader": "^7.0.0",
+    "babel-plugin-transform-runtime": "^6.23.0",
+    "babel-preset-es2015": "^6.24.1",
+    "babel-preset-react": "^6.24.1",
+    "babel-preset-stage-1": "^6.24.1",
+    "eslint": "^3.19.0",
+    "eslint-plugin-import": "^2.2.0",
+    "eslint-plugin-react": "^7.0.1",
+    "react": "^15",
+    "react-dom": "^15.5.4",
+    "webpack": "^2.5.1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/oneut/async-react-router.git"
+  },
+  "keywords": [
+    "react",
+    "router",
+    "next.js"
+  ],
+  "author": "onetu",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/oneut/async-react-router/issues"
+  },
+  "homepage": "https://github.com/oneut/async-react-router#readme"
+}

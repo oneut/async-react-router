@@ -1,0 +1,16 @@
+{
+  "presets": [
+    "es2015",
+    "stage-1",
+    "react"
+  ],
+  "env": {
+    "development": {
+    }
+  },
+  "plugins": [
+    "transform-async-to-generator",
+    "transform-decorators-legacy",
+    "transform-runtime"
+  ]
+}
