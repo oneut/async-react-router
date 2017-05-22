@@ -13,9 +13,7 @@ export default class RouteMatcher {
             return this;
         }
 
-        var regexp      = Regexp(this.path, this.keys);
-        this.routeMatch = regexp.exec(this.pathname);
-
+        this.routeMatch = Regexp(this.path, this.keys).exec(this.pathname);
         return this;
     }
 
