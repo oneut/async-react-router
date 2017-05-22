@@ -86,7 +86,7 @@ export default class Router extends React.Component {
     }
 
     componentWillMount() {
-        const location = History.location();
+        const location = History.getLocation();
         this.dispatch(location.pathname);
     }
 
@@ -95,7 +95,7 @@ export default class Router extends React.Component {
     }
 
     dispatch(pathname) {
-        const component = this.renderer(pathname, {children: null});
+        const component = this.renderer(this.normalizePathname(pathname));
         if (this.isPromise(component)) {
             return component.then((component) => {
                 this.setState({
@@ -109,14 +109,16 @@ export default class Router extends React.Component {
         });
     }
 
+    normalizePathname(pathname) {
+        return pathname.split('?')[0].split("#")[0];
+    }
+
     isPromise(obj) {
         return !!obj && (typeof obj === 'object' || typeof obj === 'function') && typeof obj.then === 'function';
     }
 
     /**
-     * Clean path by stripping subsequent "//"'s. Without this
-     * the user must be careful when to use "/" or not, which leads
-     * to bad UX.
+     * Clean path.
      */
 
     cleanPath(path) {

@@ -14,8 +14,8 @@ class Request {
     }
 
     isActive(pathname) {
-        const location = this.history.location();
-        return (location.pathname === pathname);
+        const requestLocation = this.history.getRequestLocation();
+        return (requestLocation.pathname === pathname);
     }
 }
 
