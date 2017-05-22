@@ -2,8 +2,9 @@ import createHashHistory from "history/createHashHistory";
 
 export class History {
     constructor() {
-        this.requestCallback = null;
         this.history         = null;
+        this.pathname        = '';
+        this.requestCallback = null;
         this.silent          = false;
     }
 
@@ -24,7 +25,7 @@ export class History {
 
     async push(pathname) {
         this.pathname = pathname;
-        this.silent = true;
+        this.silent   = true;
         await this.requestCallback(pathname);
         this.history.push(pathname);
         this.silent = false;
