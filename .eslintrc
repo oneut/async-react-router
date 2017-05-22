@@ -11,7 +11,8 @@
     },
     "rules": {
         "arrow-parens": [2, "always"],
-        "semi": [2, "always"]
+        "eol-last": ["error", "always"],
+        "semi": [2, "always"],
     },
     "plugins": [
         "react"

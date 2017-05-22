@@ -1,3 +1,11 @@
-export Link from './Link';
-export Route from './Route';
-export Router from './Router';
+import Link from "./Link";
+import Request from "./Request";
+import Route from "./Route";
+import Router from "./Router";
+
+export {
+    Link,
+    Request,
+    Route,
+    Router
+};

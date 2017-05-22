@@ -1,7 +1,6 @@
-import LinkEvent from "./LinkEvent";
 import History from "./History";
 import React from "react";
-import RouteMatcher from './RouteMatcher';
+import RouteMatcher from "./RouteMatcher";
 
 export default class Router extends React.Component {
     constructor(props) {
@@ -11,43 +10,31 @@ export default class Router extends React.Component {
             component: null
         };
 
-        this.silent = false;
         this.routes = {};
-        this.initHistoryEvent();
+
+        this.initHistory();
+
         // Settings Routes.
         this.addRoutes(props.children);
     }
 
-    initHistoryEvent() {
-        LinkEvent.on(async (pathname) => {
-            this.silent    = true;
-            const location = {
-                pathname: pathname
-            };
-            this.setNextComponent(location).then(() => {
-                History.push(location.pathname);
-                this.silent = false;
-            });
-        });
-
-        // History Listener.
-        History.listen((locaton) => {
-            if (!(this.silent)) this.setNextComponent(locaton);
-        });
+    initHistory() {
+        History.setRequestCallback(this.request.bind(this));
+        History.listen();
     }
 
-    renderer(location, props = {}) {
+    renderer(pathname) {
         for (const route in this.routes) {
             if (!(this.routes.hasOwnProperty(route))) continue;
 
-            const render       = this.routes[route];
-            const routeMatcher = RouteMatcher.make(route, location.pathname);
+            const routeMatcher = RouteMatcher.make(route, pathname);
             if (routeMatcher.success()) {
+                const render = this.routes[route];
                 if (typeof render !== 'function') {
                     return render;
                 }
 
-                return render(routeMatcher.getParams(), props);
+                return render(pathname, routeMatcher.getParams());
             }
         }
 
@@ -69,13 +56,16 @@ export default class Router extends React.Component {
     addRoute(route, parent) {
         const {path, component, children} = route.props;
 
-        const render = async (params, renderProps) => {
-            const finalProps = {...this.props, ...renderProps, params};
+        const render = async (pathname, params) => {
             let data         = {};
-            if (component.getInitialProps) {
-                data = await component.getInitialProps() || {};
+            if (!!component.getInitialProps && typeof component.getInitialProps === 'function') {
+                data = await component.getInitialProps({
+                        pathname,
+                        params,
+                    }) || {};
             }
 
+            const finalProps = {...this.props, params};
             return React.createElement(component, Object.assign(data, finalProps));
         };
 
@@ -90,21 +80,22 @@ export default class Router extends React.Component {
      */
 
     normalizeRoute(path, parent) {
-        if (path[0] === '/' && path.length === 1) return path;  // "/" signifies an absolute route
-        if (typeof parent === 'undefined') return path;  // no need for a join
-        return `${parent.normalizedRoute}/${path}`; // join
+        if (path[0] === '/' && path.length === 1) return path;
+        if (typeof parent === 'undefined') return path;
+        return `${parent.normalizedRoute}/${path}`;
     }
 
     componentWillMount() {
-        this.dispatch(History.location);
+        const location = History.location();
+        this.dispatch(location.pathname);
     }
 
-    async setNextComponent(location) {
-        await this.dispatch(location);
+    async request(pathname) {
+        await this.dispatch(pathname);
     }
 
-    dispatch(location) {
-        const component = this.renderer(location, {children: null});
+    dispatch(pathname) {
+        const component = this.renderer(pathname, {children: null});
         if (this.isPromise(component)) {
             return component.then((component) => {
                 this.setState({

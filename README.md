@@ -1,4 +1,4 @@
-# react-async-router
+# async-react-router
 
 ## Motivation
 Next.js is wonderful. However, it is difficult to manage State.   
@@ -12,7 +12,21 @@ You get initial props from getInitialProps() at first rendering in client side!
 + History Support is Hash History Only.
 + No SSR.
 
+## Todo
++ Test...
++ Browser History Support.
++ Error Handling Support.
++ NavLink Support.
++ example
+    + basic
+    + redux
+    + flux-utils
+
 ## Installation
+
+```
+npm install async-react-router react react-dom --save
+```
 
 ## Example
 ```javascript
@@ -72,15 +86,52 @@ render(
 );
 ```
 
+# API
+## Routing
+### `<Router>`
 
-## Todo
-+ Test...
-+ Browser History Support.
-+ Error Handling Support.
-+ NavLink Support.
-+ Context Support.
-     + location
-     + helper method (isActive etc...)
+@todo
+
+### `<Route>`
+
+@todo
+
+### `<Link>`
+
+@todo
+
+## Component
+### `getInitialProps`
+
+Components defined at `<Route>` can have `getInitialProps`.
+
+And `getInitialProps` has arguments.
+
++ `pathname` - String of the current path.
++ `params` - Object with the parsed url parameter. Defaults to {}.
+
+## Request
+### `to`
+
+When you want to push the next request, you can use `to` of `Request`.
+
+```javascript
+import Request from 'async-react-router';
+
+Request.to('/next'); // Change url to `/next`.
+```
+
+### `isActive`
+
+When you want to know current url, you can use `isActive` of `Request`.
+
+```javascript
+import Request from 'async-react-router';
+
+// When current url is `/`...
+Request.isActive('/');     // true
+Request.isActive('/path'); // false
+```
 
 ## Thanks for the inspiration
 + [next.js](https://github.com/zeit/next.js/)

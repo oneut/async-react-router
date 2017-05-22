@@ -1,13 +1,16 @@
 {
   "name": "async-react-router",
-  "version": "0.0.1",
+  "version": "0.0.7",
   "description": "Client side react router with async. It like next.js!",
   "main": "build/index.js",
   "scripts": {
     "build": "rimraf build && babel -d build/ src/",
     "prepublish": "rimraf build && babel -d build/ src/",
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "node_modules/.bin/ava --verbose"
   },
+  "files": [
+    "build"
+  ],
   "peerDependencies": {
     "react": "^15"
   },
@@ -16,6 +19,7 @@
     "path-to-regexp": "^1.7.0"
   },
   "devDependencies": {
+    "ava": "^0.19.1",
     "babel-cli": "^6.24.1",
     "babel-eslint": "^7.2.3",
     "babel-loader": "^7.0.0",
@@ -28,6 +32,7 @@
     "eslint-plugin-react": "^7.0.1",
     "react": "^15",
     "react-dom": "^15.5.4",
+    "rimraf": "^2.6.1",
     "webpack": "^2.5.1"
   },
   "repository": {
@@ -44,5 +49,13 @@
   "bugs": {
     "url": "https://github.com/oneut/async-react-router/issues"
   },
-  "homepage": "https://github.com/oneut/async-react-router#readme"
+  "homepage": "https://github.com/oneut/async-react-router#readme",
+  "ava": {
+    "concurrency": 5,
+    "powerAssert": true,
+    "require": [
+      "babel-register"
+    ],
+    "babel": "inherit"
+  }
 }
