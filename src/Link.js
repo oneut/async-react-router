@@ -1,10 +1,10 @@
-import History from "./History";
+import Request from "./Request";
 import React from "react";
 
 export default class Link extends React.Component {
     click(e) {
         e.preventDefault();
-        History.push(this.props.to);
+        Request.to(this.props.to);
     }
 
     render() {
