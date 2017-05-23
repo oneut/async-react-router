@@ -21,6 +21,9 @@ You get initial props from getInitialProps() at first rendering in client side!
     + basic
     + redux
     + flux-utils
+    
+## Demo
+[Basic Example.](https://oneut.github.io/async-react-router/)
 
 ## Installation
 
