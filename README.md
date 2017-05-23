@@ -32,7 +32,7 @@ npm install async-react-router react react-dom --save
 ```javascript
 import React from 'react';
 import { render } from 'react-dom';
-import { Router, Route, Link } from '../../async-react-router/src';
+import { Router, Route, Link } from 'async-react-router';
 
 function sleep(ms) {
     return new Promise((resolve) => setTimeout(resolve, ms));

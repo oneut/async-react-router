@@ -1,0 +1,20 @@
+{
+  "name": "sleep",
+  "version": "0.0.1",
+  "private": true,
+  "dependencies": {
+    "async-react-router": "0.0.8",
+    "prop-types": "^15.5.10",
+    "react": "^15.5.0",
+    "react-dom": "^15.5.0"
+  },
+  "devDependencies": {
+    "react-scripts": "^1.0.2"
+  },
+  "scripts": {
+    "start": "react-scripts start",
+    "build": "react-scripts build",
+    "eject": "react-scripts eject",
+    "test": "react-scripts test"
+  }
+}
