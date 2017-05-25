@@ -8,8 +8,12 @@ export class History {
         this.silent          = false;
     }
 
-    setHistory(history) {
-        this.history = history;
+    initialHistory(history) {
+        if (history) {
+            this.history = history;
+        } else {
+            this.history = createHashHistory();
+        }
     }
 
     setRequestCallback(requestCallback) {
@@ -43,6 +47,5 @@ export class History {
 }
 
 const history = new History();
-history.setHistory(createHashHistory());
 
 export default history;

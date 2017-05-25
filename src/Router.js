@@ -1,3 +1,4 @@
+import assert from "power-assert";
 import History from "./History";
 import React from "react";
 import RouteMatcher from "./RouteMatcher";
@@ -19,6 +20,7 @@ export default class Router extends React.Component {
     }
 
     initHistory() {
+        History.initialHistory(this.props.history);
         History.setRequestCallback(this.request.bind(this));
         History.listen();
     }
@@ -55,6 +57,9 @@ export default class Router extends React.Component {
 
     addRoute(route, parent) {
         const {path, component, children} = route.props;
+
+        assert(path, 'Route is missing the "path" property');
+        assert(component, 'Route is missing the "component" property');
 
         const render = async (pathname, params) => {
             let data         = {};

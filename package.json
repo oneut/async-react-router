@@ -1,6 +1,6 @@
 {
   "name": "async-react-router",
-  "version": "0.0.9",
+  "version": "0.0.11",
   "description": "Client side react router with async. It like next.js!",
   "main": "build/index.js",
   "scripts": {
@@ -24,12 +24,15 @@
     "babel-eslint": "^7.2.3",
     "babel-loader": "^7.0.0",
     "babel-plugin-transform-runtime": "^6.23.0",
+    "babel-plugin-unassert": "^2.1.2",
     "babel-preset-es2015": "^6.24.1",
+    "babel-preset-power-assert": "^1.0.0",
     "babel-preset-react": "^6.24.1",
     "babel-preset-stage-1": "^6.24.1",
     "eslint": "^3.19.0",
     "eslint-plugin-import": "^2.2.0",
     "eslint-plugin-react": "^7.0.1",
+    "power-assert": "^1.4.2",
     "react": "^15",
     "react-dom": "^15.5.4",
     "rimraf": "^2.6.1",
@@ -42,7 +45,8 @@
   "keywords": [
     "react",
     "router",
-    "next.js"
+    "next.js",
+    "async"
   ],
   "author": "onetu",
   "license": "MIT",

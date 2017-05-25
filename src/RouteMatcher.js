@@ -30,12 +30,11 @@ export default class RouteMatcher {
     }
 
     getParams() {
-        let params = {};
-
         if (this.fails()) {
             return {};
         }
 
+        let params = {};
         for (let i = 1, len = this.routeMatch.length; i < len; ++i) {
             const key = this.keys[i - 1];
             const val = 'string' === typeof this.routeMatch[i] ? decodeURIComponent(this.routeMatch[i]) : this.routeMatch[i];

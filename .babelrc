@@ -6,6 +6,14 @@
   ],
   "env": {
     "development": {
+      "presets": [
+        "babel-preset-power-assert"
+      ]
+    },
+    "production": {
+      "plugins": [
+        "babel-plugin-unassert"
+      ]
     }
   },
   "plugins": [

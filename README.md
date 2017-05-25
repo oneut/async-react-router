@@ -1,24 +1,25 @@
 # async-react-router
 
 ## Motivation
-Next.js is wonderful. However, it is difficult to manage State.   
+Next.js is wonderful. However, it is difficult to manage state.   
 Because next.js does SSR.  
-So, I made a react module.
+So, I made a router like next.js.
 
 You get initial props from getInitialProps() at first rendering in client side!
 
 ## Features
 + Support async/await like next.js.
-+ History Support is Hash History Only.
++ Support URL parameters.
++ Support [history](https://www.npmjs.com/package/history) package.The following history type are supported.
+    + Browser History
+    + Hash History
 + No SSR.
 
 ## Todo
 + Test...
-+ Browser History Support.
 + Error Handling Support.
 + NavLink Support.
 + example
-    + basic
     + redux
     + flux-utils
     
@@ -93,17 +94,60 @@ render(
 ## Routing
 ### `<Router>`
 
-@todo
+`<Router>` manages `Route`.
+
+async-react-router supports [history](https://www.npmjs.com/package/history) package.  
+Default history type is **Hash History**.  
+If you want change history type to browser history, you can use history property.
+
+```javascript
+import { Router, Route, createBrowserHistory } from 'async-react-router';
+
+render(
+    (
+        <Router history={createBrowserHistory()}>
+            // Any <Route>.
+        </Router>
+    ),
+    document.getElementById('app')
+);
+```
 
 ### `<Route>`
 
-@todo
+`<Route>` manages paths and react components.
+
+`<Route>` requires the following parameters.
+
++ `path` - Any valid URL path that [path-to-regexp](https://github.com/pillarjs/path-to-regexp) understands.
++ `component` -A react component to render only when the location matches.
+
+```javascript
+import { Router, Route } from 'async-react-router';
+
+render(
+    (
+        <Router>
+            <Route path="/" component={Home}/>
+            <Route path="/user/:userId" component={User}/>
+        </Router>
+    ),
+    document.getElementById('app')
+);
+```
 
 ### `<Link>`
 
-@todo
+`<Link>` makes a request and renders component matching `<Route>`.
 
-## Component
+```javascript
+import { Link } from 'async-react-router';
+
+
+<Link to="/">Home</Link>
+```
+
+## Component defined at `<Route>`
 ### `getInitialProps`
 
 Components defined at `<Route>` can have `getInitialProps`.
@@ -112,6 +156,23 @@ And `getInitialProps` has arguments.
 
 + `pathname` - String of the current path.
 + `params` - Object with the parsed url parameter. Defaults to {}.
+
+```javascript
+class User extends React.Component {
+    static async getInitialProps({ pathname, params }) {
+        console.log(params.userId);
+    }
+}
+
+render(
+    (
+        <Router>
+            <Route path="/user/:userId" component={User}/>
+        </Router>
+    ),
+    document.getElementById('app')
+);
+```
 
 ## Request
 ### `to`
