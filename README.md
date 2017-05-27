@@ -1,5 +1,11 @@
 # async-react-router
 
+## Attention
+
+This package is alpha version yet.
+
+For this, it causes drastic change.
+
 ## Motivation
 Next.js is wonderful. However, it is difficult to manage state.   
 Because next.js does SSR.  
