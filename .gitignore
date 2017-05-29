@@ -60,3 +60,6 @@ typings/
 # For Module
 build
 .DS_Store
+
+# Editor
+.idea
