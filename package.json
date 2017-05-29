@@ -4,17 +4,19 @@
   "description": "Client side react router with async. It like next.js!",
   "main": "build/index.js",
   "scripts": {
-    "build": "node_modules/.bin/rimraf build && babel --plugins unassert -d build/ src/",
-    "prepublish": "node_modules/.bin/rimraf build && babel --plugins unassert -d build/ src/",
-    "test": "node_modules/.bin/ava --verbose"
+    "build": "rimraf build && babel -d build/ src/",
+    "prepublish": "rimraf build && babel -d build/ src/",
+    "test": "ava --verbose"
   },
   "files": [
     "build"
   ],
   "peerDependencies": {
-    "react": "^15"
+    "react": "^15",
+    "rxjs": "^5.0.0"
   },
   "dependencies": {
+    "babel-plugin-transform-decorators-legacy": "^1.3.4",
     "history": "^4.6.1",
     "path-to-regexp": "^1.7.0"
   },

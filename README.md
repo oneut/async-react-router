@@ -34,8 +34,10 @@ You get initial props from getInitialProps() at first rendering in client side!
 
 ## Installation
 
+async-react-router has peer dependencies of [rxjs@5.x.x](https://github.com/Reactive-Extensions/RxJS) which will have to be installed.
+
 ```
-npm install async-react-router react react-dom --save
+npm install async-react-router react react-dom rxjs --save
 ```
 
 ## Example
@@ -49,13 +51,19 @@ function sleep(ms) {
 }
 
 class Home extends React.Component {
-    static async getInitialProps() {
+    static initialPropsWillGet(attributes, prevAttributes) {
         console.log('Taking a break...');
+    }
+    
+    static async getInitialProps(attributes, prevAttributes) {
         await sleep(5000);
-        console.log('Five second later');
         return {
             message: 'Home is five second sleep.'
         };
+    }
+    
+    static initialPropsDidGet(props, prevProps) {
+        console.log('Five second later');
     }
 
     render() {
@@ -121,8 +129,7 @@ render(
 
 ### `<Route>`
 
-`<Route>` manages paths and react components.
-
+`<Route>` manages paths and react components.  
 `<Route>` requires the following parameters.
 
 + `path` - Any valid URL path that [path-to-regexp](https://github.com/pillarjs/path-to-regexp) understands.
@@ -154,14 +161,20 @@ import { Link } from 'async-react-router';
 ```
 
 ## Component defined at `<Route>`
-### `getInitialProps`
+### `getInitialProps(attributes, prevAttributes): Object`
 
-Components defined at `<Route>` can have `getInitialProps`.
+Components defined at `<Route>` can have `getInitialProps` that can use async/await.  
+`getInitialProps` perform the rendering after promise has been resolved,　Using `return`, you can pass data to the component defined for route.
 
 And `getInitialProps` has arguments.
 
-+ `pathname` - String of the current path.
-+ `params` - Object with the parsed url parameter. Defaults to {}.
++ attributes - Current Route Attributes. 
+    + `pathname` - String of the current path.
+    + `params` - Object with the parsed url parameter. Defaults to {}.
++ prevAttributes - Previous Route Attributes. First rendering to {}.
+    + `pathname` - String of the previous path.
+    + `params` - Object with the parsed url parameter at previous page. Defaults to {}.
+
 
 ```javascript
 class User extends React.Component {
@@ -179,6 +192,42 @@ render(
     document.getElementById('app')
 );
 ```
+
+### `initialPropsWillGet(attributes, prevAttributes)`
+
+Components defined at `<Route>` can have `initialPropsWillGet`.  
+`initialPropsWillGet` is invoked immediately before mounting occurs. It is called before `getInitialProps()`
+
+`initialPropsWillGet` has arguments.
+
++ attributes - Current Route Attributes. 
+    + `pathname` - String of the current path.
+    + `params` - Object with the parsed url parameter. Defaults to {}.
++ prevAttributes - Previous Route Attributes. First rendering to {}.
+    + `pathname` - String of the previous path.
+    + `params` - Object with the parsed url parameter at previous page. Defaults to {}.
+
+**async/await is not supported.**
+
+### `initialPropsDidGet(props, prevProps)`
+
+Components defined at `<Route>` can have `initialPropsDidGet`.  
+`initialPropsDidGet` is called after the promise is resolved.  
+If more than one promise is pending, async-react-router gets only the last executed promise.  
+Therefore, in that case `initialPropsDidGet` is executed only when the last promise is resolved.
+
+`initialPropsDidGet` has arguments.
+
++ props - Current props of components defined at `<Route>`. 
+    + `pathname` - String of the current path.
+    + `params` - Object with the parsed url parameter. Defaults to {}.
+    + `{data}` - Data retrieved using `getInitialProps`. 
++ prevProps - Previous props of components defined at `<Route>`. First rendering to {}.
+    + `pathname` - String of the previous path.
+    + `params` - Object with the parsed url parameter at previous page. Defaults to {}.
+    + `{data}` - Data retrieved using `getInitialProps`. 
+    
+**async/await is not supported.**
 
 ## Request
 ### `to`

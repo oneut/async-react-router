@@ -1,7 +1,10 @@
-import assert from "power-assert";
 import History from "./History";
 import React from "react";
 import RouteMatcher from "./RouteMatcher";
+import { Subject } from "rxjs/Subject";
+import "rxjs/add/operator/map";
+import "rxjs/add/operator/switchMap";
+import "rxjs/add/observable/fromPromise";
 
 export default class Router extends React.Component {
     constructor(props) {
@@ -11,9 +14,17 @@ export default class Router extends React.Component {
             component: null
         };
 
+        this.attributes = {};
+
         this.routes = {};
 
+        this.stream = null;
+
+        // Settings History.
         this.initHistory();
+
+        // Settings RxJS Stream.
+        this.initStream();
 
         // Settings Routes.
         this.addRoutes(props.children);
@@ -23,6 +34,13 @@ export default class Router extends React.Component {
         History.initialHistory(this.props.history);
         History.setRequestCallback(this.request.bind(this));
         History.listen();
+    }
+
+    initStream() {
+        this.stream = new Subject();
+        this.stream.map((pathname) => this.normalizePathname(pathname))
+            .switchMap((pathname) => this.renderer(pathname))
+            .subscribe((component) => this.setComponent(component));
     }
 
     renderer(pathname) {
@@ -58,20 +76,24 @@ export default class Router extends React.Component {
     addRoute(route, parent) {
         const {path, component, children} = route.props;
 
-        assert(path, 'Route is missing the "path" property');
-        assert(component, 'Route is missing the "component" property');
-
         const render = async (pathname, params) => {
-            let data         = {};
-            if (!!component.getInitialProps && typeof component.getInitialProps === 'function') {
-                data = await component.getInitialProps({
-                        pathname,
-                        params,
-                    }) || {};
+            const prevAttributes = Object.assign({}, this.attributes);
+            const attributes = {
+                pathname,
+                params,
+            };
+            this.attributes  = Object.assign({}, attributes);
+
+            if (this.isFunction(component.initialPropsWillGet)) {
+                component.initialPropsWillGet(attributes, prevAttributes);
             }
 
-            const finalProps = {...this.props, params};
-            return React.createElement(component, Object.assign(data, finalProps));
+            let data         = {};
+            if (this.isFunction(component.getInitialProps)) {
+                data = await component.getInitialProps(attributes, prevAttributes) || {};
+            }
+
+            return React.createElement(component, Object.assign(data, attributes));
         };
 
         const normalizedRoute = this.normalizeRoute(path, parent);
@@ -92,34 +114,15 @@ export default class Router extends React.Component {
 
     componentWillMount() {
         const location = History.getLocation();
-        this.dispatch(location.pathname);
+        this.stream.next(location.pathname);
     }
 
     async request(pathname) {
-        await this.dispatch(pathname);
-    }
-
-    dispatch(pathname) {
-        const component = this.renderer(this.normalizePathname(pathname));
-        if (this.isPromise(component)) {
-            return component.then((component) => {
-                this.setState({
-                    component: component
-                });
-            });
-        }
-
-        this.setState({
-            component: component
-        });
+        await this.stream.next(pathname);
     }
 
     normalizePathname(pathname) {
         return pathname.split('?')[0].split("#")[0];
-    }
-
-    isPromise(obj) {
-        return !!obj && (typeof obj === 'object' || typeof obj === 'function') && typeof obj.then === 'function';
     }
 
     /**
@@ -128,6 +131,22 @@ export default class Router extends React.Component {
 
     cleanPath(path) {
         return path.replace(/\/\//g, '/');
+    }
+
+    isFunction(func) {
+        if (!!func && typeof func === 'function') return true;
+        return false;
+    }
+
+    setComponent(component) {
+        if (this.isFunction(component.type.initialPropsDidGet)) {
+            const prevProps = !!this.state.component ? this.state.component.props : {};
+            component.type.initialPropsDidGet(component.props, prevProps);
+        }
+
+        this.setState({
+            component: component
+        });
     }
 
     /**
