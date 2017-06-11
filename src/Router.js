@@ -16,8 +16,6 @@ export default class Router extends React.Component {
 
         this.attributes = {};
 
-        this.routes = {};
-
         this.stream = null;
 
         // Settings History.
@@ -38,27 +36,32 @@ export default class Router extends React.Component {
 
     initStream() {
         this.stream = new Subject();
-        this.stream.map((pathname) => this.normalizePathname(pathname))
+        this.stream
+            .map((pathname) => this.normalizePathname(pathname))
             .switchMap((pathname) => this.renderer(pathname))
             .subscribe((component) => this.setComponent(component));
     }
 
     renderer(pathname) {
-        for (const route in this.routes) {
-            if (!(this.routes.hasOwnProperty(route))) continue;
+        return RouteMatcher.change(pathname).renderer(async (pathname, params, component) => {
+            const prevAttributes = Object.assign({}, this.attributes);
+            const attributes     = {
+                pathname,
+                params,
+            };
+            this.attributes      = Object.assign({}, attributes);
 
-            const routeMatcher = RouteMatcher.make(route, pathname);
-            if (routeMatcher.success()) {
-                const render = this.routes[route];
-                if (typeof render !== 'function') {
-                    return render;
-                }
-
-                return render(pathname, routeMatcher.getParams());
+            if (this.isFunction(component.initialPropsWillGet)) {
+                component.initialPropsWillGet(this.attributes, prevAttributes);
             }
-        }
 
-        return null;
+            let data = {};
+            if (this.isFunction(component.getInitialProps)) {
+                data = await component.getInitialProps(this.attributes, prevAttributes) || {};
+            }
+
+            return React.createElement(component, Object.assign(data, this.attributes));
+        });
     }
 
     /**
@@ -75,31 +78,9 @@ export default class Router extends React.Component {
 
     addRoute(route, parent) {
         const {path, component, children} = route.props;
-
-        const render = async (pathname, params) => {
-            const prevAttributes = Object.assign({}, this.attributes);
-            const attributes = {
-                pathname,
-                params,
-            };
-            this.attributes  = Object.assign({}, attributes);
-
-            if (this.isFunction(component.initialPropsWillGet)) {
-                component.initialPropsWillGet(attributes, prevAttributes);
-            }
-
-            let data         = {};
-            if (this.isFunction(component.getInitialProps)) {
-                data = await component.getInitialProps(attributes, prevAttributes) || {};
-            }
-
-            return React.createElement(component, Object.assign(data, attributes));
-        };
-
         const normalizedRoute = this.normalizeRoute(path, parent);
         if (children) this.addRoutes(children, {normalizedRoute});
-
-        this.routes[this.cleanPath(normalizedRoute)] = render;
+        RouteMatcher.addRoute(this.cleanPath(normalizedRoute), component);
     }
 
     /**

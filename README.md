@@ -19,7 +19,8 @@ You get initial props from getInitialProps() at first rendering in client side!
 + Support [history](https://www.npmjs.com/package/history) package.The following history type are supported.
     + Browser History
     + Hash History
-+ No SSR.
++ No support SSR.
++ No depend on react-router.
 
 ## Todo
 + Test...
@@ -108,7 +109,7 @@ render(
 ## Routing
 ### `<Router>`
 
-`<Router>` manages `Route`.
+`<Router>` manages `<Route>`.
 
 async-react-router supports [history](https://www.npmjs.com/package/history) package.  
 Default history type is **Hash History**.  
@@ -160,18 +161,18 @@ import { Link } from 'async-react-router';
 <Link to="/">Home</Link>
 ```
 
-## Component defined at `<Route>`
+## `Component` defined at `<Route>`
 ### `getInitialProps(attributes, prevAttributes): Object`
 
-Components defined at `<Route>` can have `getInitialProps` that can use async/await.  
+`Component` defined at `<Route>` can have `getInitialProps` that can use async/await.  
 `getInitialProps` perform the rendering after promise has been resolved,　Using `return`, you can pass data to the component defined for route.
 
 And `getInitialProps` has arguments.
 
-+ attributes - Current Route Attributes. 
++ `attributes` - Current Route Attributes. 
     + `pathname` - String of the current path.
     + `params` - Object with the parsed url parameter. Defaults to {}.
-+ prevAttributes - Previous Route Attributes. First rendering to {}.
++ `prevAttributes` - Previous Route Attributes. First rendering to {}.
     + `pathname` - String of the previous path.
     + `params` - Object with the parsed url parameter at previous page. Defaults to {}.
 
@@ -195,15 +196,15 @@ render(
 
 ### `initialPropsWillGet(attributes, prevAttributes)`
 
-Components defined at `<Route>` can have `initialPropsWillGet`.  
+`Component` defined at `<Route>` can have `initialPropsWillGet`.  
 `initialPropsWillGet` is invoked immediately before mounting occurs. It is called before `getInitialProps()`
 
 `initialPropsWillGet` has arguments.
 
-+ attributes - Current Route Attributes. 
++ `attributes` - Current Route Attributes. 
     + `pathname` - String of the current path.
     + `params` - Object with the parsed url parameter. Defaults to {}.
-+ prevAttributes - Previous Route Attributes. First rendering to {}.
++ `prevAttributes` - Previous Route Attributes. First rendering to {}.
     + `pathname` - String of the previous path.
     + `params` - Object with the parsed url parameter at previous page. Defaults to {}.
 
@@ -218,11 +219,11 @@ Therefore, in that case `initialPropsDidGet` is executed only when the last prom
 
 `initialPropsDidGet` has arguments.
 
-+ props - Current props of components defined at `<Route>`. 
++ `props` - Current props of components defined at `<Route>`. 
     + `pathname` - String of the current path.
     + `params` - Object with the parsed url parameter. Defaults to {}.
     + `{data}` - Data retrieved using `getInitialProps`. 
-+ prevProps - Previous props of components defined at `<Route>`. First rendering to {}.
++ `prevProps` - Previous props of components defined at `<Route>`. First rendering to {}.
     + `pathname` - String of the previous path.
     + `params` - Object with the parsed url parameter at previous page. Defaults to {}.
     + `{data}` - Data retrieved using `getInitialProps`. 
@@ -230,26 +231,97 @@ Therefore, in that case `initialPropsDidGet` is executed only when the last prom
 **async/await is not supported.**
 
 ## Request
-### `to`
+### `to(nextRequestPath)`
 
-When you want to push the next request, you can use `to` of `Request`.
+When you want to push the next history based request, you can use `to` of `Request`.
+
++ `nextRequestPath` - String of next path.
 
 ```javascript
-import Request from 'async-react-router';
+import { Request } from 'async-react-router';
 
-Request.to('/next'); // Change url to `/next`.
+Request.to('/next'); // Change url to `#/next`.
 ```
 
-### `isActive`
+### `action(nextRequestComponentName, nextRequestParameters)`
 
-When you want to know current url, you can use `isActive` of `Request`.
+You can make history based request from the name of component defined at `<Route>`.
+
++ `nextRequestComponentName` - Name of component defined at `<Route>` for next request.
++ `nextRequestParameters` - Object of next url parameter, if it requires.
 
 ```javascript
-import Request from 'async-react-router';
+import React from 'react';
+import { render } from 'react-dom';
+import { Router, Route, Request } from 'async-react-router';
 
-// When current url is `/`...
+class User extends React.Component {
+    render() { return (<div>{this.props.params.userId}</div>); };
+}
+
+render(
+    (
+        <Router>
+            <Route path="/user/:userId" component={User}/>
+        </Router>
+    ),
+    document.getElementById('app')
+);
+
+Request.action(User.name, {userId: 1}); // Change url to `#/user/1`.
+```
+
+### `isActive(path)`
+
+When you want to know current path, you can use `isActive` of `Request`.
+
+```javascript
+import { Request } from 'async-react-router';
+
+// When current path is `/`...
 Request.isActive('/');     // true
 Request.isActive('/path'); // false
+```
+
+## URL
+### ```to(path)```
+
+When you want to make history based url, you can use `to` of `URL`.
+
++ `path` - String of path.
+
+```javascript
+import { URL } from 'async-react-router';
+
+URL.to('/next'); // String `#/next`.
+```
+
+### ```action(componentName, urlParameters)```
+
+You can make history based url from the name of component defined at `<Route>`.
+
++ `componentName` - Name of component defined at `<Route>` for next request.
++ `urlParameters` - Object of url parameter, if it requires.
+
+```javascript
+import React from 'react';
+import { render } from 'react-dom';
+import { Router, Route, URL } from 'async-react-router';
+
+class User extends React.Component {
+    render() { return (<div>{this.props.params.userId}</div>); };
+}
+
+render(
+    (
+        <Router>
+            <Route path="/user/:userId" component={User}/>
+        </Router>
+    ),
+    document.getElementById('app')
+);
+
+URL.action(User.name, {userId: 1}); // String `#/user/1`.
 ```
 
 ## Thanks for the inspiration
