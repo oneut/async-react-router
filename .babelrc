@@ -4,18 +4,6 @@
     "stage-1",
     "react"
   ],
-  "env": {
-    "development": {
-      "presets": [
-        "babel-preset-power-assert"
-      ]
-    },
-    "production": {
-      "plugins": [
-        "babel-plugin-unassert"
-      ]
-    }
-  },
   "plugins": [
     "transform-async-to-generator",
     "transform-decorators-legacy",

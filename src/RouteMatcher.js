@@ -1,38 +1,53 @@
-import Regexp from "path-to-regexp";
+import pathToRegexp from "path-to-regexp";
 
-export default class RouteMatcher {
-    constructor(path = '', pathname = '') {
-        this.path       = path;
-        this.pathname   = pathname;
-        this.routeMatch = null;
-        this.keys       = [];
+class RouteMatcher {
+    constructor() {
+        this.routes              = {};
+        this.componentNameRoutes = {};
+        this.pathname            = '';
+        this.routeMatch          = null;
+        this.render              = null;
+        this.isMatch             = false;
+        this.keys                = [];
     }
 
-    match() {
-        if (this.routeMatch) {
+    addRoute(path, component) {
+        this.routes[path] = component;
+        if (!!component && typeof component === 'function') {
+            this.componentNameRoutes[component.name] = path;
+        }
+    }
+
+    change(pathname) {
+        this.pathname   = pathname;
+        this.routeMatch = null;
+        this.component  = null;
+        this.isMatch    = false;
+        for (const route in this.routes) {
+            this.keys = [];
+            if (!(this.routes.hasOwnProperty(route))) continue;
+            const routeMatch = pathToRegexp(route, this.keys).exec(this.pathname);
+            if (!routeMatch) {
+                continue;
+            }
+            this.routeMatch = routeMatch;
+            this.component  = this.routes[route];
+            this.isMatch    = true;
             return this;
         }
-
-        this.routeMatch = Regexp(this.path, this.keys).exec(this.pathname);
         return this;
     }
 
-    static make(path, pathname) {
-        return new RouteMatcher(path, pathname).match();
-    }
+    renderer(renderer) {
+        if (!this.isMatch) {
+            return null;
+        }
 
-    success() {
-        return Boolean(this.routeMatch);
-    }
-
-    fails() {
-        return !(this.success());
+        return renderer(this.pathname, this.getParams(), this.component);
     }
 
     getParams() {
-        if (this.fails()) {
-            return {};
-        }
+        if (!this.isMatch) return {};
 
         let params = {};
         for (let i = 1, len = this.routeMatch.length; i < len; ++i) {
@@ -43,4 +58,17 @@ export default class RouteMatcher {
 
         return params;
     }
+
+    compile(componentName, parameters = {}) {
+        if (!this.componentNameRoutes[componentName]) {
+            throw `Route Component "${componentName}" did not match Path.`;
+        }
+
+        const toPath = pathToRegexp.compile(this.componentNameRoutes[componentName]);
+        return toPath(parameters);
+    }
 }
+
+const routeMatcher = new RouteMatcher();
+
+export default routeMatcher;
