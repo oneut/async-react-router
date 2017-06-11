@@ -32,7 +32,6 @@ You get initial props from getInitialProps() at first rendering in client side!
     
 ## Demo
 + [Basic Example.](https://oneut.github.io/async-react-router/basic/)
-+ [Redux Example.(with Hacker News API)](https://oneut.github.io/async-react-router/redux/)
 
 ## Installation
 
@@ -244,34 +243,6 @@ import { Request } from 'async-react-router';
 Request.to('/next'); // Change url to `#/next`.
 ```
 
-### `action(nextRequestComponentName, nextRequestParameters)`
-
-You can make history based request from the name of component defined at `<Route>`.
-
-+ `nextRequestComponentName` - Name of component defined at `<Route>` for next request.
-+ `nextRequestParameters` - Object of next url parameter, if it requires.
-
-```javascript
-import React from 'react';
-import { render } from 'react-dom';
-import { Router, Route, Request } from 'async-react-router';
-
-class User extends React.Component {
-    render() { return (<div>{this.props.params.userId}</div>); };
-}
-
-render(
-    (
-        <Router>
-            <Route path="/user/:userId" component={User}/>
-        </Router>
-    ),
-    document.getElementById('app')
-);
-
-Request.action(User.name, {userId: 1}); // Change url to `#/user/1`.
-```
-
 ### `isActive(path)`
 
 When you want to know current path, you can use `isActive` of `Request`.
@@ -295,34 +266,6 @@ When you want to make history based url, you can use `to` of `URL`.
 import { URL } from 'async-react-router';
 
 URL.to('/next'); // String `#/next`.
-```
-
-### ```action(componentName, urlParameters)```
-
-You can make history based url from the name of component defined at `<Route>`.
-
-+ `componentName` - Name of component defined at `<Route>` for next request.
-+ `urlParameters` - Object of url parameter, if it requires.
-
-```javascript
-import React from 'react';
-import { render } from 'react-dom';
-import { Router, Route, URL } from 'async-react-router';
-
-class User extends React.Component {
-    render() { return (<div>{this.props.params.userId}</div>); };
-}
-
-render(
-    (
-        <Router>
-            <Route path="/user/:userId" component={User}/>
-        </Router>
-    ),
-    document.getElementById('app')
-);
-
-URL.action(User.name, {userId: 1}); // String `#/user/1`.
 ```
 
 ## Thanks for the inspiration
