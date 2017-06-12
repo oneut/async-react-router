@@ -14,8 +14,8 @@ class URL {
         return this.history.history.createHref({pathname});
     }
 
-    action(componentName, parameters) {
-        const pathname = RouteMatcher.compile(componentName, parameters);
+    name(name, parameters) {
+        const pathname = RouteMatcher.compile(name, parameters);
         return this.history.history.createHref({pathname});
     }
 }

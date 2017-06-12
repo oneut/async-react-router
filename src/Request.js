@@ -14,8 +14,8 @@ class Request {
         this.history.push(to);
     }
 
-    action(componentName, parameters = {}) {
-        this.history.push(RouteMatcher.compile(componentName, parameters));
+    name(name, parameters = {}) {
+        this.history.push(RouteMatcher.compile(name, parameters));
     }
 
     isActive(pathname) {

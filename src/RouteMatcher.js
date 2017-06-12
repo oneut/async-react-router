@@ -2,19 +2,19 @@ import pathToRegexp from "path-to-regexp";
 
 class RouteMatcher {
     constructor() {
-        this.routes              = {};
-        this.componentNameRoutes = {};
-        this.pathname            = '';
-        this.routeMatch          = null;
-        this.render              = null;
-        this.isMatch             = false;
-        this.keys                = [];
+        this.routes     = {};
+        this.nameRoutes = {};
+        this.pathname   = '';
+        this.routeMatch = null;
+        this.render     = null;
+        this.isMatch    = false;
+        this.keys       = [];
     }
 
-    addRoute(path, component) {
+    addRoute(path, component, name) {
         this.routes[path] = component;
-        if (!!component && typeof component === 'function') {
-            this.componentNameRoutes[component.name] = path;
+        if (!!name) {
+            this.nameRoutes[name] = path;
         }
     }
 
@@ -59,12 +59,12 @@ class RouteMatcher {
         return params;
     }
 
-    compile(componentName, parameters = {}) {
-        if (!this.componentNameRoutes[componentName]) {
-            throw `Route Component "${componentName}" did not match Path.`;
+    compile(name, parameters = {}) {
+        if (!this.nameRoutes[name]) {
+            throw `Route Name "${name}" did not match Path.`;
         }
 
-        const toPath = pathToRegexp.compile(this.componentNameRoutes[componentName]);
+        const toPath = pathToRegexp.compile(this.nameRoutes[name]);
         return toPath(parameters);
     }
 }
