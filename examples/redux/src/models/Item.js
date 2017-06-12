@@ -1,5 +1,4 @@
 import Immutable from 'immutable';
-import ItemPage from '../pages/ItemPage';
 import { URL } from 'async-react-router';
 import timeago from 'timeago.js';
 
@@ -21,7 +20,7 @@ export default class Item extends ItemRecord {
             return this.url;
         }
 
-        return URL.action(ItemPage.name, {itemId: this.id});
+        return URL.name("ItemPage", {itemId: this.id});
     }
 
     getTimeAgo() {

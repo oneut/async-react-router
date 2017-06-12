@@ -12,10 +12,7 @@ const store = createStore(indexReducer);
 
 export default class IndexPage extends React.Component {
     static initialPropsWillGet() {
-        NProgress.remove();
         NProgress.start();
-        NProgress.set(0.0);
-        NProgress.set(0.3);
     }
 
     static async getInitialProps() {

@@ -9,10 +9,10 @@ import UserPage from "./pages/UserPage";
 render(
     (
         <Router>
-            <Route path="/" component={IndexPage}/>
-            <Route path="/news/:page?" component={NewsPage}/>
-            <Route path="/item/:itemId" component={ItemPage}/>
-            <Route path="/user/:userId" component={UserPage}/>
+            <Route path="/" component={IndexPage} name="IndexPage"/>
+            <Route path="/news/:page?" component={NewsPage} name="NewsPage"/>
+            <Route path="/item/:itemId" component={ItemPage} name="ItemPage"/>
+            <Route path="/user/:userId" component={UserPage} name="UserPage"/>
         </Router>
     ),
     document.getElementById('app')

@@ -2,7 +2,6 @@ import React from "react";
 import Rx from "rxjs";
 import HackerNewsApi from "../../api/HackerNewsApi";
 import CommentComponent from "./CommentComponent";
-import UserPage from "../../pages/UserPage";
 import { URL } from "async-react-router";
 import "font-awesome/css/font-awesome.min.css";
 
@@ -41,7 +40,7 @@ export default class ItemComponent extends React.Component {
                     <div>
                         <ul className="list-inline">
                             <li className="score">{this.props.item.score} points</li>
-                            <li className="by">by <a href={URL.action(UserPage.name, {userId: this.props.item.by})}
+                            <li className="by">by <a href={URL.name("UserPage", {userId: this.props.item.by})}
                                                      className="">{this.props.item.by}</a></li>
                             <li className="time">{this.props.item.getTimeAgo()}</li>
                         </ul>

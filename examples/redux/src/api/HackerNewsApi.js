@@ -1,4 +1,5 @@
 import Firebase from "firebase";
+import LRU from "lru-cache";
 
 class HackerNewsApi {
     constructor() {
@@ -7,7 +8,11 @@ class HackerNewsApi {
         Firebase.initializeApp({
             databaseURL: 'https://hacker-news.firebaseio.com'
         });
-        this.api = Firebase.database().ref('/v0');
+        this.api   = Firebase.database().ref('/v0');
+        this.cache = LRU({
+            max: 500,
+            maxAge: 1000 * 60 * 60
+        });
     }
 
     async getTopStoryItems(page = 1) {
@@ -18,13 +23,19 @@ class HackerNewsApi {
     }
 
     async getTopStoryItemIds() {
+        if (this.cache.has("topstories")) return this.cache.get('topstories');
         const snapshot = await this.api.child('/topstories').once('value');
-        return snapshot.val();
+        const value = snapshot.val();
+        this.cache.set("topstories", value)
+        return value;
     }
 
     async findItem(id) {
+        if (this.cache.has(`item/${id}`)) return this.cache.get(`item/${id}`);
         const snapshot = await this.api.child(`/item/${id}`).once('value');
-        return snapshot.val();
+        const value = snapshot.val();
+        this.cache.set(`item/${id}`, value)
+        return value;
     }
 
     async getComments(ids) {
@@ -40,8 +51,11 @@ class HackerNewsApi {
     }
 
     async findUser(id) {
+        if (this.cache.has(`/user/${id}`)) return this.cache.get(`/user/${id}`);
         const snapshot = await this.api.child(`/user/${id}`).once('value');
-        return snapshot.val();
+        const value = snapshot.val();
+        this.cache.set(`/user/${id}`, value)
+        return value;
     }
 }
 

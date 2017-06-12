@@ -1,5 +1,4 @@
 import React from "react";
-import UserPage from "../../pages/UserPage";
 import { URL } from "async-react-router";
 
 export default class CommentComponent extends React.Component {
@@ -12,7 +11,7 @@ export default class CommentComponent extends React.Component {
                 <dl>
                     <dt>
                         <ul className="list-inline">
-                            <li className="by"><a href={URL.action(UserPage.name, {userId: this.props.comment.by})}>{this.props.comment.by}</a></li>
+                            <li className="by"><a href={URL.name("UserPage", {userId: this.props.comment.by})}>{this.props.comment.by}</a></li>
                             <li className="time">{this.props.comment.getTimeAgo()}</li>
                         </ul>
                     </dt>

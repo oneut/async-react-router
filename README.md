@@ -11,7 +11,7 @@ Next.js is wonderful. However, it is difficult to manage state.
 Because next.js does SSR.  
 So, I made a router like next.js.
 
-You get initial props from getInitialProps() at first rendering in client side!
+You get initial props from `getInitialProps()` at first rendering in client side!
 
 ## Features
 + Support async/await like next.js.
@@ -27,11 +27,12 @@ You get initial props from getInitialProps() at first rendering in client side!
 + Error Handling Support.
 + NavLink Support.
 + example
-    + redux
     + flux-utils
++ SSR?
     
 ## Demo
 + [Basic Example.](https://oneut.github.io/async-react-router/basic/)
++ [Redux Example.](https://oneut.github.io/async-react-router/redux/)
 
 ## Installation
 
@@ -113,7 +114,7 @@ render(
 
 async-react-router supports [history](https://www.npmjs.com/package/history) package.  
 Default history type is **Hash History**.  
-If you want change history type to browser history, you can use history property.
+If you want change history type to browser history, you can use `history` property.
 
 ```javascript
 import { Router, Route, createBrowserHistory } from 'async-react-router';
@@ -131,10 +132,11 @@ render(
 ### `<Route>`
 
 `<Route>` manages paths and react components.  
-`<Route>` requires the following parameters.
+`<Route>` has the following properties.
 
-+ `path` - Any valid URL path that [path-to-regexp](https://github.com/pillarjs/path-to-regexp) understands.
-+ `component` -A react component to render only when the location matches.
++ `path` - Any valid URL path that [path-to-regexp](https://github.com/pillarjs/path-to-regexp) understands. Required.
++ `component` - A react component to render only when the location matches. Required.
++ `name` - Name of `<Route>`. You can use `name` at Request API, or URL API. Optional.
 
 ```javascript
 import { Router, Route } from 'async-react-router';
@@ -143,7 +145,7 @@ render(
     (
         <Router>
             <Route path="/" component={Home}/>
-            <Route path="/user/:userId" component={User}/>
+            <Route path="/user/:userId" component={User} name="User"/>
         </Router>
     ),
     document.getElementById('app')
@@ -215,7 +217,7 @@ render(
 Components defined at `<Route>` can have `initialPropsDidGet`.  
 `initialPropsDidGet` is called after the promise is resolved.  
 If more than one promise is pending, async-react-router gets only the last executed promise.  
-Therefore, in that case `initialPropsDidGet` is executed only when the last promise is resolved.
+For this, in that case `initialPropsDidGet` is executed only when the last promise is resolved.
 
 `initialPropsDidGet` has arguments.
 
@@ -231,16 +233,44 @@ Therefore, in that case `initialPropsDidGet` is executed only when the last prom
 **async/await is not supported.**
 
 ## Request
-### `to(nextRequestPath)`
+### `to(path)`
 
 When you want to push the next history based request, you can use `to` of `Request`.
 
-+ `nextRequestPath` - String of next path.
++ `path` - String of next path.
 
 ```javascript
 import { Request } from 'async-react-router';
 
 Request.to('/next'); // Change url to `#/next`.
+```
+
+### `name(routeName, urlParameters)`
+
+You can make history based request from the `name` defined at `<Route>`.
+
++ `routeName` - Name defined at `<Route>` for next request.
++ `urlParameters` - Object of next url parameter, if it requires.
+
+```javascript
+import React from 'react';
+import { render } from 'react-dom';
+import { Router, Route, Request } from 'async-react-router';
+
+class User extends React.Component {
+    render() { return (<div>{this.props.params.userId}</div>); };
+}
+
+render(
+    (
+        <Router>
+            <Route path="/user/:userId" component={User} name="User"/>
+        </Router>
+    ),
+    document.getElementById('app')
+);
+
+Request.name("User", {userId: 1}); // Change url to `#/user/1`.
 ```
 
 ### `isActive(path)`
@@ -266,6 +296,34 @@ When you want to make history based url, you can use `to` of `URL`.
 import { URL } from 'async-react-router';
 
 URL.to('/next'); // String `#/next`.
+```
+
+### ```name(routeName, urlParameters)```
+
+You can make history based url from the `name` property of route defined at `<Route>`.
+
++ `routeName` - Name defined at `<Route>`.
++ `urlParameters` - Object of url parameter, if it requires.
+
+```javascript
+import React from 'react';
+import { render } from 'react-dom';
+import { Router, Route, URL } from 'async-react-router';
+
+class User extends React.Component {
+    render() { return (<div>{this.props.params.userId}</div>); };
+}
+
+render(
+    (
+        <Router>
+            <Route path="/user/:userId" component={User} name="User"/>
+        </Router>
+    ),
+    document.getElementById('app')
+);
+
+URL.name("User", {userId: 1}); // String `#/user/1`.
 ```
 
 ## Thanks for the inspiration
