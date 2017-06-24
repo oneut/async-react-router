@@ -1,6 +1,7 @@
 import History from "./History";
 import React from "react";
 import RouteMatcher from "./RouteMatcher";
+import * as Utils from "./Utils";
 import { Subject } from "rxjs/Subject";
 import "rxjs/add/operator/map";
 import "rxjs/add/operator/switchMap";
@@ -13,8 +14,6 @@ export default class Router extends React.Component {
         this.state = {
             component: null
         };
-
-        this.attributes = {};
 
         this.stream = null;
 
@@ -37,31 +36,16 @@ export default class Router extends React.Component {
     initStream() {
         this.stream = new Subject();
         this.stream
-            .map((pathname) => this.normalizePathname(pathname))
             .switchMap((pathname) => this.renderer(pathname))
             .subscribe((component) => this.setComponent(component));
     }
 
-    renderer(pathname) {
-        return RouteMatcher.change(pathname).renderer(async (pathname, params, component) => {
-            const prevAttributes = Object.assign({}, this.attributes);
-            const attributes     = {
-                pathname,
-                params,
-            };
-            this.attributes      = Object.assign({}, attributes);
-
-            if (this.isFunction(component.initialPropsWillGet)) {
-                component.initialPropsWillGet(this.attributes, prevAttributes);
-            }
-
-            let data = {};
-            if (this.isFunction(component.getInitialProps)) {
-                data = await component.getInitialProps(this.attributes, prevAttributes) || {};
-            }
-
-            return React.createElement(component, Object.assign(data, this.attributes));
-        });
+    async renderer(pathname) {
+        const renderer = RouteMatcher.getRenderer(Utils.normalizePathname(pathname));
+        renderer.fireInitialPropsWillGet();
+        const data = await renderer.fireGetInitialProps();
+        renderer.fireInitialPropsDidGet();
+        return React.createElement(renderer.getComponent(), Object.assign(data, renderer.getProps()));
     }
 
     /**
@@ -78,19 +62,9 @@ export default class Router extends React.Component {
 
     addRoute(route, parent) {
         const {path, component, children, name} = route.props;
-        const normalizedRoute = this.normalizeRoute(path, parent);
-        if (children) this.addRoutes(children, {normalizedRoute});
-        RouteMatcher.addRoute(this.cleanPath(normalizedRoute), component, name);
-    }
-
-    /**
-     * Normalize route based on the parent.
-     */
-
-    normalizeRoute(path, parent) {
-        if (path[0] === '/' && path.length === 1) return path;
-        if (typeof parent === 'undefined') return path;
-        return `${parent.normalizedRoute}/${path}`;
+        const normalizedPath                    = Utils.cleanPath(Utils.createRoute(path, parent));
+        if (children) this.addRoutes(children, {path: normalizedPath});
+        RouteMatcher.addRoute(normalizedPath, component, name);
     }
 
     componentWillMount() {
@@ -102,29 +76,7 @@ export default class Router extends React.Component {
         await this.stream.next(pathname);
     }
 
-    normalizePathname(pathname) {
-        return pathname.split('?')[0].split("#")[0];
-    }
-
-    /**
-     * Clean path.
-     */
-
-    cleanPath(path) {
-        return path.replace(/\/\//g, '/');
-    }
-
-    isFunction(func) {
-        if (!!func && typeof func === 'function') return true;
-        return false;
-    }
-
     setComponent(component) {
-        if (this.isFunction(component.type.initialPropsDidGet)) {
-            const prevProps = !!this.state.component ? this.state.component.props : {};
-            component.type.initialPropsDidGet(component.props, prevProps);
-        }
-
         this.setState({
             component: component
         });

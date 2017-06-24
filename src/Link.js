@@ -9,7 +9,7 @@ export default class Link extends React.Component {
 
     render() {
         return (
-            <a href={this.props.to} onClick={this.click.bind(this)}>
+            <a href={this.props.to} className={this.props.className} onClick={this.click.bind(this)}>
                 {this.props.children}
             </a>
         );

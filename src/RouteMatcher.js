@@ -1,14 +1,11 @@
 import pathToRegexp from "path-to-regexp";
+import Renderer from "./Renderer";
 
 class RouteMatcher {
     constructor() {
         this.routes     = {};
         this.nameRoutes = {};
-        this.pathname   = '';
-        this.routeMatch = null;
-        this.render     = null;
-        this.isMatch    = false;
-        this.keys       = [];
+        this.renderer   = null;
     }
 
     addRoute(path, component, name) {
@@ -18,45 +15,27 @@ class RouteMatcher {
         }
     }
 
-    change(pathname) {
-        this.pathname   = pathname;
-        this.routeMatch = null;
-        this.component  = null;
-        this.isMatch    = false;
+    getRenderer(pathname) {
+        this.renderer = null;
         for (const route in this.routes) {
-            this.keys = [];
+            let keys = [];
             if (!(this.routes.hasOwnProperty(route))) continue;
-            const routeMatch = pathToRegexp(route, this.keys).exec(this.pathname);
+            const routeMatch = pathToRegexp(route, keys).exec(pathname);
             if (!routeMatch) {
                 continue;
             }
-            this.routeMatch = routeMatch;
-            this.component  = this.routes[route];
-            this.isMatch    = true;
-            return this;
-        }
-        return this;
-    }
 
-    renderer(renderer) {
-        if (!this.isMatch) {
-            return null;
+            let params = {};
+            for (let i = 1, len = routeMatch.length; i < len; ++i) {
+                const key = keys[i - 1];
+                if (key) params[key.name] = 'string' === typeof routeMatch[i] ? decodeURIComponent(routeMatch[i]) : routeMatch[i];
+            }
+
+            this.renderer = new Renderer(pathname, this.routes[route], params, this.renderer);
+            break;
         }
 
-        return renderer(this.pathname, this.getParams(), this.component);
-    }
-
-    getParams() {
-        if (!this.isMatch) return {};
-
-        let params = {};
-        for (let i = 1, len = this.routeMatch.length; i < len; ++i) {
-            const key = this.keys[i - 1];
-            const val = 'string' === typeof this.routeMatch[i] ? decodeURIComponent(this.routeMatch[i]) : this.routeMatch[i];
-            if (key) params[key.name] = val;
-        }
-
-        return params;
+        return this.renderer;
     }
 
     compile(name, parameters = {}) {

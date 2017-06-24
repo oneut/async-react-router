@@ -11,7 +11,7 @@ class Request {
     }
 
     to(to) {
-        this.history.push(to);
+        this.history.push(this.normarizeTo(to));
     }
 
     name(name, parameters = {}) {
@@ -21,6 +21,14 @@ class Request {
     isActive(pathname) {
         const requestLocation = this.history.getRequestLocation();
         return (requestLocation.pathname === pathname);
+    }
+
+    normarizeTo(to) {
+        if (to[0] === '#') {
+            return to.substr(1);
+        }
+
+        return to;
     }
 }
 
