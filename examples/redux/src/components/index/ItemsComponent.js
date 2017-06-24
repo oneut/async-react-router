@@ -1,6 +1,6 @@
 import React from 'react';
 import ItemComponent from "./ItemComponent";
-import { URL } from "async-react-router";
+import { URL, Link } from "async-react-router";
 import 'bootstrap/dist/css/bootstrap.css';
 
 export default class ItemsComponent extends React.Component {
@@ -10,7 +10,7 @@ export default class ItemsComponent extends React.Component {
             <div className="container">
                 {itemComponents}
                 <h3>
-                    <a href={URL.name("NewsPage", {page: 2})}>more</a>
+                    <Link to={URL.name("NewsPage", {page: 2})}>more</Link>
                 </h3>
             </div>
         );

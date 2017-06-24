@@ -2,7 +2,7 @@ import React from "react";
 import Rx from "rxjs";
 import HackerNewsApi from "../../api/HackerNewsApi";
 import CommentComponent from "./CommentComponent";
-import { URL } from "async-react-router";
+import { URL, Link } from "async-react-router";
 import "font-awesome/css/font-awesome.min.css";
 
 export default class ItemComponent extends React.Component {
@@ -36,12 +36,12 @@ export default class ItemComponent extends React.Component {
         return (
             <div className="container">
                 <div className="news-item">
-                    <h3 className="title"><a href={this.props.item.getUrl()}>{this.props.item.title}</a></h3>
+                    <h3 className="title"><Link to={this.props.item.getUrl()}>{this.props.item.title}</Link></h3>
                     <div>
                         <ul className="list-inline">
                             <li className="score">{this.props.item.score} points</li>
-                            <li className="by">by <a href={URL.name("UserPage", {userId: this.props.item.by})}
-                                                     className="">{this.props.item.by}</a></li>
+                            <li className="by">by <Link to={URL.name("UserPage", {userId: this.props.item.by})}
+                                                     className="">{this.props.item.by}</Link></li>
                             <li className="time">{this.props.item.getTimeAgo()}</li>
                         </ul>
                     </div>

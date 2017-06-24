@@ -1,5 +1,5 @@
 import React from "react";
-import { URL } from "async-react-router";
+import { URL, Link } from "async-react-router";
 
 export default class CommentComponent extends React.Component {
     render() {
@@ -11,7 +11,7 @@ export default class CommentComponent extends React.Component {
                 <dl>
                     <dt>
                         <ul className="list-inline">
-                            <li className="by"><a href={URL.name("UserPage", {userId: this.props.comment.by})}>{this.props.comment.by}</a></li>
+                            <li className="by"><Link to={URL.name("UserPage", {userId: this.props.comment.by})}>{this.props.comment.by}</Link></li>
                             <li className="time">{this.props.comment.getTimeAgo()}</li>
                         </ul>
                     </dt>

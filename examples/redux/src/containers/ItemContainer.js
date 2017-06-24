@@ -7,8 +7,15 @@ import ItemComponent from "../components/item/ItemComponent";
 import ItemAction from "../actions/ItemAction";
 
 class ItemContainer extends React.Component {
-    render() {
+    componentDidMount() {
         window.scrollTo(0, 0);
+    }
+
+    componentDidUpdate() {
+        window.scrollTo(0, 0);
+    }
+
+    render() {
         return (
             <div>
                 <Header/>
