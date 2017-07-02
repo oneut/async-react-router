@@ -1,7 +1,6 @@
 import React from 'react';
 import ItemComponent from "./ItemComponent";
 import { URL, Link } from "async-react-router";
-import 'bootstrap/dist/css/bootstrap.css';
 
 export default class ItemsComponent extends React.Component {
     render() {

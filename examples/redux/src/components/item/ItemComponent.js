@@ -3,7 +3,6 @@ import Rx from "rxjs";
 import HackerNewsApi from "../../api/HackerNewsApi";
 import CommentComponent from "./CommentComponent";
 import { URL, Link } from "async-react-router";
-import "font-awesome/css/font-awesome.min.css";
 
 export default class ItemComponent extends React.Component {
     constructor(props) {

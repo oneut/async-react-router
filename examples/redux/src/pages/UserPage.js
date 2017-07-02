@@ -6,7 +6,7 @@ import userReducer from "../reducers/user";
 import UserContainer from "../containers/UserContainer";
 import HackerNewsApi from "../api/HackerNewsApi";
 import UserActionTypes from "../actionTypes/UserActionTypes";
-import "nprogress/nprogress.css";
+import NotFoundPage from "./NotFoundPage";
 
 const store = createStore(userReducer);
 
@@ -17,10 +17,20 @@ export default class UserPage extends React.Component {
 
     static async getInitialProps(attributes) {
         const user = await HackerNewsApi.findUser(attributes.params.userId);
+        if (!user) {
+            return {
+                notFound: true
+            };
+        }
+
         store.dispatch({
             type: UserActionTypes.NEW_USER,
             user: user
         });
+
+        return {
+            notFound: false
+        };
     }
 
     static initialPropsDidGet() {
@@ -28,6 +38,7 @@ export default class UserPage extends React.Component {
     }
 
     render() {
+        if (this.props.notFound) return (<NotFoundPage/>);
         return (
             <Provider store={store}>
                 <UserContainer params={this.props.params}/>

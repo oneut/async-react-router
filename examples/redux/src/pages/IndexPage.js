@@ -6,7 +6,7 @@ import indexReducer from "../reducers/index";
 import IndexContainer from "../containers/IndexContainer";
 import HackerNewsApi from "../api/HackerNewsApi";
 import IndexActionTypes from "../actionTypes/IndexActionTypes";
-import "nprogress/nprogress.css";
+import NotFoundPage from "./NotFoundPage";
 
 const store = createStore(indexReducer);
 
@@ -16,11 +16,22 @@ export default class IndexPage extends React.Component {
     }
 
     static async getInitialProps() {
-        const items = await HackerNewsApi.getTopStoryItems();
+        const items = await HackerNewsApi.getTopStoryItems()
+        if (!items.length) {
+            return {
+                notFound: true
+            };
+        }
+
         store.dispatch({
             type: IndexActionTypes.ADD_ITEMS,
             items: items
         });
+
+        return {
+            notFound: false
+        };
+
     }
 
     static initialPropsDidGet() {
@@ -28,6 +39,8 @@ export default class IndexPage extends React.Component {
     }
 
     render() {
+        if (this.props.notFound) return (<NotFoundPage/>);
+
         return (
             <Provider store={store}>
                 <IndexContainer/>
