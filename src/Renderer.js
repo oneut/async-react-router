@@ -1,8 +1,9 @@
 export default class Renderer {
     constructor(pathname, component, params, prevRenderer) {
-        this.pathname     = pathname;
+        this.data         = {};
         this.component    = component;
         this.params       = params;
+        this.pathname     = pathname;
         this.prevRenderer = prevRenderer;
     }
 
@@ -25,6 +26,13 @@ export default class Renderer {
         };
     }
 
+    getComponentProps() {
+        return {
+            ...this.getProps(),
+            ...this.data
+        }
+    }
+
     fireInitialPropsWillGet() {
         if (this.isFunction(this.component.initialPropsWillGet)) {
             const prevProps = !!this.prevRenderer ? this.prevRenderer.getProps() : {};
@@ -33,15 +41,20 @@ export default class Renderer {
     }
 
     async fireGetInitialProps() {
+        await this.fetchInitialProps();
+        return this.data;
+    }
+
+    async fetchInitialProps() {
         if (!(this.isFunction(this.component.getInitialProps))) return {};
         const prevProps = !!this.prevRenderer ? this.prevRenderer.getProps() : {};
-        return await this.component.getInitialProps(this.getProps(), prevProps) || {};
+        this.data       = await this.component.getInitialProps(this.getProps(), prevProps) || {};
     }
 
     fireInitialPropsDidGet() {
         if (this.isFunction(this.component.initialPropsDidGet)) {
-            const prevProps = !!this.prevRenderer ? this.prevRenderer.getProps() : {};
-            this.component.initialPropsDidGet(this.getProps(), prevProps);
+            const prevComponentProps = !!this.prevRenderer ? this.prevRenderer.getComponentProps() : {};
+            this.component.initialPropsDidGet(this.getComponentProps(), prevComponentProps);
         }
     }
 
