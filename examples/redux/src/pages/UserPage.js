@@ -16,21 +16,18 @@ export default class UserPage extends React.Component {
     }
 
     static async getInitialProps(attributes) {
-        const user = await HackerNewsApi.findUser(attributes.params.userId);
-        if (!user) {
-            return {
-                notFound: true
-            };
-        }
-
-        store.dispatch({
-            type: UserActionTypes.NEW_USER,
-            user: user
-        });
-
         return {
-            notFound: false
+            user: await HackerNewsApi.findUser(attributes.params.userId)
         };
+    }
+
+    static initialPropsStoreHook(props) {
+        if (props.user) {
+            store.dispatch({
+                type: UserActionTypes.NEW_USER,
+                user: props.user
+            });
+        }
     }
 
     static initialPropsDidGet() {
@@ -38,7 +35,8 @@ export default class UserPage extends React.Component {
     }
 
     render() {
-        if (this.props.notFound) return (<NotFoundPage/>);
+        if (!this.props.user) return (<NotFoundPage/>);
+
         return (
             <Provider store={store}>
                 <UserContainer params={this.props.params}/>

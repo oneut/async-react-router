@@ -16,21 +16,18 @@ export default class ItemPage extends React.Component {
     }
 
     static async getInitialProps(attributes) {
-        const item = await HackerNewsApi.findItem(attributes.params.itemId);
-        if (!item) {
-            return {
-                notFound: true
-            };            
-        }
-
-        store.dispatch({
-            type: ItemActionTypes.NEW_ITEM,
-            item: item
-        });
-
         return {
-            notFound: false
+            item: await HackerNewsApi.findItem(attributes.params.itemId)
         };
+    }
+
+    static initialPropsStoreHook(props) {
+        if (props.item) {
+            store.dispatch({
+                type: ItemActionTypes.NEW_ITEM,
+                item: props.item
+            });
+        }
     }
 
     static initialPropsDidGet() {
@@ -38,7 +35,7 @@ export default class ItemPage extends React.Component {
     }
 
     render() {
-        if (this.props.notFound) return (<NotFoundPage/>);
+        if (!this.props.item) return (<NotFoundPage/>);
 
         return (
             <Provider store={store}>

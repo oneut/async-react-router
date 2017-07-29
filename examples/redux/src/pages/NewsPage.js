@@ -18,26 +18,23 @@ export default class NewsPage extends React.Component {
     static async getInitialProps(attributes) {
         if (isNaN(parseFloat(attributes.params.page)) || !(isFinite(attributes.params.page))) {
             return {
-                notFound: true
+                items: [],
             };
         }
 
         const page  = attributes.params.page || 1;
-        const items = await HackerNewsApi.getTopStoryItems(page)
-        if (!items.length) {
-            return {
-                notFound: true
-            };
-        }
-
-        store.dispatch({
-            type: NewsActionTypes.ADD_ITEMS,
-            items: items
-        })
-
         return {
-            notFound: false
+            items: await HackerNewsApi.getTopStoryItems(page)
         };
+    }
+
+    static initialPropsStoreHook(props) {
+        if (props.items.length) {
+            store.dispatch({
+                type: NewsActionTypes.ADD_ITEMS,
+                items: props.items
+            });
+        }
     }
 
     static initialPropsDidGet() {;
@@ -45,9 +42,7 @@ export default class NewsPage extends React.Component {
     }
 
     render() {
-        if (this.props.notFound) {
-            return (<NotFoundPage/>);
-        }
+        if (!this.props.items.length) return (<NotFoundPage/>);
 
         return (
             <Provider store={store}>

@@ -16,22 +16,18 @@ export default class IndexPage extends React.Component {
     }
 
     static async getInitialProps() {
-        const items = await HackerNewsApi.getTopStoryItems()
-        if (!items.length) {
-            return {
-                notFound: true
-            };
-        }
-
-        store.dispatch({
-            type: IndexActionTypes.ADD_ITEMS,
-            items: items
-        });
-
         return {
-            notFound: false
+            items: await HackerNewsApi.getTopStoryItems()
         };
+    }
 
+    static initialPropsStoreHook(props) {
+        if (props.items.length) {
+            store.dispatch({
+                type: IndexActionTypes.ADD_ITEMS,
+                items: props.items
+            });
+        }
     }
 
     static initialPropsDidGet() {
@@ -39,7 +35,7 @@ export default class IndexPage extends React.Component {
     }
 
     render() {
-        if (this.props.notFound) return (<NotFoundPage/>);
+        if (!this.props.items.length) return (<NotFoundPage/>);
 
         return (
             <Provider store={store}>
