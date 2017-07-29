@@ -1,26 +1,25 @@
-import History from "./History";
-import RouteMatcher from "./RouteMatcher";
+import HistoryManager from "./HistoryManager"
 
 class Request {
     constructor() {
-        this.history = null;
+        this.historyManager = null;
     }
 
-    setHistory(history) {
-        this.history = history;
+    setHistoryManager(historyManager) {
+        this.historyManager = historyManager;
     }
 
     to(to) {
-        this.history.push(this.normarizeTo(to));
+        this.historyManager.push(this.normarizeTo(to));
     }
 
     name(name, parameters = {}) {
-        this.history.push(RouteMatcher.compile(name, parameters));
+        this.historyManager.pushName(name, parameters);
     }
 
     isActive(pathname) {
-        const requestLocation = this.history.getRequestLocation();
-        return (requestLocation.pathname === pathname);
+        const location = this.historyManager.getLocation();
+        return (location.pathname === pathname);
     }
 
     normarizeTo(to) {
@@ -33,6 +32,6 @@ class Request {
 }
 
 const request = new Request();
-request.setHistory(History);
+request.setHistoryManager(HistoryManager);
 
 export default request;

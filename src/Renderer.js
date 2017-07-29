@@ -27,10 +27,7 @@ export default class Renderer {
     }
 
     getComponentProps() {
-        return {
-            ...this.getProps(),
-            ...this.data
-        }
+        return Object.assign(this.data, this.getProps());
     }
 
     fireInitialPropsWillGet() {
@@ -41,14 +38,24 @@ export default class Renderer {
     }
 
     async fireGetInitialProps() {
-        await this.fetchInitialProps();
+        if (!(this.isFunction(this.component.getInitialProps))) {
+            this.data = {};
+            return;
+        }
+
+        const prevProps = !!this.prevRenderer ? this.prevRenderer.getProps() : {};
+        this.data       = await this.component.getInitialProps(this.getProps(), prevProps) || {};
+    }
+
+    getInitialProps() {
         return this.data;
     }
 
-    async fetchInitialProps() {
-        if (!(this.isFunction(this.component.getInitialProps))) return {};
-        const prevProps = !!this.prevRenderer ? this.prevRenderer.getProps() : {};
-        this.data       = await this.component.getInitialProps(this.getProps(), prevProps) || {};
+    fireInitialPropsStoreHook() {
+        if (this.isFunction(this.component.initialPropsStoreHook)) {
+            const prevComponentProps = !!this.prevRenderer ? this.prevRenderer.getComponentProps() : {};
+            this.component.initialPropsStoreHook(this.getComponentProps(), prevComponentProps);
+        }
     }
 
     fireInitialPropsDidGet() {
@@ -56,6 +63,15 @@ export default class Renderer {
             const prevComponentProps = !!this.prevRenderer ? this.prevRenderer.getComponentProps() : {};
             this.component.initialPropsDidGet(this.getComponentProps(), prevComponentProps);
         }
+    }
+
+    fireGetFirstRenderedInitialProps() {
+        if (!(this.isFunction(this.component.getFirstRenderedInitialProps))) {
+            this.data = {};
+            return;
+        }
+
+        this.data = this.component.getFirstRenderedInitialProps(this.getProps()) || {};
     }
 
     isFunction(func) {

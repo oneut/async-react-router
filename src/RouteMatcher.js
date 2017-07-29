@@ -3,6 +3,10 @@ import Renderer from "./Renderer";
 
 class RouteMatcher {
     constructor() {
+        this.init();
+    }
+
+    init() {
         this.routes     = [];
         this.nameRoutes = {};
         this.renderer   = null;
@@ -15,12 +19,11 @@ class RouteMatcher {
         }
     }
 
-    getRenderer(pathname) {
-        this.renderer = this.createRenderer(pathname);
+    getRenderer() {
         return this.renderer;
     }
 
-    createRenderer(pathname) {
+    fetchRenderer(pathname) {
         for (let i = 0; this.routes.length > i; i++) {
             let keys         = [];
             let route        = this.routes[i];
@@ -33,13 +36,15 @@ class RouteMatcher {
                 if (key) params[key.name] = 'string' === typeof routeMatch[i] ? decodeURIComponent(routeMatch[i]) : routeMatch[i];
             }
 
-            return new Renderer(pathname, route.component, params, this.renderer);
+            this.renderer = new Renderer(pathname, route.component, params, this.renderer);
+            return this;
         }
 
-        return null;
+        this.renderer = null;
+        return this;
     }
 
-    compile(name, parameters = {}) {
+    compileByName(name, parameters = {}) {
         if (!this.nameRoutes[name]) {
             throw `Route Name "${name}" did not match Path.`;
         }

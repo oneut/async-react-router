@@ -18,9 +18,9 @@ export function normalizePathname(pathname) {
  * Normalize route based on the parent.
  */
 
-export function createRoute(path, parent) {
+export function createRoute(path, parentPath) {
     if (path[0] === '/' && path.length === 1) return path;
-    if (typeof parent === 'undefined') return path;
-    if (parent.path[0] === '/' && parent.path.length === 1) return path;
-    return `${parent.path}/${path}`;
+    if (typeof parentPath === 'undefined') return path;
+    if (parentPath[0] === '/' && parentPath.length === 1) return path;
+    return `${parentPath}/${path}`;
 }

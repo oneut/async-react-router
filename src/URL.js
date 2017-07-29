@@ -1,26 +1,24 @@
-import History from "./History";
-import RouteMatcher from "./RouteMatcher";
+import HistoryManager from "./HistoryManager";
 
 class URL {
     constructor() {
-        this.history = null;
+        this.historyManager = null;
     }
 
-    setHistory(history) {
-        this.history = history;
+    setHistoryManager(historyManager) {
+        this.historyManager = historyManager;
     }
 
     to(pathname) {
-        return this.history.history.createHref({pathname});
+        return this.historyManager.createHref(pathname);
     }
 
-    name(name, parameters) {
-        const pathname = RouteMatcher.compile(name, parameters);
-        return this.history.history.createHref({pathname});
+    name(name, parameters = {}) {
+        return this.historyManager.createHrefByName(name, parameters);
     }
 }
 
 const url = new URL();
-url.setHistory(History);
+url.setHistoryManager(HistoryManager);
 
 export default url;

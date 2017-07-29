@@ -1,9 +1,8 @@
-import History from "./History";
+import HistoryManager from "./HistoryManager"
 import React from "react";
 import RouteMatcher from "./RouteMatcher";
 import * as Utils from "./Utils";
 import { Subject } from "rxjs/Subject";
-import "rxjs/add/operator/map";
 import "rxjs/add/operator/switchMap";
 import "rxjs/add/observable/fromPromise";
 
@@ -17,20 +16,30 @@ export default class Router extends React.Component {
 
         this.stream = null;
 
-        // Settings History.
+        // Settings HistoryManager.
         this.initHistory();
 
         // Settings RxJS Stream.
         this.initStream();
+
+        RouteMatcher.init();
 
         // Settings Routes.
         this.addRoutes(props.children);
     }
 
     initHistory() {
-        History.initialHistory(this.props.history);
-        History.setRequestCallback(this.request.bind(this));
-        History.listen();
+        HistoryManager.initialHistory(this.getHistory());
+        HistoryManager.setRequestCallback(this.request.bind(this));
+        HistoryManager.listen();
+    }
+
+    getHistory() {
+        if (!!this.props.history) {
+            return this.props.history;
+        } else {
+            return require("history").createHashHistory();
+        }
     }
 
     initStream() {
@@ -41,34 +50,39 @@ export default class Router extends React.Component {
     }
 
     async renderer(pathname) {
-        const renderer = RouteMatcher.getRenderer(Utils.normalizePathname(pathname));
-        renderer.fireInitialPropsWillGet();
-        const data = await renderer.fireGetInitialProps();
-        renderer.fireInitialPropsDidGet();
-        return React.createElement(renderer.getComponent(), Object.assign(data, renderer.getProps()));
+        const renderer = RouteMatcher.fetchRenderer(Utils.normalizePathname(pathname)).getRenderer();
+        if (renderer) {
+            renderer.fireInitialPropsWillGet();
+            await renderer.fireGetInitialProps();
+            renderer.fireInitialPropsStoreHook();
+            renderer.fireInitialPropsDidGet();
+            return React.createElement(renderer.getComponent(), {...renderer.getComponentProps(), ...this.props});
+        }
+
+        return null;
     }
 
     /**
      * Add routes.
      */
 
-    addRoutes(routes, parent) {
-        React.Children.toArray(routes).forEach((route) => this.addRoute(route, parent));
+    addRoutes(routes, parentPath) {
+        React.Children.toArray(routes).forEach((route) => this.addRoute(route, parentPath));
     }
 
     /**
      * Add route.
      */
 
-    addRoute(route, parent) {
+    addRoute(route, parentPath) {
         const {path, component, children, name} = route.props;
-        const normalizedPath                    = Utils.cleanPath(Utils.createRoute(path, parent));
+        const normalizedPath                    = Utils.cleanPath(Utils.createRoute(path, parentPath));
         RouteMatcher.addRoute(normalizedPath, component, name);
-        if (children) this.addRoutes(children, {path: normalizedPath});
+        if (children) this.addRoutes(children, normalizedPath);
     }
 
     componentWillMount() {
-        const location = History.getLocation();
+        const location = HistoryManager.getLocation();
         this.stream.next(location.pathname);
     }
 
