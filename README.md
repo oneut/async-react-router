@@ -25,15 +25,12 @@ You get initial props from `getInitialProps()` at first rendering in client side
 ## Todo
 + Test...
 + Error Handling Support.
-+ NavLink Support.
-+ example
-    + flux-utils
 + SSR?
     
 ## Demo
 + [Basic Example.](https://oneut.github.io/async-react-router/basic/)
 + [Redux Example.](https://oneut.github.io/async-react-router/redux/)
-+ [Flux Utils Example.](https://oneut.github.io/async-react-router/flux-utils/)
++ [Flux Utils Example.](https://oneut.github.io/async-react-router/flux/)
 
 ## Installation
 
