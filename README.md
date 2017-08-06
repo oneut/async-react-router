@@ -28,9 +28,9 @@ You get initial props from `getInitialProps()` at first rendering in client side
 + SSR?
     
 ## Demo
-+ [Basic Example.](https://oneut.github.io/async-react-router/basic/)
-+ [Redux Example.](https://oneut.github.io/async-react-router/redux/)
-+ [Flux Utils Example.](https://oneut.github.io/async-react-router/flux/)
++ [Basic Example.](https://oneut.github.io/async-react-router/basic/index.html)
++ [Redux Example.](https://oneut.github.io/async-react-router/redux/index.html)
++ [Flux Utils Example.](https://oneut.github.io/async-react-router/flux-utils/index.html)
 
 ## Installation
 
