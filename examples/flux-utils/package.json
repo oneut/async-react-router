@@ -1,5 +1,5 @@
 {
-  "name": "redux-example-hacker-news",
+  "name": "flux-utils-example-hacker-news",
   "version": "0.0.1",
   "private": true,
   "dependencies": {
