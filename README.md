@@ -7,8 +7,8 @@ This package is alpha version yet.
 For this, it causes drastic change.
 
 ## Motivation
-Next.js is wonderful. However, it is difficult to manage state.   
-Because next.js does SSR.  
+Next.js is wonderful. However, it has to do SSR.
+And, it is difficult to manage state for Client.   
 So, I made a router like next.js.
 
 You get initial props from `getInitialProps()` at first rendering in client side!
@@ -33,6 +33,7 @@ You get initial props from `getInitialProps()` at first rendering in client side
 ## Demo
 + [Basic Example.](https://oneut.github.io/async-react-router/basic/)
 + [Redux Example.](https://oneut.github.io/async-react-router/redux/)
++ [Flux Utils Example.](https://oneut.github.io/async-react-router/flux-utils/)
 
 ## Installation
 
