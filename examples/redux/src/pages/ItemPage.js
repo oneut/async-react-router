@@ -2,13 +2,13 @@ import NProgress from "nprogress";
 import React from "react";
 import { createStore } from "redux";
 import { Provider } from "react-redux";
-import itemReducer from "../reducers/item";
+import itemRootReducer from "../rootReducers/item";
 import ItemContainer from "../containers/ItemContainer";
 import HackerNewsApi from "../api/HackerNewsApi";
-import ItemActionTypes from "../actionTypes/ItemActionTypes";
 import NotFoundPage from "./NotFoundPage";
+import ItemAction from "../actions/ItemAction";
 
-const store = createStore(itemReducer);
+const store = createStore(itemRootReducer);
 
 export default class ItemPage extends React.Component {
     static initialPropsWillGet() {
@@ -23,10 +23,7 @@ export default class ItemPage extends React.Component {
 
     static initialPropsStoreHook(props) {
         if (props.item) {
-            store.dispatch({
-                type: ItemActionTypes.NEW_ITEM,
-                item: props.item
-            });
+            store.dispatch(ItemAction.newInstance(props.item));
         }
     }
 

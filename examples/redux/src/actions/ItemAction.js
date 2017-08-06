@@ -1,10 +1,10 @@
-import ItemActionTypes from "../actionTypes/ItemActionTypes";
+import ItemType from "../actionTypes/ItemType";
 
 const ItemAction = {
-    addComments: (comments) => {
+    newInstance: (attributes) => {
         return {
-            type: ItemActionTypes.ADD_COMMENTS,
-            comments: comments
+            type: ItemType.NEW_INSTANCE,
+            attributes: attributes
         };
     }
 };

@@ -2,13 +2,13 @@ import NProgress from "nprogress";
 import React from "react";
 import { createStore } from "redux";
 import { Provider } from "react-redux";
-import userReducer from "../reducers/user";
+import userRootReducer from "../rootReducers/user";
 import UserContainer from "../containers/UserContainer";
 import HackerNewsApi from "../api/HackerNewsApi";
-import UserActionTypes from "../actionTypes/UserActionTypes";
 import NotFoundPage from "./NotFoundPage";
+import UserAction from "../actions/UserAction";
 
-const store = createStore(userReducer);
+const store = createStore(userRootReducer);
 
 export default class UserPage extends React.Component {
     static initialPropsWillGet() {
@@ -23,10 +23,7 @@ export default class UserPage extends React.Component {
 
     static initialPropsStoreHook(props) {
         if (props.user) {
-            store.dispatch({
-                type: UserActionTypes.NEW_USER,
-                user: props.user
-            });
+            store.dispatch(UserAction.newInstance(props.user));
         }
     }
 

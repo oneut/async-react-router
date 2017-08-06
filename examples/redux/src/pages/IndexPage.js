@@ -2,13 +2,13 @@ import NProgress from "nprogress";
 import React from "react";
 import { createStore } from "redux";
 import { Provider } from "react-redux";
-import indexReducer from "../reducers/index";
+import indexRootReducer from "../rootReducers/index";
 import IndexContainer from "../containers/IndexContainer";
 import HackerNewsApi from "../api/HackerNewsApi";
-import IndexActionTypes from "../actionTypes/IndexActionTypes";
 import NotFoundPage from "./NotFoundPage";
+import ItemsAction from "../actions/ItemsAction";
 
-const store = createStore(indexReducer);
+const store = createStore(indexRootReducer);
 
 export default class IndexPage extends React.Component {
     static initialPropsWillGet() {
@@ -23,10 +23,7 @@ export default class IndexPage extends React.Component {
 
     static initialPropsStoreHook(props) {
         if (props.items.length) {
-            store.dispatch({
-                type: IndexActionTypes.ADD_ITEMS,
-                items: props.items
-            });
+            store.dispatch(ItemsAction.sync(props.items));
         }
     }
 

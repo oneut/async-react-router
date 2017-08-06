@@ -4,7 +4,7 @@ import { bindActionCreators } from "redux";
 import { connect } from "react-redux";
 import Header from "../components/common/Header";
 import ItemComponent from "../components/item/ItemComponent";
-import ItemAction from "../actions/ItemAction";
+import CommentsAction from "../actions/CommentsAction";
 
 class ItemContainer extends React.Component {
     componentDidMount() {
@@ -37,7 +37,9 @@ const mapStateToProps = (state) => ({
 });
 
 const mapDispatchToProps = (dispatch) => ({
-    actions: bindActionCreators(ItemAction, dispatch)
+    actions: {
+        comments: bindActionCreators(CommentsAction, dispatch)
+    }
 });
 
 export default connect(

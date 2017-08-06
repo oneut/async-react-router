@@ -2,13 +2,13 @@ import NProgress from "nprogress";
 import React from "react";
 import { createStore } from "redux";
 import { Provider } from "react-redux";
-import newsReducer from "../reducers/news";
+import newsRootReducer from "../rootReducers/news";
 import NewsContainer from "../containers/NewsContainer";
 import HackerNewsApi from "../api/HackerNewsApi";
-import NewsActionTypes from "../actionTypes/NewsActionTypes";
 import NotFoundPage from "./NotFoundPage";
+import ItemsAction from "../actions/ItemsAction";
 
-const store = createStore(newsReducer);
+const store = createStore(newsRootReducer);
 
 export default class NewsPage extends React.Component {
     static initialPropsWillGet() {
@@ -30,10 +30,7 @@ export default class NewsPage extends React.Component {
 
     static initialPropsStoreHook(props) {
         if (props.items.length) {
-            store.dispatch({
-                type: NewsActionTypes.ADD_ITEMS,
-                items: props.items
-            });
+            store.dispatch(ItemsAction.sync(props.items));
         }
     }
 

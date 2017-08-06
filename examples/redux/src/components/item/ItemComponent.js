@@ -20,7 +20,7 @@ export default class ItemComponent extends React.Component {
 
         this.commentApiStream = Rx.Observable.fromPromise(HackerNewsApi.getComments(this.props.item.kids))
             .subscribe((comments) => {
-                this.props.actions.addComments(comments);
+                this.props.actions.comments.sync(comments);
                 this.setState({isLoading: false});
             });
     }
@@ -35,7 +35,7 @@ export default class ItemComponent extends React.Component {
         return (
             <div className="container">
                 <div className="news-item">
-                    <h3 className="title"><Link to={this.props.item.getUrl()}>{this.props.item.title}</Link></h3>
+                    <h3 className="title"><a href={this.props.item.getUrl()}>{this.props.item.title}</a></h3>
                     <div>
                         <ul className="list-inline">
                             <li className="score">{this.props.item.score} points</li>
