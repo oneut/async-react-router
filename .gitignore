@@ -63,3 +63,7 @@ build
 
 # Editor
 .idea
+
+# Test
+coverage
+.nyc_output
