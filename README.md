@@ -1,5 +1,7 @@
 # async-react-router
 
+[![Build Status](https://travis-ci.org/oneut/async-react-router.svg?branch=master)](https://travis-ci.org/oneut/async-react-router)
+
 ## Attention
 
 This package is alpha version yet.
