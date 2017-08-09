@@ -2,6 +2,10 @@ import RouteMatcher from "./RouteMatcher";
 
 class HistoryManager {
     constructor() {
+        this.init();
+    }
+
+    init() {
         this.history         = null;
         this.routeMatcher    = null;
         this.requestCallback = null;
@@ -20,17 +24,27 @@ class HistoryManager {
         this.requestCallback = requestCallback;
     }
 
+    changeSilent() {
+        this.silent = true;
+    }
+
+    changeUnsilent() {
+        this.silent = false;
+    }
+
     listen() {
-        this.history.listen((locaton) => {
-            if (!(this.silent)) this.requestCallback(locaton.pathname);
-        });
+        this.history.listen(this.listenCallback.bind(this));
+    }
+
+    listenCallback(location) {
+        if (!(this.silent)) this.requestCallback(location.pathname);
     }
 
     push(pathname) {
-        this.silent   = true;
+        this.changeSilent();
         this.requestCallback(pathname);
         this.history.push(pathname);
-        this.silent = false;
+        this.changeUnsilent();
     }
 
     pushByName(name, parameters) {
