@@ -1,4 +1,4 @@
-import HistoryManager from "./HistoryManager"
+import HistoryManager from "./HistoryManager";
 import React from "react";
 import RouteMatcher from "./RouteMatcher";
 import * as Utils from "./Utils";

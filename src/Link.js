@@ -15,4 +15,3 @@ export default class Link extends React.Component {
         );
     }
 }
-

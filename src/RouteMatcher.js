@@ -46,7 +46,7 @@ class RouteMatcher {
 
     compileByName(name, parameters = {}) {
         if (!this.nameRoutes[name]) {
-            throw `Route Name "${name}" did not match Path.`;
+            throw Error(`Route Name "${name}" did not match Path.`);
         }
 
         const toPath = pathToRegexp.compile(this.nameRoutes[name]);

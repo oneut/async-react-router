@@ -1,4 +1,4 @@
-import HistoryManager from "./HistoryManager"
+import HistoryManager from "./HistoryManager";
 
 class Request {
     constructor() {

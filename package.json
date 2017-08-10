@@ -5,6 +5,7 @@
   "main": "build/index.js",
   "scripts": {
     "build": "rimraf build && babel -d build/ src/",
+    "lint": "eslint ./",
     "prepublish": "rimraf build && babel -d build/ src/",
     "test": "nyc ava --verbose",
     "report": "nyc report --reporter=html"

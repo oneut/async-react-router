@@ -5,7 +5,7 @@ import createMemoryHistory from "history/createMemoryHistory";
 Test.serial('push path', async (t) => {
     const historyCallBack = (pathname) => {
         t.is(pathname, '/test');
-    }
+    };
 
     HistoryManager.init();
     HistoryManager.initialHistory(createMemoryHistory());
@@ -26,7 +26,7 @@ Test.serial('push path by name', async (t) => {
 
     const historyCallBack = (pathname) => {
         t.is(pathname, '/test/1');
-    }
+    };
 
     HistoryManager.init();
     HistoryManager.initialHistory(createMemoryHistory());

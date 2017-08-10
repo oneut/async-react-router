@@ -5,13 +5,9 @@
         "node": true,
         "es6": true
     },
-    "ecmaFeatures": {
-        "modules": true,
-        "jsx": true
-    },
     "rules": {
         "arrow-parens": [2, "always"],
-        "eol-last": ["error", "always"],
+        "eol-last": [2, "always"],
         "semi": [2, "always"],
     },
     "plugins": [

@@ -1,4 +1,4 @@
-import HistoryManager from "./HistoryManager"
+import HistoryManager from "./HistoryManager";
 import RouteMatcher from "./RouteMatcher";
 import * as Utils from "./Utils";
 import Router from "./Router";
@@ -6,11 +6,7 @@ import React from "react";
 
 export default class ClientRouter extends Router {
     getHistory() {
-        if (!!this.props.history) {
-            return this.props.history;
-        } else {
-            return require("history").createBrowserHistory();
-        }
+        return !!this.props.history ? this.props.history : require("history").createBrowserHistory();
     }
 
     componentWillMount() {

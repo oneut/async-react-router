@@ -1,4 +1,4 @@
-import HistoryManager from "./HistoryManager"
+import HistoryManager from "./HistoryManager";
 import React from "react";
 import RouteMatcher from "./RouteMatcher";
 import * as Utils from "./Utils";
@@ -35,11 +35,7 @@ export default class Router extends React.Component {
     }
 
     getHistory() {
-        if (!!this.props.history) {
-            return this.props.history;
-        } else {
-            return require("history").createHashHistory();
-        }
+        return !!this.props.history ? this.props.history : require("history").createHashHistory();
     }
 
     initStream() {
