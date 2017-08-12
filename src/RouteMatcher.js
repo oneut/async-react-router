@@ -33,7 +33,7 @@ class RouteMatcher {
             let params = {};
             for (let i = 1, len = routeMatch.length; i < len; ++i) {
                 const key = keys[i - 1];
-                if (key) params[key.name] = 'string' === typeof routeMatch[i] ? decodeURIComponent(routeMatch[i]) : routeMatch[i];
+                if (key) params[key.name] = isNaN(routeMatch[i]) ? decodeURIComponent(routeMatch[i]) : Number(routeMatch[i]);
             }
 
             this.renderer = new Renderer(pathname, route.component, params, this.renderer);
