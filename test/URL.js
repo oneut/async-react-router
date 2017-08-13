@@ -31,7 +31,7 @@ test('name without parameter', async (t) => {
     class HistoryManagerMock {
         createHrefByName(name, parameters) {
             t.is(name, 'test');
-            t.true(Object.keys(parameters).length === 0 && typeof parameters === "object")
+            t.true(Object.keys(parameters).length === 0 && typeof parameters === "object");
             return '/test';
         }
     }

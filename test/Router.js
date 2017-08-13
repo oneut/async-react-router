@@ -91,7 +91,7 @@ Test.serial('match nest route', async (t) => {
 
 Test.serial("default history", async (t) => {
     const router = new Router({});
-    const history = router.getHistory()
+    const history = router.getHistory();
     t.is(history.location.pathname, "/");
 });
 

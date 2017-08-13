@@ -117,4 +117,4 @@ Test.serial("fire component method", async (t) => {
         t.is(actual.html(), expected.html());
         t.is(data.message, "first rendering data");
     });
-})
+});
