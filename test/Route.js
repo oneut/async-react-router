@@ -1,7 +1,10 @@
 import test from 'ava';
 import Route from "../src/Route";
 
-test('Test is nothing', (t) => {
+test('is function', (t) => {
    t.true(typeof Route === "function");
-   t.true(typeof Route() === "undefined");
+});
+
+test('return undefined', (t) => {
+    t.true(typeof Route() === "undefined");
 });

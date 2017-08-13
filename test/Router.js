@@ -7,7 +7,95 @@ import { mount } from "enzyme";
 import createMemoryHistory from "history/createMemoryHistory";
 import Sinon from "sinon";
 
-Test.serial('First Rendering', async (t) => {
+Test.serial('match single route', async (t) => {
+    // Location Settings
+    const history = createMemoryHistory();
+    history.push('/');
+
+    // Page Settings
+    class IndexPage extends React.Component {
+        render() {
+            return (<div>Hello, World</div>);
+        }
+    }
+
+    // Ready Sinon Spy
+    const spy = Sinon.spy(Router.prototype, 'renderer');
+
+    // The Router use RxJS to control async/await.
+    // So, First Mount is null.
+    const firstMountedActual = mount(
+        <Router history={history}>
+            <Route path="/" component={IndexPage}/>
+        </Router>
+    );
+    t.is(firstMountedActual.html(), null);
+
+    // renderer from componentWillMount
+    const component = await spy.getCall(0).returnValue;
+    const actual    = mount(component);
+    const expected  = mount(<IndexPage/>);
+    t.is(actual.html(), expected.html());
+
+    // renderer args Test
+    t.is(spy.getCall(0).args[0], '/');
+
+    // Restore Sinon Spy
+    Router.prototype.renderer.restore();
+});
+
+Test.serial('match nest route', async (t) => {
+    // Location Settings
+    const history = createMemoryHistory();
+    history.push('/nest');
+
+    // Page Settings
+    class IndexPage extends React.Component {
+        render() {
+            return (<div>Hello, World</div>);
+        }
+    }
+
+    class NestPage extends React.Component {
+        render() {
+            return (<div>Nest Page</div>);
+        }
+    }
+
+    // Ready Sinon Spy
+    const spy = Sinon.spy(Router.prototype, 'renderer');
+
+    // The Router use RxJS to control async/await.
+    // So, First Mount is null.
+    const firstMountedActual = mount(
+        <Router history={history}>
+            <Route path="/" component={IndexPage}>
+                <Route path="/nest" component={NestPage}/>
+            </Route>
+        </Router>
+    );
+    t.is(firstMountedActual.html(), null);
+
+    // renderer from componentWillMount
+    const component = await spy.getCall(0).returnValue;
+    const actual    = mount(component);
+    const expected  = mount(<NestPage/>);
+    t.is(actual.html(), expected.html());
+
+    // renderer args Test
+    t.is(spy.getCall(0).args[0], '/nest');
+
+    // Restore Sinon Spy
+    Router.prototype.renderer.restore();
+});
+
+Test.serial("default history", async (t) => {
+    const router = new Router({});
+    const history = router.getHistory();
+    t.is(history.location.pathname, "/");
+});
+
+Test.serial('first rendering', async (t) => {
     // Location Settings
     const history = createMemoryHistory();
     history.push('/');
@@ -69,7 +157,7 @@ Test.serial('First Rendering', async (t) => {
     Router.prototype.renderer.restore();
 });
 
-Test.serial('Next Rendering from Request `to`', async (t) => {
+Test.serial('next rendering from Request `to`', async (t) => {
     // Location Settings
     const history = createMemoryHistory();
     history.push('/');
