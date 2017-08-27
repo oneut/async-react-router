@@ -1,5 +1,5 @@
 import test from "ava";
-import URL from "../src/URL";
+import URL from "../../src/lib/URL";
 
 test('to', async (t) => {
     class HistoryManagerMock {

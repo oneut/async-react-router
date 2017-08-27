@@ -1,5 +1,5 @@
 import test from "ava";
-import Request from "../src/Request";
+import Request from "../../src/lib/Request";
 
 test('To', async (t) => {
     class HistoryManagerMock {

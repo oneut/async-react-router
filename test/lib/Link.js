@@ -1,9 +1,9 @@
 import test from 'ava';
 import React from "react";
 import { mount } from "enzyme";
-import HistoryManager from "../src/HistoryManager";
+import HistoryManager from "../../src/lib/HistoryManager";
 import createMemoryHistory from "history/createMemoryHistory";
-import Link from "../src/Link";
+import Link from "../../src/lib/Link";
 
 test('Link', (t) => {
     const historyCallBack = (pathname) => {

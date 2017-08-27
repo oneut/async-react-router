@@ -1,6 +1,6 @@
 import React from 'react';
 import test from 'ava';
-import RouteMatcher from '../src/RouteMatcher';
+import RouteMatcher from '../../src/lib/RouteMatcher';
 
 test('Add Route', (t) => {
     class TestComponent extends React.Component {

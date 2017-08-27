@@ -1,6 +1,6 @@
 import test from "ava";
 import React from "react";
-import Renderer from "../src/Renderer";
+import Renderer from "../../src/lib/Renderer";
 
 test('Get initial props', async (t) => {
     class Component extends React.Component {

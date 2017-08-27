@@ -1,5 +1,5 @@
 import test from "ava";
-import * as Utils from "../src/Utils";
+import * as Utils from "../../src/lib/Utils";
 
 test('Clean path', async (t) => {
     t.is('/Test', Utils.cleanPath('/Test'));
