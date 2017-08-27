@@ -1,5 +1,3 @@
-import ClientRouter from "./ClientRouter";
-import ServerRouteCompiler from "./ServerRouteCompiler";
 import createBrowserHistory from "history/createBrowserHistory";
 import createHashHistory from "history/createHashHistory";
 import createMemoryHistory from "history/createMemoryHistory";
@@ -13,8 +11,6 @@ export {
     createBrowserHistory,
     createHashHistory,
     createMemoryHistory,
-    ClientRouter,
-    ServerRouteCompiler,
     Link,
     Request,
     Route,

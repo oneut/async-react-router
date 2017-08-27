@@ -1,8 +1,8 @@
 import React from "react";
 import Test from "ava";
-import Route from "../src/Route";
-import Router from "../src/Router";
-import Request from "../src/Request";
+import Route from "../../src/lib/Route";
+import Router from "../../src/lib/Router";
+import Request from "../../src/lib/Request";
 import { mount } from "enzyme";
 import createMemoryHistory from "history/createMemoryHistory";
 import Sinon from "sinon";

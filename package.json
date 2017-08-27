@@ -2,16 +2,19 @@
   "name": "async-react-router",
   "version": "0.2.7",
   "description": "Client side react router with async. It like next.js!",
-  "main": "build/index.js",
+  "main": "lib/index.js",
   "scripts": {
-    "build": "rimraf build && babel -d build/ src/",
+    "build": "npm run build:lib && npm run build:ssr",
+    "build:lib": "rimraf lib && babel src/lib -d lib/",
+    "build:ssr": "rimraf ssr && babel src/ssr -d ssr/",
     "lint": "eslint ./",
     "prepublish": "rimraf build && babel -d build/ src/",
     "test": "nyc ava --verbose",
     "report": "nyc report --reporter=html"
   },
   "files": [
-    "build"
+    "lib",
+    "ssr"
   ],
   "peerDependencies": {
     "react": "^15",

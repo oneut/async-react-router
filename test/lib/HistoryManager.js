@@ -1,5 +1,5 @@
 import Test from "ava";
-import HistoryManager from "../src/HistoryManager";
+import HistoryManager from "../../src/lib/HistoryManager";
 import createMemoryHistory from "history/createMemoryHistory";
 
 Test.serial('push path', async (t) => {

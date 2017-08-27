@@ -1,10 +1,10 @@
 import Test from "ava";
 import React from "react";
 import { mount } from "enzyme";
-import ServerRouteCompiler from "../src/ServerRouteCompiler";
-import Route from "../src/Route";
+import RouteResolver from "../../src/ssr/RouteResolver";
+import Route from "../../src/lib/Route";
 
-Test.serial("compile single route", async (t) => {
+Test.serial("resolve single route", async (t) => {
     // Page Settings
     class IndexPage extends React.Component {
         render() {
@@ -20,8 +20,8 @@ Test.serial("compile single route", async (t) => {
         <Route path="/" component={IndexPage}/>
     );
 
-    const compiler = ServerRouteCompiler.make(route, '/');
-    compiler.compile((component, data) => {
+    const routeResolver = RouteResolver.make(route);
+    routeResolver.resolve('/', (component, data) => {
         const actual   = mount(component);
         const expected = mount(
             <IndexPage/>
@@ -30,7 +30,7 @@ Test.serial("compile single route", async (t) => {
     });
 });
 
-Test.serial("compile nest route", async (t) => {
+Test.serial("resolve nest route", async (t) => {
     // Page Settings
     class IndexPage extends React.Component {
         render() {
@@ -59,8 +59,8 @@ Test.serial("compile nest route", async (t) => {
         </Route>
     );
 
-    const compiler = ServerRouteCompiler.make(route, '/nest');
-    compiler.compile((component, data) => {
+    const routeResolver = RouteResolver.make(route);
+    routeResolver.resolve('/nest', (component, data) => {
         const actual   = mount(component);
         const expected = mount(
             <NestPage/>
@@ -108,8 +108,8 @@ Test.serial("fire component method", async (t) => {
         <Route path="/" component={IndexPage}/>
     );
 
-    const compiler = ServerRouteCompiler.make(route, '/');
-    compiler.compile((component, data) => {
+    const routeResolver = RouteResolver.make(route);
+    routeResolver.resolve('/', (component, data) => {
         const actual   = mount(component);
         const expected = mount(
             <IndexPage message="first rendering data"/>

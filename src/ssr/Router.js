@@ -1,7 +1,7 @@
-import HistoryManager from "./HistoryManager";
-import RouteMatcher from "./RouteMatcher";
-import * as Utils from "./Utils";
-import Router from "./Router";
+import HistoryManager from "../lib/HistoryManager";
+import RouteMatcher from "../lib/RouteMatcher";
+import * as Utils from "../lib/Utils";
+import Router from "../lib/Router";
 import React from "react";
 
 export default class ClientRouter extends Router {
