@@ -3,23 +3,23 @@
   "version": "0.0.1",
   "private": true,
   "dependencies": {
-    "async-react-router": "^0.2.0",
+    "async-react-router": "^0.2.8",
     "bootstrap": "^3.3.7",
-    "firebase": "^4.1.2",
+    "firebase": "^4.3.0",
     "font-awesome": "^4.7.0",
     "immutable": "^3.8.1",
     "lru-cache": "^4.1.1",
     "nprogress": "^0.2.0",
     "prop-types": "^15.5.10",
-    "react": "^15.5.4",
-    "react-dom": "^15.5.4",
-    "react-redux": "^5.0.5",
-    "redux": "^3.6.0",
-    "rxjs": "^5.4.0",
-    "timeago.js": "^3.0.1"
+    "react": "^15.6.1",
+    "react-dom": "^15.6.1",
+    "react-redux": "^5.0.6",
+    "redux": "^3.7.2",
+    "rxjs": "^5.4.3",
+    "timeago.js": "^3.0.2"
   },
   "devDependencies": {
-    "react-scripts": "^1.0.2"
+    "react-scripts": "^1.0.11"
   },
   "scripts": {
     "start": "react-scripts start",
