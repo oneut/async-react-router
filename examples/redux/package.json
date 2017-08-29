@@ -3,7 +3,7 @@
   "version": "0.0.1",
   "private": true,
   "dependencies": {
-    "async-react-router": "^0.2.8",
+    "async-react-router": "^0.2.9",
     "bootstrap": "^3.3.7",
     "firebase": "^4.3.0",
     "font-awesome": "^4.7.0",
@@ -19,7 +19,7 @@
     "timeago.js": "^3.0.2"
   },
   "devDependencies": {
-    "react-scripts": "^1.0.11"
+    "react-scripts": "^1.0.12"
   },
   "scripts": {
     "start": "react-scripts start",
