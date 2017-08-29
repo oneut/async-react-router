@@ -226,7 +226,7 @@ Test.serial('Not found', (t) => {
                     <route path="/child" component={ChildPage}/>
                 </Route>
             </Route>
-            <Route path="*" component={NotFoundPage}/>
+            <Route path="(.*)" component={NotFoundPage}/>
         </Router>
     );
 
