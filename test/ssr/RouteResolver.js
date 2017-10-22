@@ -82,10 +82,6 @@ Test.serial("fire component method", async (t) => {
             };
         }
 
-        static getFirstRenderedInitialProps() {
-            t.fail();
-        }
-
         static initialPropsStoreHook(componentProps) {
             t.is(componentProps.message, 'first rendering data');
         }

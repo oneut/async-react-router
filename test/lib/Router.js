@@ -113,10 +113,6 @@ Test.serial('first rendering', async (t) => {
             };
         }
 
-        static getFirstRenderedInitialProps() {
-            t.fail();
-        }
-
         static initialPropsStoreHook(componentProps) {
             t.is(componentProps.message, 'world');
         }
@@ -187,10 +183,6 @@ Test.serial('next rendering from Request `to`', async (t) => {
             return {
                 userName: 'oneut'
             };
-        }
-
-        static getFirstRenderedInitialProps() {
-            t.fail();
         }
 
         static initialPropsStoreHook(componentProps, prevComponentProps) {
@@ -274,4 +266,3 @@ Test.serial('Router props', async (t) => {
     // renderer args Test
     t.is(spy.getCall(0).args[0], '/');
 });
-

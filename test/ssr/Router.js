@@ -47,8 +47,9 @@ Test.serial('Index route', (t) => {
         }
     }
 
+    const firstRenderedInitialProps = {message: 'first rendering data'};
     const actual = mount(
-        <Router history={history}>
+        <Router history={history} firstRenderedInitialProps={firstRenderedInitialProps}>
             <Route path="/" component={IndexPage}/>
         </Router>
     );

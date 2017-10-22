@@ -138,16 +138,27 @@ test("Get initial props", async (t) => {
     t.is(renderer.getInitialProps().data, 'data');
 });
 
-test('Fire getFirstRenderedInitialProps for Server Side Rendering', async (t) => {
+test("Get initial props without `getInitialProps`", async (t) => {
     class Component extends React.Component {
-        static getFirstRenderedInitialProps(props) {
-            t.is(props.pathname, '/path');
-            t.is(props.params.parameter1, 'parameter1');
-            return {
-                data: 'data'
-            };
+        render() {
+            return (<div>Hello, World</div>);
         }
+    }
 
+    // Make Renderer
+    const pathname  = '/path';
+    const component = Component;
+    const params    = {
+        parameter1: 'parameter1'
+    };
+    const renderer  = new Renderer(pathname, component, params);
+    await renderer.fireGetInitialProps();
+    const initialProps = renderer.getInitialProps();
+    t.true(Object.keys(initialProps).length === 0 && typeof initialProps === "object");
+});
+
+test('setInitialProps args set object.', async (t) => {
+    class Component extends React.Component {
         static initialPropsStoreHook(props) {
             t.is(props.pathname, '/path');
             t.is(props.params.parameter1, 'parameter1');
@@ -160,39 +171,34 @@ test('Fire getFirstRenderedInitialProps for Server Side Rendering', async (t) =>
     }
 
     // Make Renderer
-    const pathname  = '/path';
-    const component = Component;
-    const params    = {
+    const pathname = '/path';
+    const params   = {
         parameter1: 'parameter1'
     };
-    const renderer  = new Renderer(pathname, component, params);
+    const renderer = new Renderer(pathname, Component, params);
 
     // Renderer Setup. Important to the order!.
-    renderer.fireGetFirstRenderedInitialProps();
+    renderer.setInitialProps({data: "data"});
     renderer.fireInitialPropsStoreHook();
 
-    t.plan(5);
+    t.plan(3);
 });
 
-test('Fire getFirstRenderedInitialProps for Server Side Rendering, but initialProps is empty object.', (t) => {
+test('setInitialProps args set `null`', (t) => {
     class Component extends React.Component {
-        static getFirstRenderedInitialProps(props) {
-            return null;
-        }
-
         render() {
             return (<div>Hello, World</div>);
         }
     }
 
-    // Make Renderer
     const pathname  = '/path';
-    const component = Component;
     const params    = {
         parameter1: 'parameter1'
     };
-    const renderer  = new Renderer(pathname, component, params);
-    renderer.fireGetFirstRenderedInitialProps();
+
+    // Make Renderer
+    const renderer = new Renderer(pathname, Component, params);
+    renderer.setInitialProps(null);
     const initialProps = renderer.getInitialProps();
     // initialProps is empty object.
     t.true(Object.keys(initialProps).length === 0 && typeof initialProps === "object");

@@ -3,4 +3,6 @@ build
 coverage
 docs
 examples
+lib
 node_modules
+ssr

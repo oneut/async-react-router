@@ -1,7 +1,7 @@
 import HistoryManager from "./HistoryManager";
 import React from "react";
 import RouteMatcher from "./RouteMatcher";
-import * as Utils from "./Utils";
+import RouteNormalizer from "./RouteNormalizer";
 import { Subject } from "rxjs/Subject";
 import "rxjs/add/operator/switchMap";
 import "rxjs/add/observable/fromPromise";
@@ -46,7 +46,7 @@ export default class Router extends React.Component {
     }
 
     async renderer(pathname) {
-        const renderer = RouteMatcher.fetchRenderer(Utils.normalizePathname(pathname)).getRenderer();
+        const renderer = RouteMatcher.fetchRenderer(pathname).getRenderer();
         if (renderer) {
             renderer.fireInitialPropsWillGet();
             await renderer.fireGetInitialProps();
@@ -58,23 +58,11 @@ export default class Router extends React.Component {
         return null;
     }
 
-    /**
-     * Add routes.
-     */
-
-    addRoutes(routes, parentPath) {
-        React.Children.toArray(routes).forEach((route) => this.addRoute(route, parentPath));
-    }
-
-    /**
-     * Add route.
-     */
-
-    addRoute(route, parentPath) {
-        const {path, component, children, name} = route.props;
-        const normalizedPath                    = Utils.cleanPath(Utils.createRoute(path, parentPath));
-        RouteMatcher.addRoute(normalizedPath, component, name);
-        if (children) this.addRoutes(children, normalizedPath);
+    addRoutes(routes) {
+        const normalizedRoutes = RouteNormalizer.make().addRoutes(routes).get();
+        normalizedRoutes.map((route) => {
+            RouteMatcher.addRoute(route.normalizedPath, route.component, route.name);
+        });
     }
 
     componentWillMount() {

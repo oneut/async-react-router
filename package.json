@@ -42,13 +42,14 @@
     "eslint": "^4.5.0",
     "eslint-plugin-import": "^2.7.0",
     "eslint-plugin-react": "^7.3.0",
+    "just-extend": "1.1.22",
     "nyc": "^11.1.0",
     "react": "^15.6.1",
     "react-dom": "^15.6.1",
     "react-test-renderer": "^15.6.1",
     "rimraf": "^2.6.1",
     "rxjs": "^5.4.3",
-    "sinon": "^3.2.1",
+    "sinon": "^4.0.1",
     "webpack": "^3.5.5"
   },
   "repository": {

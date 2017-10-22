@@ -69,17 +69,18 @@ export default class Renderer {
         }
     }
 
-    fireGetFirstRenderedInitialProps() {
-        if (!(this.isFunction(this.component.getFirstRenderedInitialProps))) {
+    isFunction(func) {
+        if (!!func && typeof func === 'function') return true;
+        return false;
+    }
+
+    setInitialProps(data) {
+        if (!data) {
             this.data = {};
             return;
         }
 
-        this.data = this.component.getFirstRenderedInitialProps(this.getProps()) || {};
-    }
-
-    isFunction(func) {
-        if (!!func && typeof func === 'function') return true;
-        return false;
+        this.data = data;
+        return this;
     }
 }

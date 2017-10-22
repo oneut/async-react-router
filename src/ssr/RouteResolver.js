@@ -1,7 +1,7 @@
 import HistoryManager from "../lib/HistoryManager";
 import React from "react";
 import RouteMatcher from "../lib/RouteMatcher";
-import * as Utils from "../lib/Utils";
+import RouteNormalizer from "../lib/RouteNormalizer";
 import createMemoryHistory from "history/createMemoryHistory";
 
 export default class RouteResolver {
@@ -20,9 +20,8 @@ export default class RouteResolver {
     /**
      * Compile component.
      */
-
     async resolve(pathname, callback) {
-        const renderer = RouteMatcher.fetchRenderer(Utils.normalizePathname(pathname)).getRenderer();
+        const renderer = RouteMatcher.fetchRenderer(pathname).getRenderer();
         await renderer.fireGetInitialProps();
         renderer.fireInitialPropsStoreHook();
 
@@ -31,21 +30,12 @@ export default class RouteResolver {
     }
 
     /**
-     * Add routes.
-     */
-
-    addRoutes(routes, parentPath) {
-        React.Children.toArray(routes).forEach((route) => this.addRoute(route, parentPath));
-    }
-
-    /**
      * Add route.
      */
-
-    addRoute(route, parentPath) {
-        const {path, component, children, name} = route.props;
-        const normalizedPath                    = Utils.cleanPath(Utils.createRoute(path, parentPath));
-        RouteMatcher.addRoute(normalizedPath, component, name);
-        if (children) this.addRoutes(children, parentPath);
+    addRoute(route) {
+        const normalizedRoutes = RouteNormalizer.make().addRoute(route).get();
+        normalizedRoutes.map((route) => {
+            RouteMatcher.addRoute(route.normalizedPath, route.component, route.name);
+        });
     }
 }

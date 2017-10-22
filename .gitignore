@@ -59,8 +59,8 @@ typings/
 
 # For Module
 build
-lib
-ssr
+/lib
+/ssr
 .DS_Store
 
 # Editor

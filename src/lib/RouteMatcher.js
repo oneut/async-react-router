@@ -24,19 +24,20 @@ class RouteMatcher {
     }
 
     fetchRenderer(pathname) {
+        const normalizedPathname = this.normalizePathname(pathname);
         for (let i = 0; this.routes.length > i; i++) {
             let keys         = [];
             let route        = this.routes[i];
-            const routeMatch = pathToRegexp(route.path, keys).exec(pathname);
+            const routeMatch = pathToRegexp(route.path, keys).exec(normalizedPathname);
             if (!routeMatch) continue;
 
             let params = {};
             for (let i = 1, len = routeMatch.length; i < len; ++i) {
                 const key = keys[i - 1];
-                if (key) params[key.name] = isNaN(routeMatch[i]) ? decodeURIComponent(routeMatch[i]) : Number(routeMatch[i]);
+                params[key.name] = isNaN(routeMatch[i]) ? decodeURIComponent(routeMatch[i]) : Number(routeMatch[i]);
             }
 
-            this.renderer = new Renderer(pathname, route.component, params, this.renderer);
+            this.renderer = new Renderer(normalizedPathname, route.component, params, this.renderer);
             return this;
         }
 
@@ -51,6 +52,10 @@ class RouteMatcher {
 
         const toPath = pathToRegexp.compile(this.nameRoutes[name]);
         return toPath(parameters);
+    }
+
+    normalizePathname(pathname) {
+        return pathname.split('?')[0].split("#")[0];
     }
 }
 
