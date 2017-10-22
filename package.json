@@ -8,7 +8,7 @@
     "build:lib": "rimraf lib && babel src/lib -d lib/",
     "build:ssr": "rimraf ssr && babel src/ssr -d ssr/",
     "lint": "eslint ./",
-    "prepublish": "rimraf build && babel -d build/ src/",
+    "prepublish": "npm run build",
     "test": "nyc ava --verbose",
     "report": "nyc report --reporter=html"
   },
