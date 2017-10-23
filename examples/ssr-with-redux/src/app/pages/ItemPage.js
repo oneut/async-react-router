@@ -21,12 +21,6 @@ export default class ItemPage extends React.Component {
         };
     }
 
-    static getFirstRenderedInitialProps() {
-        return {
-            item: window.INIT_DATA.item
-        };
-    }
-
     static initialPropsStoreHook(props) {
         if (props.item) {
             store.dispatch({
