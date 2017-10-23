@@ -1,5 +1,5 @@
 import React from "react";
-import { render } from "react-dom";
+import { hydrate } from "react-dom";
 import { Router } from "async-react-router/ssr";
 import routes from "./routes";
 import 'bootstrap/dist/css/bootstrap.css';
@@ -8,13 +8,13 @@ import "nprogress/nprogress.css";
 
 function App() {
     return (
-        <Router>
+        <Router firstRenderedInitialProps={JSON.parse(document.getElementById("initial-props").innerText)}>
             {routes}
         </Router>
     );
 }
 
-render(
+hydrate(
     (<App/>),
     document.getElementById('app')
 );

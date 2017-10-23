@@ -30,12 +30,6 @@ export default class UserPage extends React.Component {
         }
     }
 
-    static getFirstRenderedInitialProps() {
-        return {
-            user: window.INIT_DATA.user
-        };
-    }
-
     static initialPropsDidGet() {
         NProgress.done();
     }

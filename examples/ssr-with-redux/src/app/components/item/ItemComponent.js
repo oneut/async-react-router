@@ -1,5 +1,5 @@
 import React from "react";
-import Rx from "rxjs";
+import { Observable } from "rxjs";
 import HackerNewsApi from "../../api/HackerNewsApi";
 import CommentComponent from "./CommentComponent";
 import { URL, Link } from "async-react-router";
@@ -18,7 +18,7 @@ export default class ItemComponent extends React.Component {
     componentDidMount() {
         this.setState({isLoading: true});
 
-        this.commentApiStream = Rx.Observable.fromPromise(HackerNewsApi.getComments(this.props.item.kids))
+        this.commentApiStream = Observable.fromPromise(HackerNewsApi.getComments(this.props.item.kids))
             .subscribe((comments) => {
                 this.props.actions.addComments(comments);
                 this.setState({isLoading: false});

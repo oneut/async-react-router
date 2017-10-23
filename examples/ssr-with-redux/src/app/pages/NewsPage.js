@@ -28,12 +28,6 @@ export default class NewsPage extends React.Component {
         };
     }
 
-    static getFirstRenderedInitialProps() {
-        return {
-            items: window.INIT_DATA.items
-        };
-    }
-
     static initialPropsStoreHook(props) {
         if (props.items.length) {
             store.dispatch({
