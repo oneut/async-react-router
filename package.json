@@ -17,8 +17,7 @@
     "ssr"
   ],
   "peerDependencies": {
-    "react@15.0.0": "^15",
-    "react@16.0.0": "^16",
+    "react": "*",
     "rxjs": "^5.0.0"
   },
   "dependencies": {
