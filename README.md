@@ -31,7 +31,6 @@ You get initial props from `getInitialProps()` at first rendering in client side
 ## Todo
 + Test...
 + Error Handling Support.
-+ SSR?
     
 ## Demo
 + [Basic Example.](https://oneut.github.io/async-react-router/basic/)
