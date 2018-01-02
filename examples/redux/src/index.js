@@ -17,7 +17,7 @@ function App() {
                 <Route path="/news/:page?" component={NewsPage} name="NewsPage"/>
                 <Route path="/item/:itemId" component={ItemPage} name="ItemPage"/>
                 <Route path="/user/:userId" component={UserPage} name="UserPage"/>
-                <Route path="*" component={NotFoundPage}/>
+                <Route path="(.*)" component={NotFoundPage}/>
             </Route>
         </Router>
     );

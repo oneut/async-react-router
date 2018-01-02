@@ -3,15 +3,15 @@
   "version": "0.0.1",
   "private": true,
   "dependencies": {
-    "async-react-router": "^0.2.0",
+    "async-react-router": "^0.2.12",
     "nprogress": "^0.2.0",
-    "prop-types": "^15.5.10",
-    "react": "^15.5.0",
-    "react-dom": "^15.5.0",
-    "rxjs": "^5.4.0"
+    "prop-types": "^15.6.0",
+    "react": "^16.0.0",
+    "react-dom": "^16.0.0",
+    "rxjs": "^5.5.0"
   },
   "devDependencies": {
-    "react-scripts": "^1.0.2"
+    "react-scripts": "^1.0.14"
   },
   "scripts": {
     "start": "react-scripts start",
