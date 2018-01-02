@@ -36,10 +36,6 @@ You can get initial props from `getInitialProps()` at client side in first rende
 + Depend on [rxjs@5.x.x](https://github.com/Reactive-Extensions/RxJS).
 + No depend on react-router.
 
-## Todo
-+ Test...
-+ Error Handling Support.
-    
 ## Demo
 + [Basic Example.](https://oneut.github.io/async-react-router/basic/)
 + [Redux Example.](https://oneut.github.io/async-react-router/redux/)
