@@ -18,7 +18,9 @@ So, I made a router like next.js.
 You get initial props from `getInitialProps()` at first rendering in client side!
 
 ## Features
++ Support React version 15 and 16.
 + Support async/await like next.js.
++ Support client only.
 + Support URL parameters.
 + Support [history](https://www.npmjs.com/package/history) package.The following history type are supported.
     + Browser History
@@ -161,11 +163,26 @@ render(
 ```javascript
 import { Link } from 'async-react-router';
 
-
 <Link to="/">Home</Link>
 ```
 
 ## `Component` defined at `<Route>`
+### `initialPropsWillGet(attributes, prevAttributes)`
+
+`Component` defined at `<Route>` can have `initialPropsWillGet`.  
+`initialPropsWillGet` is invoked immediately before mounting occurs. It is called before `getInitialProps()`
+
+`initialPropsWillGet` has arguments.
+
++ `attributes` - Current Route Attributes. 
+    + `pathname` - String of the current path.
+    + `params` - Object with the parsed url parameter. Defaults to {}.
++ `prevAttributes` - Previous Route Attributes. First rendering to {}.
+    + `pathname` - String of the previous path.
+    + `params` - Object with the parsed url parameter at previous page. Defaults to {}.
+
+**async/await is not supported.**
+
 ### `getInitialProps(attributes, prevAttributes): Object`
 
 `Component` defined at `<Route>` can have `getInitialProps` that can use async/await.  
@@ -185,6 +202,16 @@ And `getInitialProps` has arguments.
 class User extends React.Component {
     static async getInitialProps({ pathname, params }) {
         console.log(params.userId);
+        return { data: "Get Inital Props!!" };
+    }
+    
+    render() {
+        return (
+            <div>
+                <div>UserId: {this.props.params.userId}</div>
+                <div>Data: {this.props.data}</div>
+            </div>
+        );
     }
 }
 
@@ -198,25 +225,26 @@ render(
 );
 ```
 
-### `initialPropsWillGet(attributes, prevAttributes)`
+### `initialPropsStoreHook(props, prevProps)`
 
-`Component` defined at `<Route>` can have `initialPropsWillGet`.  
-`initialPropsWillGet` is invoked immediately before mounting occurs. It is called before `getInitialProps()`
+`Component` defined at `<Route>` can have `initialPropsStoreHook`.  
+`initialPropsStoreHook` is used for setting store of redux or flux-utils after calling `getInitialProps`.
+It can also be set with `getInitialProps`. However, it is implemented to separate responsibility.
 
-`initialPropsWillGet` has arguments.
-
-+ `attributes` - Current Route Attributes. 
++ `props` - Current props of components defined at `<Route>`. 
     + `pathname` - String of the current path.
     + `params` - Object with the parsed url parameter. Defaults to {}.
-+ `prevAttributes` - Previous Route Attributes. First rendering to {}.
+    + `{data}` - Data retrieved using `getInitialProps`. 
++ `prevProps` - Previous props of components defined at `<Route>`. First rendering to {}.
     + `pathname` - String of the previous path.
     + `params` - Object with the parsed url parameter at previous page. Defaults to {}.
+    + `{data}` - Data retrieved using `getInitialProps`. 
 
 **async/await is not supported.**
 
 ### `initialPropsDidGet(props, prevProps)`
 
-Components defined at `<Route>` can have `initialPropsDidGet`.  
+`Component` defined at `<Route>` can have `initialPropsDidGet`.  
 `initialPropsDidGet` is called after the promise is resolved.  
 If more than one promise is pending, async-react-router gets only the last executed promise.  
 For this, in that case `initialPropsDidGet` is executed only when the last promise is resolved.
@@ -327,6 +355,71 @@ render(
 
 URL.name("User", {userId: 1}); // String `#/user/1`.
 ```
+
+# Server Side Rendering
+
+Async React Router supports Server Side Rendering.
+Server-Side Rendering is easy.
+
++ `RouteResolver` will solve the route very easily on the server side.
++ you can deal with SSR just by changing `<Router>` to `<Router>` of SSR on Client-Side.
++ It is also possible to obtain resolved data on the server side via HTML.
+
+## Server Side
+### `RouteResolver`
+
+`RouteResolver` can solve the route on the server side.
+
++ `routes` - Route information consisting only of `<Route>`. Required.
+
+```javascript
+import { RouteResolver } from "async-react-router/ssr";
+
+const routes = (
+    <Route path="/" component="IndexPage">
+        <Route path="/user" component="UserPage"/>
+    </Route
+);
+
+RouteResolver
+    .make(routes)
+    .resolve(req.url, (component, data) => {
+        // View Rendering
+    });
+```
+
+## Client Side
+### `<Router>` for SSR
+
+`<Router>` for SSR manages `<Route>`.
+
+Basically, it has the same function as `<Router>` for Client.  
+`getInitialProps` and `initialPropsWillGet`, `initialPropsDidGet` are not called for the first time.  
+However, there is a parameter called `firstRendererdInitialProps`, so we can pass the initial value.
+`initialPropsStoreHook` is called every time.
+
+```javascript
+import React from "react";
+import { hydrate } from "react-dom";
+import { Router } from "async-react-router/ssr";
+import routes from "./routes";
+
+function App() {
+    return (
+        <Router firstRenderedInitialProps={JSON.parse(document.getElementById("initial-props").innerText)}>
+            {routes}
+        </Router>
+    );
+}
+
+hydrate(
+    (<App/>),
+    document.getElementById('app')
+);
+```
+
+The history that can be used is **Browser History** only.
+**Hash History**, **Memory History** cannot be used.
 
 ## Thanks for the inspiration
 + [next.js](https://github.com/zeit/next.js/)
