@@ -7,7 +7,6 @@
 
 ## Attention
 
-+ This package is alpha version yet.For this, it causes drastic change.
 + I created this package when Nest.js 2.x.
 
 ## Motivation
