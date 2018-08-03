@@ -1,5 +1,3 @@
-const CommentsType = {
-    SYNC: Symbol("comments/sync")
-}
-
-export default CommentsType;
+export const commentsType = {
+  SYNC: Symbol("comments/sync")
+};

@@ -1,11 +1,18 @@
-import ItemDispatcher from "../../dispatchers/ItemDispatcher";
-import CommentsType from "../../storeTypes/CommentsType";
+import { commentsType } from "../../storeTypes/CommentsType";
 
-export default class CommentsAction {
-    static sync(comments) {
-        ItemDispatcher.dispatch({
-            type: CommentsType.SYNC,
-            comments: comments
-        })
-    }
+class CommentsAction {
+  constructor(dispatcher) {
+    this.dispatcher = dispatcher;
+  }
+
+  sync(comments) {
+    this.dispatcher.dispatch({
+      type: commentsType.SYNC,
+      comments: comments
+    });
+  }
+}
+
+export function newCommentsAction(dispatcher) {
+  return new CommentsAction(dispatcher);
 }

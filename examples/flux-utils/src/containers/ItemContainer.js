@@ -2,41 +2,42 @@ import React from "react";
 import { Container } from "flux/utils";
 import Header from "../components/common/Header";
 import ItemComponent from "../components/item/ItemComponent";
-import CommentsStore from "../stores/item/CommentsStore";
-import ItemStore from "../stores/item/ItemStore";
 
 class ItemContainer extends React.Component {
-    static getStores() {
-        return [
-            CommentsStore,
-            ItemStore
-        ];
-    }
+  static getStores(props) {
+    return [props.stores.commentsStore, props.stores.itemStore];
+  }
 
-    static calculateState() {
-        return {
-            comments: CommentsStore.getState(),
-            item: ItemStore.getState()
-        }
-    }
+  static calculateState(prevState, props) {
+    return {
+      comments: props.stores.commentsStore.getState(),
+      item: props.stores.itemStore.getState()
+    };
+  }
 
-    componentDidMount() {
-        window.scrollTo(0, 0);
-    }
+  componentDidMount() {
+    window.scrollTo(0, 0);
+  }
 
-    componentDidUpdate() {
-        window.scrollTo(0, 0);
-    }
+  componentDidUpdate() {
+    window.scrollTo(0, 0);
+  }
 
-    render() {
-        return (
-            <div>
-                <Header/>
-                <ItemComponent comments={this.state.comments} item={this.state.item}/>
-            </div>
-        );
-    }
+  render() {
+    return (
+      <div>
+        <Header />
+        <ItemComponent
+          actions={this.props.actions}
+          comments={this.state.comments}
+          item={this.state.item}
+        />
+      </div>
+    );
+  }
 }
 
-const itemContainer = Container.create(ItemContainer);
+const itemContainer = Container.create(ItemContainer, {
+  withProps: true
+});
 export default itemContainer;

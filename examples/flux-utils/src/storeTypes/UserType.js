@@ -1,5 +1,3 @@
-const UserType = {
-    NEW_INSTANCE: Symbol("user/newInstance")
-}
-
-export default UserType;
+export const userType = {
+  NEW_INSTANCE: Symbol("user/newInstance")
+};

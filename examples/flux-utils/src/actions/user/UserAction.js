@@ -1,11 +1,18 @@
-import UserDispatcher from "../../dispatchers/UserDispatcher";
-import UserType from "../../storeTypes/UserType";
+import { userType } from "../../storeTypes/UserType";
 
-export default class UserAction {
-    static newInstance(attributes) {
-        UserDispatcher.dispatch({
-            type: UserType.NEW_INSTANCE,
-            attributes: attributes
-        });
-    }
+class UserAction {
+  constructor(dispatcher) {
+    this.dispatcher = dispatcher;
+  }
+
+  newInstance(attributes) {
+    this.dispatcher.dispatch({
+      type: userType.NEW_INSTANCE,
+      attributes: attributes
+    });
+  }
+}
+
+export function newUserAction(dispatcher) {
+  return new UserAction(dispatcher);
 }

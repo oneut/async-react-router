@@ -1,5 +1,3 @@
-const ItemType = {
-    NEW_INSTANCE: Symbol("item/newInstance"),
+export const itemType = {
+  NEW_INSTANCE: Symbol("item/newInstance")
 };
-
-export default ItemType;

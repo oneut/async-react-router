@@ -2,36 +2,37 @@ import React from "react";
 import { Container } from "flux/utils";
 import Header from "../components/common/Header";
 import UserComponent from "../components/user/UserComponent";
-import UserStore from "../stores/user/UserStore";
 
 class UserContainer extends React.Component {
-    static getStores() {
-        return [UserStore];
-    }
+  static getStores(props) {
+    return [props.stores.userStore];
+  }
 
-    static calculateState() {
-        return {
-            user: UserStore.getState()
-        }
-    }
+  static calculateState(prevState, props) {
+    return {
+      user: props.stores.userStore.getState()
+    };
+  }
 
-    componentDidMount() {
-        window.scrollTo(0, 0);
-    }
+  componentDidMount() {
+    window.scrollTo(0, 0);
+  }
 
-    componentDidUpdate() {
-        window.scrollTo(0, 0);
-    }
+  componentDidUpdate() {
+    window.scrollTo(0, 0);
+  }
 
-    render() {
-        return (
-            <div>
-                <Header/>
-                <UserComponent user={this.state.user}/>
-            </div>
-        );
-    }
+  render() {
+    return (
+      <div>
+        <Header />
+        <UserComponent user={this.state.user} />
+      </div>
+    );
+  }
 }
 
-const userContainer = Container.create(UserContainer);
+const userContainer = Container.create(UserContainer, {
+  withProps: true
+});
 export default userContainer;

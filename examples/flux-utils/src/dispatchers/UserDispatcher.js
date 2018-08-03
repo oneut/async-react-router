@@ -1,4 +1,5 @@
 import { Dispatcher } from "flux";
 
-const instance = new Dispatcher();
-export default instance;
+export function newUserDispatcher() {
+  return new Dispatcher();
+}

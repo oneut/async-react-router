@@ -3,39 +3,49 @@ import React from "react";
 import NewsContainer from "../containers/NewsContainer";
 import HackerNewsApi from "../api/HackerNewsApi";
 import NotFoundPage from "./NotFoundPage";
-import ItemsAction from "../actions/news/ItemsAction";
+import { newNewsDispatcher } from "../dispatchers/NewsDispatcher";
+import { newItemsAction } from "../actions/news/ItemsAction";
+import { newItemsStore } from "../stores/ItemsStore";
 
 export default class NewsPage extends React.Component {
-    static initialPropsWillGet() {
-        NProgress.start();
+  static initialPropsWillGet() {
+    NProgress.start();
+  }
+
+  static async getInitialProps(attributes) {
+    if (
+      isNaN(parseFloat(attributes.params.page)) ||
+      !isFinite(attributes.params.page)
+    ) {
+      return {
+        items: []
+      };
     }
 
-    static async getInitialProps(attributes) {
-        if (isNaN(parseFloat(attributes.params.page)) || !(isFinite(attributes.params.page))) {
-            return {
-                items: [],
-            };
-        }
+    const page = attributes.params.page || 1;
+    return {
+      items: await HackerNewsApi.getTopStoryItems(page)
+    };
+  }
 
-        const page = attributes.params.page || 1;
-        return {
-            items: await HackerNewsApi.getTopStoryItems(page)
-        };
-    }
+  static initialPropsDidGet() {
+    NProgress.done();
+  }
 
-    static initialPropsStoreHook(props) {
-        if (props.items.length) {
-            ItemsAction.sync(props.items);
-        }
-    }
+  render() {
+    if (!this.props.items.length) return <NotFoundPage />;
 
-    static initialPropsDidGet() {
-        NProgress.done();
-    }
+    const newsDispatcher = newNewsDispatcher();
+    const itemsAction = newItemsAction(newsDispatcher);
+    const itemsStore = newItemsStore(newsDispatcher);
+    itemsAction.sync(this.props.items);
 
-    render() {
-        if (!this.props.items.length) return (<NotFoundPage/>);
+    const params = {
+      stores: {
+        itemsStore
+      }
+    };
 
-        return (<NewsContainer params={this.props.params}/>);
-    }
+    return <NewsContainer {...params} params={this.props.params} />;
+  }
 }
