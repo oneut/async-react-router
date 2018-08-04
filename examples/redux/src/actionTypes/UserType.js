@@ -1,5 +1,3 @@
-const UserActionTypes = {
-    NEW_INSTANCE: Symbol('user/newInstance'),
+export const userActionType = {
+  NEW_INSTANCE: Symbol("user/newInstance")
 };
-
-export default UserActionTypes;

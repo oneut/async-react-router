@@ -1,5 +1,3 @@
-const ItemType = {
-    NEW_INSTANCE: Symbol('item/newInstance'),
+export const itemActionType = {
+  NEW_INSTANCE: Symbol("item/newInstance")
 };
-
-export default ItemType;

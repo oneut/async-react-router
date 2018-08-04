@@ -1,11 +1,11 @@
 import User from "../models/User";
-import UserType from "../actionTypes/UserType";
+import { userActionType } from "../actionTypes/UserType";
 
 export default function user(state = null, action) {
-    switch (action.type) {
-        case UserType.NEW_INSTANCE:
-            return new User(action.attributes);
-        default:
-            return state;
-    }
+  switch (action.type) {
+    case userActionType.NEW_INSTANCE:
+      return new User(action.attributes);
+    default:
+      return state;
+  }
 }

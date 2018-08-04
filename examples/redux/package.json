@@ -19,12 +19,18 @@
     "timeago.js": "^3.0.2"
   },
   "devDependencies": {
+    "eslint": "^5.2.0",
+    "eslint-config-prettier": "^2.9.0",
+    "eslint-plugin-prettier": "^2.6.2",
+    "prettier": "^1.14.0",
     "react-scripts": "^1.0.14"
   },
   "scripts": {
     "start": "react-scripts start",
     "build": "react-scripts build",
     "eject": "react-scripts eject",
+    "eslint": "eslint ./src",
+    "eslint:fix": "eslint --fix ./src",
     "test": "react-scripts test"
   },
   "homepage": "."

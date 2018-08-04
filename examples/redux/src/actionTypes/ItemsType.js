@@ -1,5 +1,3 @@
-const ItemsType = {
-    SYNC: Symbol('items/sync'),
+export const itemsActionType = {
+  SYNC: Symbol("items/sync")
 };
-
-export default ItemsType;

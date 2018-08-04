@@ -1,12 +1,10 @@
-import CommentsType from "../actionTypes/CommentsType";
+import { commentsActionType } from "../actionTypes/CommentsType";
 
-const CommentsAction = {
-    sync: (comments) => {
-        return {
-            type: CommentsType.SYNC,
-            comments: comments
-        };
-    }
+export const commentsAction = {
+  sync: comments => {
+    return {
+      type: commentsActionType.SYNC,
+      comments: comments
+    };
+  }
 };
-
-export default CommentsAction;

@@ -6,38 +6,42 @@ import userRootReducer from "../rootReducers/user";
 import UserContainer from "../containers/UserContainer";
 import HackerNewsApi from "../api/HackerNewsApi";
 import NotFoundPage from "./NotFoundPage";
-import UserAction from "../actions/UserAction";
-
-const store = createStore(userRootReducer);
+import { bindActionCreators } from "redux";
+import { userAction } from "../actions/UserAction";
 
 export default class UserPage extends React.Component {
-    static initialPropsWillGet() {
-        NProgress.start();
-    }
+  static initialPropsWillGet() {
+    NProgress.start();
+  }
 
-    static async getInitialProps(attributes) {
-        return {
-            user: await HackerNewsApi.findUser(attributes.params.userId)
-        };
-    }
+  static async getInitialProps(attributes) {
+    return {
+      user: await HackerNewsApi.findUser(attributes.params.userId)
+    };
+  }
 
-    static initialPropsStoreHook(props) {
-        if (props.user) {
-            store.dispatch(UserAction.newInstance(props.user));
-        }
-    }
+  static initialPropsDidGet() {
+    NProgress.done();
+  }
 
-    static initialPropsDidGet() {
-        NProgress.done();
-    }
+  render() {
+    if (!this.props.user) return <NotFoundPage />;
 
-    render() {
-        if (!this.props.user) return (<NotFoundPage/>);
+    const ProviderWrapper = () => {
+      const store = createStore(userRootReducer);
 
-        return (
-            <Provider store={store}>
-                <UserContainer params={this.props.params}/>
-            </Provider>
-        );
-    }
+      const actions = {
+        user: bindActionCreators(userAction, store.dispatch)
+      };
+      actions.user.newInstance(this.props.user);
+
+      return (
+        <Provider store={store}>
+          <UserContainer params={this.props.params} actions={actions} />
+        </Provider>
+      );
+    };
+
+    return <ProviderWrapper />;
+  }
 }

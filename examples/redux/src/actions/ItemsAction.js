@@ -1,12 +1,10 @@
-import ItemsType from "../actionTypes/ItemsType";
+import { itemsActionType } from "../actionTypes/ItemsType";
 
-const ItemsAction = {
-    sync: (items) => {
-        return             {
-            type: ItemsType.SYNC,
-            items: items
-        };
-    }
+export const itemsAction = {
+  sync: items => {
+    return {
+      type: itemsActionType.SYNC,
+      items: items
+    };
+  }
 };
-
-export default ItemsAction;

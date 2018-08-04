@@ -1,12 +1,10 @@
-import UserType from "../actionTypes/UserType";
+import { userActionType } from "../actionTypes/UserType";
 
-const UserAction = {
-    newInstance: (attributes) => {
-        return {
-            type: UserType.NEW_INSTANCE,
-            attributes: attributes
-        };
-    }
+export const userAction = {
+  newInstance: attributes => {
+    return {
+      type: userActionType.NEW_INSTANCE,
+      attributes: attributes
+    };
+  }
 };
-
-export default UserAction;

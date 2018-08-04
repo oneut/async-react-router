@@ -1,15 +1,17 @@
 import Immutable from "immutable";
 import Item from "../models/Item";
-import ItemsType from "../actionTypes/ItemsType";
+import { itemsActionType } from "../actionTypes/ItemsType";
 
 export default function items(state = Immutable.List(), action) {
-    switch (action.type) {
-        case ItemsType.SYNC:
-            const newState = Immutable.List();
-            return newState.withMutations((newState) => {
-                action.items.map((itemAttributes) => newState.push(new Item(itemAttributes)));
-            });
-        default:
-            return state;
-    }
+  switch (action.type) {
+    case itemsActionType.SYNC:
+      const newState = Immutable.List();
+      return newState.withMutations(newState => {
+        action.items.map(itemAttributes =>
+          newState.push(new Item(itemAttributes))
+        );
+      });
+    default:
+      return state;
+  }
 }

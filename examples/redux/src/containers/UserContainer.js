@@ -1,42 +1,31 @@
 import React from "react";
-import PropTypes from "prop-types";
-import { bindActionCreators } from "redux";
 import { connect } from "react-redux";
 import Header from "../components/common/Header";
 import UserComponent from "../components/user/UserComponent";
 
 class UserContainer extends React.Component {
-    componentDidMount() {
-        window.scrollTo(0, 0);
+  componentDidMount() {
+    window.scrollTo(0, 0);
+  }
+
+  componentDidUpdate() {
+    window.scrollTo(0, 0);
+  }
+
+  render() {
+    if (!this.props.user) {
+      return null;
     }
 
-    componentDidUpdate() {
-        window.scrollTo(0, 0);
-    }
-
-    render() {
-        return (
-            <div>
-                <Header/>
-                <UserComponent user={this.props.user}/>
-            </div>
-        );
-    }
+    return (
+      <div>
+        <Header />
+        <UserComponent user={this.props.user} />
+      </div>
+    );
+  }
 }
 
-UserContainer.proptypes = {
-    user: PropTypes.object.isRequired
-};
-
-const mapStateToProps = (state) => ({
-    user: state.user
-});
-
-const mapDispatchToProps = (dispatch) => ({
-    actions: bindActionCreators({}, dispatch)
-});
-
-export default connect(
-    mapStateToProps,
-    mapDispatchToProps
-)(UserContainer);
+export default connect(state => ({
+  user: state.user
+}))(UserContainer);
