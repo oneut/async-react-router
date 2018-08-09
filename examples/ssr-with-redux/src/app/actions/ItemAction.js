@@ -1,12 +1,10 @@
-import ItemActionTypes from "../actionTypes/ItemActionTypes";
+import { itemActionType } from "../actionTypes/ItemType";
 
-const ItemAction = {
-    addComments: (comments) => {
-        return {
-            type: ItemActionTypes.ADD_COMMENTS,
-            comments: comments
-        };
-    }
+export const itemAction = {
+  newInstance: attributes => {
+    return {
+      type: itemActionType.NEW_INSTANCE,
+      attributes: attributes
+    };
+  }
 };
-
-export default ItemAction;

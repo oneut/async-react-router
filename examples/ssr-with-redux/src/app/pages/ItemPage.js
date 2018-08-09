@@ -2,45 +2,48 @@ import NProgress from "nprogress";
 import React from "react";
 import { createStore } from "redux";
 import { Provider } from "react-redux";
-import itemReducer from "../reducers/item";
+import itemRootReducer from "../rootReducers/item";
 import ItemContainer from "../containers/ItemContainer";
 import HackerNewsApi from "../api/HackerNewsApi";
-import ItemActionTypes from "../actionTypes/ItemActionTypes";
 import NotFoundPage from "./NotFoundPage";
-
-const store = createStore(itemReducer);
+import { bindActionCreators } from "redux";
+import { commentsAction } from "../actions/CommentsAction";
+import { itemAction } from "../actions/ItemAction";
 
 export default class ItemPage extends React.Component {
-    static initialPropsWillGet() {
-        NProgress.start();
-    }
+  static initialPropsWillGet() {
+    NProgress.start();
+  }
 
-    static async getInitialProps(attributes) {
-        return {
-            item: await HackerNewsApi.findItem(attributes.params.itemId)
-        };
-    }
+  static async getInitialProps(attributes) {
+    return {
+      item: await HackerNewsApi.findItem(attributes.params.itemId)
+    };
+  }
 
-    static initialPropsStoreHook(props) {
-        if (props.item) {
-            store.dispatch({
-                type: ItemActionTypes.NEW_ITEM,
-                item: props.item
-            });
-        }
-    }
+  static initialPropsDidGet() {
+    NProgress.done();
+  }
 
-    static initialPropsDidGet() {
-        NProgress.done();
-    }
+  render() {
+    if (!this.props.item) return <NotFoundPage />;
 
-    render() {
-        if (!this.props.item) return (<NotFoundPage/>);
+    const ProviderWrapper = () => {
+      const store = createStore(itemRootReducer);
 
-        return (
-            <Provider store={store}>
-                <ItemContainer />
-            </Provider>
-        );
-    }
+      const actions = {
+        item: bindActionCreators(itemAction, store.dispatch),
+        comments: bindActionCreators(commentsAction, store.dispatch)
+      };
+      actions.item.newInstance(this.props.item);
+
+      return (
+        <Provider store={store}>
+          <ItemContainer actions={actions} />
+        </Provider>
+      );
+    };
+
+    return <ProviderWrapper />;
+  }
 }

@@ -2,45 +2,46 @@ import NProgress from "nprogress";
 import React from "react";
 import { createStore } from "redux";
 import { Provider } from "react-redux";
-import indexReducer from "../reducers/index";
+import indexRootReducer from "../rootReducers/index";
 import IndexContainer from "../containers/IndexContainer";
 import HackerNewsApi from "../api/HackerNewsApi";
-import IndexActionTypes from "../actionTypes/IndexActionTypes";
 import NotFoundPage from "./NotFoundPage";
-
-const store = createStore(indexReducer);
+import { bindActionCreators } from "redux";
+import { itemsAction } from "../actions/ItemsAction";
 
 export default class IndexPage extends React.Component {
-    static initialPropsWillGet() {
-        NProgress.start();
-    }
+  static initialPropsWillGet() {
+    NProgress.start();
+  }
 
-    static async getInitialProps() {
-        return {
-            items: await HackerNewsApi.getTopStoryItems()
-        };
-    }
+  static async getInitialProps() {
+    return {
+      items: await HackerNewsApi.getTopStoryItems()
+    };
+  }
 
-    static initialPropsStoreHook(props) {
-        if (props.items.length) {
-            store.dispatch({
-                type: IndexActionTypes.ADD_ITEMS,
-                items: props.items
-            });
-        }
-    }
+  static initialPropsDidGet() {
+    NProgress.done();
+  }
 
-    static initialPropsDidGet() {
-        NProgress.done();
-    }
+  render() {
+    if (!this.props.items.length) return <NotFoundPage />;
 
-    render() {
-        if (!this.props.items.length) return (<NotFoundPage/>);
+    const ProviderWrapper = () => {
+      const store = createStore(indexRootReducer);
 
-        return (
-            <Provider store={store}>
-                <IndexContainer/>
-            </Provider>
-        );
-    }
+      const actions = {
+        items: bindActionCreators(itemsAction, store.dispatch)
+      };
+      actions.items.sync(this.props.items);
+
+      return (
+        <Provider store={store}>
+          <IndexContainer actions={actions} />
+        </Provider>
+      );
+    };
+
+    return <ProviderWrapper />;
+  }
 }

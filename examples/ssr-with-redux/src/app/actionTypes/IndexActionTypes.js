@@ -1,5 +1,5 @@
 const IndexActionTypes = {
-    ADD_ITEMS: Symbol('index/addItems'),
+  ADD_ITEMS: Symbol("index/addItems")
 };
 
 export default IndexActionTypes;
