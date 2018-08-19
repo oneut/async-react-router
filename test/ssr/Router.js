@@ -1,351 +1,380 @@
-import Test from "ava";
+import test from "ava";
 import React from "react";
-import { mount } from 'enzyme';
-import Router from "../../src/ssr/Router";
+import { mount } from "enzyme";
 import Route from "../../src/lib/Route";
 import createMemoryHistory from "history/createMemoryHistory";
-import browserEnv from 'browser-env';
+import browserEnv from "browser-env";
+import RouteMatcher from "../../src/lib/RouteMatcher";
+import HistoryManager from "../../src/lib/HistoryManager";
+import Request from "../../src/lib/Request";
+import { createRouter } from "../../src/ssr/Router";
 
 browserEnv();
 
-Test.serial('Index route', (t) => {
-    // Location Settings
-    const history = createMemoryHistory();
-    history.push('/');
+const asyncFlush = () => new Promise((resolve) => setTimeout(resolve, 0));
 
-    // Page Settings
-    class IndexPage extends React.Component {
-        static initialPropsWillGet() {
-            t.fail();
-        }
+test.beforeEach((t) => {
+  const routeMatcher = new RouteMatcher();
 
-        static async getInitialProps() {
-            t.fail();
-        }
+  const historyManager = new HistoryManager();
+  historyManager.initialRouteMatcher(routeMatcher);
 
-        static getFirstRenderedInitialProps() {
-            return {
-                message: 'first rendering data'
-            };
-        }
+  const request = new Request();
+  request.setHistoryManager(historyManager);
 
-        static initialPropsStoreHook(componentProps) {
-            t.is(componentProps.message, 'first rendering data');
-        }
-
-        static initialPropsDidGet() {
-            t.fail();
-        }
-
-        render() {
-            return (
-                <div>
-                    <h1>Index</h1>
-                    {this.props.message}
-                </div>
-            );
-        }
-    }
-
-    const firstRenderedInitialProps = {message: 'first rendering data'};
-    const actual = mount(
-        <Router history={history} firstRenderedInitialProps={firstRenderedInitialProps}>
-            <Route path="/" component={IndexPage}/>
-        </Router>
-    );
-
-    const expected = mount(
-        <IndexPage message="first rendering data"/>
-    );
-
-    t.is(actual.html(), expected.html());
-
-    t.plan(2);
+  t.context.router = createRouter(historyManager, routeMatcher);
 });
 
-Test.serial('Router props', (t) => {
-    // Location Settings
-    const history = createMemoryHistory();
-    history.push('/');
+test.serial("Index route", async (t) => {
+  // Location Settings
+  const history = createMemoryHistory();
+  history.push("/");
 
-    // Page Settings
-    class IndexPage extends React.Component {
-        render() {
-            return (
-                <div>
-                    <h1>Index</h1>
-                    <ul>{this.props.items.map((item, index) => (<li key={index}>{item}</li>))}</ul>
-                </div>
-            );
-        }
+  // Page Settings
+  class IndexPage extends React.Component {
+    static initialPropsWillGet() {
+      t.fail();
     }
 
-    const actual = mount(
-        <Router history={history} items={['foo', 'bar', 'baz']}>
-            <Route path="/" component={IndexPage}/>
-        </Router>
-    );
+    static async getInitialProps() {
+      t.fail();
+    }
 
-    const expected = mount(
-        <IndexPage items={['foo', 'bar', 'baz']}/>
-    );
+    static initialPropsDidGet() {
+      t.fail();
+    }
 
-    t.is(actual.html(), expected.html());
+    render() {
+      return (
+        <div>
+          <h1>Index</h1>
+          {this.props.message}
+        </div>
+      );
+    }
+  }
+
+  const firstRenderedInitialProps = { message: "first rendering data" };
+  const actual = mount(
+    <t.context.router
+      history={history}
+      firstRenderedInitialProps={firstRenderedInitialProps}
+    >
+      <Route path="/" component={IndexPage} />
+    </t.context.router>
+  );
+  t.is(actual.html(), null);
+
+  // wait to resolve promise.
+  await asyncFlush();
+
+  actual.update();
+  const expected = mount(<IndexPage message="first rendering data" />);
+
+  t.is(actual.html(), expected.html());
+
+  t.plan(2);
 });
 
-Test.serial('No match', (t) => {
-    // Location Settings
-    const history = createMemoryHistory();
-    history.push('/Test');
+test.serial("Router props", async (t) => {
+  // Location Settings
+  const history = createMemoryHistory();
+  history.push("/");
 
-    // Page Settings
-    class IndexPage extends React.Component {
-        render() {
-            return (
-                <div>
-                    <h1>Index</h1>
-                </div>
-            );
-        }
+  // Page Settings
+  class IndexPage extends React.Component {
+    render() {
+      return (
+        <div>
+          <h1>Index</h1>
+          <ul>
+            {this.props.items.map((item, index) => (
+              <li key={index}>{item}</li>
+            ))}
+          </ul>
+        </div>
+      );
     }
+  }
 
-    const actual = mount(
-        <Router history={history}>
-            <Route path="/" component={IndexPage}/>
-        </Router>
-    );
+  const actual = mount(
+    <t.context.router history={history} items={["foo", "bar", "baz"]}>
+      <Route path="/" component={IndexPage} />
+    </t.context.router>
+  );
 
-    // return null
-    t.is(actual.html(), null);
+  // wait to resolve promise.
+  await asyncFlush();
+
+  actual.update();
+  const expected = mount(<IndexPage items={["foo", "bar", "baz"]} />);
+
+  t.is(actual.html(), expected.html());
 });
 
-Test.serial('Route nest', (t) => {
-    // Location Settings
-    const history = createMemoryHistory();
-    history.push('/parent/1/child');
+test.serial("No match", async (t) => {
+  // Location Settings
+  const history = createMemoryHistory();
+  history.push("/Test");
 
-    // Page Settings
-    class IndexPage extends React.Component {
-        render() {
-            return (
-                <div>
-                    <h1>Index</h1>
-                </div>
-            );
-        }
+  // Page Settings
+  class IndexPage extends React.Component {
+    render() {
+      return (
+        <div>
+          <h1>Index</h1>
+        </div>
+      );
     }
+  }
 
-    class ParentPage extends React.Component {
-        render() {
-            return (
-                <div>
-                    <h1>Parent</h1>
-                </div>
-            );
-        }
-    }
+  const actual = mount(
+    <t.context.router history={history}>
+      <Route path="/" component={IndexPage} />
+    </t.context.router>
+  );
 
-    class ChildPage extends React.Component {
-        render() {
-            return (
-                <div>
-                    <h1>Child</h1>
-                    <ul>{this.props.items.map((item, index) => (<li key={index}>{item}</li>))}</ul>
-                </div>
-            );
-        }
-    }
+  // wait to resolve promise.
+  await asyncFlush();
 
-    const actual = mount(
-        <Router history={history} items={['foo', 'bar', 'baz']}>
-            <Route path="/" component={IndexPage}>
-                <Route path="/parent/:id" component={ParentPage}>
-                    <route path="/child" component={ChildPage}/>
-                </Route>
-            </Route>
-        </Router>
-    );
+  actual.update();
 
-    const expected = mount(
-        <ChildPage items={['foo', 'bar', 'baz']}/>
-    );
-
-    t.is(actual.html(), expected.html());
+  // return null
+  t.is(actual.html(), null);
 });
 
-Test.serial('Not found', (t) => {
-    // Location Settings
-    const history = createMemoryHistory();
-    history.push('/not_found');
+test.serial("Route nest", async (t) => {
+  // Location Settings
+  const history = createMemoryHistory();
+  history.push("/parent/1/child");
 
-    // Page Settings
-    class IndexPage extends React.Component {
-        render() {
-            return (
-                <div>
-                    <h1>Index</h1>
-                </div>
-            );
-        }
+  // Page Settings
+  class IndexPage extends React.Component {
+    render() {
+      return (
+        <div>
+          <h1>Index</h1>
+        </div>
+      );
     }
+  }
 
-    class ParentPage extends React.Component {
-        render() {
-            return (
-                <div>
-                    <h1>Parent</h1>
-                </div>
-            );
-        }
+  class ParentPage extends React.Component {
+    render() {
+      return (
+        <div>
+          <h1>Parent</h1>
+        </div>
+      );
     }
+  }
 
-    class ChildPage extends React.Component {
-        render() {
-            return (
-                <div>
-                    <h1>Parent</h1>
-                </div>
-            );
-        }
+  class ChildPage extends React.Component {
+    render() {
+      return (
+        <div>
+          <h1>Child</h1>
+          <ul>
+            {this.props.items.map((item, index) => (
+              <li key={index}>{item}</li>
+            ))}
+          </ul>
+        </div>
+      );
     }
+  }
 
-    // Page Settings
-    class NotFoundPage extends React.Component {
-        render() {
-            return (
-                <div>
-                    <h1>NotFound</h1>
-                </div>
-            );
-        }
-    }
+  const actual = mount(
+    <t.context.router history={history} items={["foo", "bar", "baz"]}>
+      <Route path="/" component={IndexPage}>
+        <Route path="/parent/:id" component={ParentPage}>
+          <route path="/child" component={ChildPage} />
+        </Route>
+      </Route>
+    </t.context.router>
+  );
 
-    const actual = mount(
-        <Router history={history}>
-            <Route path="/" component={IndexPage}>
-                <Route path="/parent/:id" component={ParentPage}>
-                    <route path="/child" component={ChildPage}/>
-                </Route>
-            </Route>
-            <Route path="(.*)" component={NotFoundPage}/>
-        </Router>
-    );
+  // wait to resolve promise.
+  await asyncFlush();
 
-    const expected = mount(
-        <NotFoundPage/>
-    );
+  actual.update();
+  const expected = mount(<ChildPage items={["foo", "bar", "baz"]} />);
 
-    // return null
-    t.is(actual.html(), expected.html());
+  t.is(actual.html(), expected.html());
 });
 
-Test.serial('Route order 1', (t) => {
-    // Location Settings
-    const history = createMemoryHistory();
-    history.push('/Test/1');
+test.serial("Not found", async (t) => {
+  // Location Settings
+  const history = createMemoryHistory();
+  history.push("/not_found");
 
-    // Page Settings
-    class IndexPage extends React.Component {
-        render() {
-            return (
-                <div>
-                    <h1>Index</h1>
-                </div>
-            );
-        }
+  // Page Settings
+  class IndexPage extends React.Component {
+    render() {
+      return (
+        <div>
+          <h1>Index</h1>
+        </div>
+      );
     }
+  }
 
-    class TestPage extends React.Component {
-        render() {
-            return (
-                <div>
-                    <h1>Test</h1>
-                </div>
-            );
-        }
+  class ParentPage extends React.Component {
+    render() {
+      return (
+        <div>
+          <h1>Parent</h1>
+        </div>
+      );
     }
+  }
 
-    class TestShowPage extends React.Component {
-        render() {
-            return (
-                <div>
-                    <h1>Test Show</h1>
-                </div>
-            );
-        }
+  class ChildPage extends React.Component {
+    render() {
+      return (
+        <div>
+          <h1>Parent</h1>
+        </div>
+      );
     }
+  }
 
-    const actual = mount(
-        <Router history={history}>
-            <Route path="/" component={IndexPage}/>
-            <Route path="/test/:id" component={TestShowPage}/>
-            <Route path="/test" component={TestPage}/>
-        </Router>
-    );
+  // Page Settings
+  class NotFoundPage extends React.Component {
+    render() {
+      return (
+        <div>
+          <h1>NotFound</h1>
+        </div>
+      );
+    }
+  }
 
-    const expected = mount(
-        <TestShowPage/>
-    );
+  const actual = mount(
+    <t.context.router history={history}>
+      <Route path="/" component={IndexPage}>
+        <Route path="/parent/:id" component={ParentPage}>
+          <route path="/child" component={ChildPage} />
+        </Route>
+      </Route>
+      <Route path="(.*)" component={NotFoundPage} />
+    </t.context.router>
+  );
 
-    // return null
-    t.is(actual.html(), expected.html());
+  // wait to resolve promise.
+  await asyncFlush();
+
+  actual.update();
+  const expected = mount(<NotFoundPage />);
+
+  // return null
+  t.is(actual.html(), expected.html());
 });
 
-Test.serial('Route order 2', async (t) => {
-    // Location Settings
-    const history = createMemoryHistory();
-    history.push('/Test');
+test.serial("Route order desc for show", async (t) => {
+  // Location Settings
+  const history = createMemoryHistory();
+  history.push("/Test/1");
 
-    // Page Settings
-    class IndexPage extends React.Component {
-        render() {
-            return (
-                <div>
-                    <h1>Index</h1>
-                </div>
-            );
-        }
+  // Page Settings
+  class IndexPage extends React.Component {
+    render() {
+      return (
+        <div>
+          <h1>Index</h1>
+        </div>
+      );
     }
+  }
 
-    class TestPage extends React.Component {
-        render() {
-            return (
-                <div>
-                    <h1>Test</h1>
-                </div>
-            );
-        }
+  class TestPage extends React.Component {
+    render() {
+      return (
+        <div>
+          <h1>Test</h1>
+        </div>
+      );
     }
+  }
 
-    class TestShowPage extends React.Component {
-        render() {
-            return (
-                <div>
-                    <h1>Test Show</h1>
-                </div>
-            );
-        }
+  class TestShowPage extends React.Component {
+    render() {
+      return (
+        <div>
+          <h1>Test Show</h1>
+        </div>
+      );
     }
+  }
 
-    const actual = mount(
-        <Router history={history}>
-            <Route path="/" component={IndexPage}/>
-            <Route path="/test/:id" component={TestShowPage}/>
-            <Route path="/test" component={TestPage}/>
-        </Router>
-    );
+  const actual = mount(
+    <t.context.router history={history}>
+      <Route path="/" component={IndexPage} />
+      <Route path="/test/:id" component={TestShowPage} />
+      <Route path="/test" component={TestPage} />
+    </t.context.router>
+  );
 
-    const expected = mount(
-        <TestPage/>
-    );
+  // wait to resolve promise.
+  await asyncFlush();
 
-    // return null
-    t.is(actual.html(), expected.html());
+  actual.update();
+  const expected = mount(<TestShowPage />);
+
+  // return null
+  t.is(actual.html(), expected.html());
 });
 
-Test.serial("Get default history", (t) => {
-    const clientRouter = new Router({});
-    const history = clientRouter.getHistory();
-    t.true(typeof history === "object");
-    t.true(typeof history.createHref === "function");
+test.serial("Route order desc for index", async (t) => {
+  // Location Settings
+  const history = createMemoryHistory();
+  history.push("/Test");
+
+  // Page Settings
+  class IndexPage extends React.Component {
+    render() {
+      return (
+        <div>
+          <h1>Index</h1>
+        </div>
+      );
+    }
+  }
+
+  class TestPage extends React.Component {
+    render() {
+      return (
+        <div>
+          <h1>Test</h1>
+        </div>
+      );
+    }
+  }
+
+  class TestShowPage extends React.Component {
+    render() {
+      return (
+        <div>
+          <h1>Test Show</h1>
+        </div>
+      );
+    }
+  }
+
+  const actual = mount(
+    <t.context.router history={history}>
+      <Route path="/" component={IndexPage} />
+      <Route path="/test/:id" component={TestShowPage} />
+      <Route path="/test" component={TestPage} />
+    </t.context.router>
+  );
+
+  // wait to resolve promise.
+  await asyncFlush();
+
+  actual.update();
+  const expected = mount(<TestPage />);
+
+  // return null
+  t.is(actual.html(), expected.html());
 });

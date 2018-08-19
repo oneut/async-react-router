@@ -1,10 +1,10 @@
-import test from 'ava';
+import test from "ava";
 import Route from "../../src/lib/Route";
 
-test('is function', (t) => {
-   t.true(typeof Route === "function");
+test("is function", (t) => {
+  t.true(typeof Route === "function");
 });
 
-test('return undefined', (t) => {
-    t.true(typeof Route() === "undefined");
+test("return undefined", (t) => {
+  t.true(typeof Route() === "undefined");
 });

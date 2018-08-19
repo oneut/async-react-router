@@ -1,90 +1,118 @@
-import HistoryManager from "./HistoryManager";
 import React from "react";
-import RouteMatcher from "./RouteMatcher";
 import RouteNormalizer from "./RouteNormalizer";
-import { Subject } from "rxjs/Subject";
-import "rxjs/add/operator/switchMap";
-import "rxjs/add/observable/fromPromise";
+import { Subject } from "rxjs";
+import { switchMap } from "rxjs/operators";
+import { createHashHistory } from "history";
 
 export default class Router extends React.Component {
-    constructor(props) {
-        super(props);
+  constructor(props) {
+    super(props);
 
-        this.state = {
-            component: null
-        };
+    this.state = {
+      component: null
+    };
 
-        this.stream = null;
+    this.stream = null;
 
-        // Settings HistoryManager.
-        this.initHistory();
+    // Settings HistoryManager.
+    this.initHistory(props.historyManager);
 
-        // Settings RxJS Stream.
-        this.initStream();
+    // Settings RxJS Stream.
+    this.initStream();
 
-        RouteMatcher.init();
+    this.initRouteMatcher(props.routeMatcher, props.children);
+  }
 
-        // Settings Routes.
-        this.addRoutes(props.children);
-    }
+  initHistory(historyManager) {
+    historyManager.initialHistory(this.props.history);
+    historyManager.setRequestCallback(this.request.bind(this));
+    historyManager.listen();
+  }
 
-    initHistory() {
-        HistoryManager.initialHistory(this.getHistory());
-        HistoryManager.setRequestCallback(this.request.bind(this));
-        HistoryManager.listen();
-    }
+  initStream() {
+    this.stream = new Subject();
+    this.stream
+      .pipe(switchMap((pathname) => this.renderer(pathname)))
+      .subscribe((component) => this.setComponent(component));
+  }
 
-    getHistory() {
-        return !!this.props.history ? this.props.history : require("history").createHashHistory();
-    }
+  renderer(pathname) {
+    return this.props.routeMatcher
+      .fetchRenderer(pathname)
+      .then((resolvedFetchRenderer) => {
+        const renderer = resolvedFetchRenderer.getRenderer();
 
-    initStream() {
-        this.stream = new Subject();
-        this.stream
-            .switchMap((pathname) => this.renderer(pathname))
-            .subscribe((component) => this.setComponent(component));
-    }
-
-    async renderer(pathname) {
-        const renderer = RouteMatcher.fetchRenderer(pathname).getRenderer();
-        if (renderer) {
-            renderer.fireInitialPropsWillGet();
-            await renderer.fireGetInitialProps();
-            renderer.fireInitialPropsStoreHook();
-            renderer.fireInitialPropsDidGet();
-            return React.createElement(renderer.getComponent(), {...renderer.getComponentProps(), ...this.props});
+        if (!!renderer) {
+          renderer.fireInitialPropsWillGet();
+          return renderer.fireGetInitialProps().then(() => {
+            return renderer;
+          });
         }
 
         return null;
-    }
+      })
+      .then((renderer) => {
+        if (!renderer) {
+          return null;
+        }
 
-    addRoutes(routes) {
-        const normalizedRoutes = RouteNormalizer.make().addRoutes(routes).get();
-        normalizedRoutes.map((route) => {
-            RouteMatcher.addRoute(route.normalizedPath, route.component, route.name);
+        renderer.fireInitialPropsDidGet();
+        return React.createElement(renderer.getComponent(), {
+          ...renderer.getComponentProps(),
+          ...this.props
         });
-    }
+      });
+  }
 
-    componentWillMount() {
-        const location = HistoryManager.getLocation();
-        this.stream.next(location.pathname);
-    }
+  initRouteMatcher(routeMatcher, routes) {
+    // Settings Routes.
+    const normalizedRoutes = RouteNormalizer.make()
+      .addRoutes(routes)
+      .get();
+    normalizedRoutes.map((route) => {
+      routeMatcher.addRoute(
+        route.normalizedPath,
+        route.component,
+        route.name,
+        !!route.isAsync
+      );
+    });
+  }
 
-    async request(pathname) {
-        await this.stream.next(pathname);
-    }
+  componentWillMount() {
+    const location = this.props.historyManager.getLocation();
+    this.stream.next(location.pathname);
+  }
 
-    setComponent(component) {
-        this.setState({
-            component: component
-        });
-    }
+  request(pathname) {
+    this.stream.next(pathname);
+  }
 
-    /**
-     * Render the matching route.
-     */
+  setComponent(component) {
+    this.setState({
+      component: component
+    });
+  }
 
-    render() {
-        return this.state.component;
-    }
+  /**
+   * Render the matching route.
+   */
+
+  render() {
+    return this.state.component;
+  }
+}
+
+export function createRouter(historyManager, routeMatcher) {
+  return (props) => {
+    const history = createHashHistory();
+    return (
+      <Router
+        history={history}
+        historyManager={historyManager}
+        routeMatcher={routeMatcher}
+        {...props}
+      />
+    );
+  };
 }

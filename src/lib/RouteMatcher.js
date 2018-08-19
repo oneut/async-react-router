@@ -2,63 +2,82 @@ import pathToRegexp from "path-to-regexp";
 import Renderer from "./Renderer";
 
 class RouteMatcher {
-    constructor() {
-        this.init();
+  constructor() {
+    this.routes = [];
+    this.nameRoutes = {};
+    this.renderer = null;
+  }
+
+  addRoute(path, component, name, isAsync) {
+    this.routes.push({ path, component, isAsync });
+    if (!!name) {
+      this.nameRoutes[name] = path;
     }
+  }
 
-    init() {
-        this.routes     = [];
-        this.nameRoutes = {};
-        this.renderer   = null;
-    }
+  getRenderer() {
+    return this.renderer;
+  }
 
-    addRoute(path, component, name) {
-        this.routes.push({path, component});
-        if (!!name) {
-            this.nameRoutes[name] = path;
-        }
-    }
+  fetchRenderer(pathname) {
+    const normalizedPathname = this.normalizePathname(pathname);
+    for (let i = 0; this.routes.length > i; i++) {
+      let keys = [];
+      let route = this.routes[i];
+      const routeMatch = pathToRegexp(route.path, keys).exec(
+        normalizedPathname
+      );
+      if (!routeMatch) continue;
 
-    getRenderer() {
-        return this.renderer;
-    }
+      let params = {};
+      for (let i = 1, len = routeMatch.length; i < len; ++i) {
+        const key = keys[i - 1];
+        params[key.name] = isNaN(routeMatch[i])
+          ? decodeURIComponent(routeMatch[i])
+          : Number(routeMatch[i]);
+      }
 
-    fetchRenderer(pathname) {
-        const normalizedPathname = this.normalizePathname(pathname);
-        for (let i = 0; this.routes.length > i; i++) {
-            let keys         = [];
-            let route        = this.routes[i];
-            const routeMatch = pathToRegexp(route.path, keys).exec(normalizedPathname);
-            if (!routeMatch) continue;
-
-            let params = {};
-            for (let i = 1, len = routeMatch.length; i < len; ++i) {
-                const key = keys[i - 1];
-                params[key.name] = isNaN(routeMatch[i]) ? decodeURIComponent(routeMatch[i]) : Number(routeMatch[i]);
-            }
-
-            this.renderer = new Renderer(normalizedPathname, route.component, params, this.renderer);
-            return this;
-        }
-
-        this.renderer = null;
+      return this.resolveComponent(route).then((component) => {
+        this.renderer = new Renderer(
+          normalizedPathname,
+          component,
+          params,
+          this.renderer
+        );
         return this;
+      });
     }
 
-    compileByName(name, parameters = {}) {
-        if (!this.nameRoutes[name]) {
-            throw Error(`Route Name "${name}" did not match Path.`);
-        }
+    this.renderer = null;
+    return Promise.resolve(this);
+  }
 
-        const toPath = pathToRegexp.compile(this.nameRoutes[name]);
-        return toPath(parameters);
+  resolveComponent(route) {
+    if (!route.isAsync) {
+      return Promise.resolve(route.component);
     }
 
-    normalizePathname(pathname) {
-        return pathname.split('?')[0].split("#")[0];
+    return route.component().then((component) => {
+      if (!!component && component.__esModule) {
+        return component.default;
+      }
+
+      return component;
+    });
+  }
+
+  compileByName(name, parameters = {}) {
+    if (!this.nameRoutes[name]) {
+      throw Error(`Route Name "${name}" did not match Path.`);
     }
+
+    const toPath = pathToRegexp.compile(this.nameRoutes[name]);
+    return toPath(parameters);
+  }
+
+  normalizePathname(pathname) {
+    return pathname.split("?")[0].split("#")[0];
+  }
 }
 
-const routeMatcher = new RouteMatcher();
-
-export default routeMatcher;
+export default RouteMatcher;
