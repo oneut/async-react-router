@@ -1,18 +1,19 @@
 {
   "presets": [
-    "es2015",
-    "stage-1",
-    "react"
+    "@babel/preset-env",
+    "@babel/preset-react"
   ],
-  "ignore": "test.js",
+  "ignore": [
+    "test.js"
+  ],
   "env": {
     "development": {
       "sourceMaps": "inline"
+    },
+    "test": {
+      "plugins": [
+        "istanbul"
+      ]
     }
-  },
-  "plugins": [
-    "transform-async-to-generator",
-    "transform-decorators-legacy",
-    "transform-runtime"
-  ]
+  }
 }

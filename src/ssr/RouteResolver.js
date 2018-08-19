@@ -1,41 +1,58 @@
-import HistoryManager from "../lib/HistoryManager";
 import React from "react";
-import RouteMatcher from "../lib/RouteMatcher";
 import RouteNormalizer from "../lib/RouteNormalizer";
 import createMemoryHistory from "history/createMemoryHistory";
 
 export default class RouteResolver {
-    constructor(route) {
-        HistoryManager.initialHistory(createMemoryHistory());
+  constructor(historyManager, routeMatcher, route) {
+    this.historyManager = historyManager;
+    this.historyManager.initialHistory(createMemoryHistory());
 
-        RouteMatcher.init();
+    this.routeMatcher = routeMatcher;
 
-        this.addRoute(route);
-    }
+    this.addRoute(route);
+  }
 
-    static make(route) {
-        return new RouteResolver(route);
-    }
+  make(route) {
+    return new RouteResolver(this.historyManager, this.routeMatcher, route);
+  }
 
-    /**
-     * Compile component.
-     */
-    async resolve(pathname, callback) {
-        const renderer = RouteMatcher.fetchRenderer(pathname).getRenderer();
-        await renderer.fireGetInitialProps();
-        renderer.fireInitialPropsStoreHook();
-
-        const data = renderer.getInitialProps();
-        callback(React.createElement(renderer.getComponent(), renderer.getComponentProps()), data);
-    }
-
-    /**
-     * Add route.
-     */
-    addRoute(route) {
-        const normalizedRoutes = RouteNormalizer.make().addRoute(route).get();
-        normalizedRoutes.map((route) => {
-            RouteMatcher.addRoute(route.normalizedPath, route.component, route.name);
+  /**
+   * Compile component.
+   */
+  resolve(pathname, callback) {
+    return this.routeMatcher
+      .fetchRenderer(pathname)
+      .then((resolvedFetchRenderer) => {
+        const renderer = resolvedFetchRenderer.getRenderer();
+        return renderer.fireGetInitialProps().then(() => {
+          return renderer;
         });
-    }
+      })
+      .then((renderer) => {
+        const data = renderer.getInitialProps();
+        callback(
+          React.createElement(
+            renderer.getComponent(),
+            renderer.getComponentProps()
+          ),
+          data
+        );
+      });
+  }
+
+  /**
+   * Add route.
+   */
+  addRoute(route) {
+    const normalizedRoutes = RouteNormalizer.make()
+      .addRoute(route)
+      .get();
+    normalizedRoutes.map((route) => {
+      this.routeMatcher.addRoute(
+        route.normalizedPath,
+        route.component,
+        route.name
+      );
+    });
+  }
 }

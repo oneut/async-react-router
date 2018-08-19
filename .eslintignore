@@ -1,8 +1,8 @@
 .nyc_output
 build
 coverage
-docs
-examples
-lib
 node_modules
-ssr
+./docs
+./examples
+./lib
+./ssr

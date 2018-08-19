@@ -1,20 +1,37 @@
-import HistoryManager from "../lib/HistoryManager";
-import RouteMatcher from "../lib/RouteMatcher";
 import RouterBase from "../lib/Router";
 import React from "react";
+import { createBrowserHistory } from "history";
 
-export default class Router extends RouterBase {
-    getHistory() {
-        return !!this.props.history ? this.props.history : require("history").createBrowserHistory();
-    }
-
-    componentWillMount() {
-        const location = HistoryManager.getLocation();
-        const renderer = RouteMatcher.fetchRenderer(location.pathname).getRenderer();
+class Router extends RouterBase {
+  componentWillMount() {
+    const location = this.props.historyManager.getLocation();
+    this.props.routeMatcher
+      .fetchRenderer(location.pathname)
+      .then((routeMatcher) => {
+        const renderer = routeMatcher.getRenderer();
         if (renderer) {
-            renderer.setInitialProps(this.props.firstRenderedInitialProps);
-            renderer.fireInitialPropsStoreHook();
-            this.setComponent(React.createElement(renderer.getComponent(), {...renderer.getComponentProps(), ...this.props}));
+          renderer.setInitialProps(this.props.firstRenderedInitialProps);
+          this.setComponent(
+            React.createElement(renderer.getComponent(), {
+              ...renderer.getComponentProps(),
+              ...this.props
+            })
+          );
         }
-    }
+      });
+  }
+}
+
+export function createRouter(historyManager, routeMatcher) {
+  return (props) => {
+    const history = createBrowserHistory();
+    return (
+      <Router
+        history={history}
+        historyManager={historyManager}
+        routeMatcher={routeMatcher}
+        {...props}
+      />
+    );
+  };
 }
