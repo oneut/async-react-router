@@ -11,7 +11,9 @@
     "lint:fix": "eslint --fix ./src ./test",
     "prepublish": "npm run build",
     "test": "nyc ava --verbose",
-    "report": "nyc report --reporter=html"
+    "report": "nyc report --reporter=html",
+    "precommit": "npm run lint",
+    "prepush": "npm run lint && run test"
   },
   "files": [
     "lib",
@@ -46,6 +48,7 @@
     "eslint-config-prettier": "^3.0.1",
     "eslint-plugin-import": "^2.13.0",
     "eslint-plugin-prettier": "^2.6.2",
+    "husky": "^0.14.3",
     "nyc": "^12.0.2",
     "prettier": "1.14.2",
     "react": "^16.4.2",
