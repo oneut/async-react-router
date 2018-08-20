@@ -3,9 +3,14 @@ import Renderer from "./Renderer";
 
 class RouteMatcher {
   constructor() {
+    this.init();
+  }
+
+  init() {
     this.routes = [];
     this.nameRoutes = {};
     this.renderer = null;
+    return this;
   }
 
   addRoute(path, component, name, isAsync) {

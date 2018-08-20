@@ -9,7 +9,7 @@ export default class RouteResolver {
 
     this.routeMatcher = routeMatcher;
 
-    this.addRoute(route);
+    this.initRouteMatcher(route);
   }
 
   make(route) {
@@ -40,10 +40,9 @@ export default class RouteResolver {
       });
   }
 
-  /**
-   * Add route.
-   */
-  addRoute(route) {
+  initRouteMatcher(route) {
+    this.routeMatcher.init();
+
     const normalizedRoutes = RouteNormalizer.make()
       .addRoute(route)
       .get();

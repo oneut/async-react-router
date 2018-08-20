@@ -65,6 +65,8 @@ export default class Router extends React.Component {
   }
 
   initRouteMatcher(routeMatcher, routes) {
+    routeMatcher.init();
+
     // Settings Routes.
     const normalizedRoutes = RouteNormalizer.make()
       .addRoutes(routes)
