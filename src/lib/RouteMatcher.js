@@ -3,7 +3,7 @@ import Renderer from "./Renderer";
 
 class RouteMatcher {
   constructor() {
-    this.init()
+    this.init();
   }
 
   init() {
