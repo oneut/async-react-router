@@ -13,7 +13,7 @@
     "test": "nyc ava --verbose",
     "report": "nyc report --reporter=html",
     "precommit": "npm run lint",
-    "prepush": "npm run lint && run test"
+    "prepush": "npm run lint && npm test"
   },
   "files": [
     "lib",
