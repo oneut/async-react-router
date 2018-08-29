@@ -12,7 +12,7 @@ class Request {
   }
 
   name(name, parameters = {}) {
-    this.historyManager.pushName(name, parameters);
+    this.historyManager.pushByName(name, parameters);
   }
 
   isActive(pathname) {

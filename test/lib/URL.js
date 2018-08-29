@@ -1,7 +1,7 @@
 import test from "ava";
 import URL from "../../src/lib/URL";
 
-test("to", async (t) => {
+test("to", (t) => {
   class HistoryManagerMock {
     createHref(pathname) {
       t.is(pathname, "/test");
@@ -14,7 +14,7 @@ test("to", async (t) => {
   t.is(url.to("/test"), "/test");
 });
 
-test("name", async (t) => {
+test("name", (t) => {
   class HistoryManagerMock {
     createHrefByName(name, parameter) {
       t.is(name, "test");
@@ -29,7 +29,7 @@ test("name", async (t) => {
   t.plan(3);
 });
 
-test("name without parameter", async (t) => {
+test("name without parameter", (t) => {
   class HistoryManagerMock {
     createHrefByName(name, parameters) {
       t.is(name, "test");

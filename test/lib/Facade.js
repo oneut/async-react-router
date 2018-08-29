@@ -1,7 +1,4 @@
 import test from "ava";
-import browserEnv from "browser-env";
-
-browserEnv();
 
 test.serial("Get object", (t) => {
   const facade = require("../../src/lib/Facade");

@@ -2,50 +2,59 @@ import test from "ava";
 import HistoryManager from "../../src/lib/HistoryManager";
 import createMemoryHistory from "history/createMemoryHistory";
 
-test.serial("push path", async (t) => {
+test("Push pathname", (t) => {
+  // Create history callback
   const historyCallBack = (pathname) => {
     t.is(pathname, "/test");
   };
 
+  // HistoryManager test
   const historyManager = new HistoryManager();
   historyManager.initialHistory(createMemoryHistory());
   historyManager.setRequestCallback(historyCallBack);
   historyManager.listen();
-  await historyManager.push("/test");
+
+  historyManager.push("/test");
 
   const location = historyManager.getLocation();
   t.is(location.pathname, "/test");
 });
 
-test.serial("push path by name", async (t) => {
+test("Push pathname by name", (t) => {
+  // Create mock
   class RouteMatcherMock {
     compileByName(name, parameters = {}) {
       return "/test/1";
     }
   }
 
+  // Create history callback
   const historyCallBack = (pathname) => {
     t.is(pathname, "/test/1");
   };
 
+  // HistoryManager test
   const historyManager = new HistoryManager();
   historyManager.initialHistory(createMemoryHistory());
   historyManager.initialRouteMatcher(new RouteMatcherMock());
   historyManager.setRequestCallback(historyCallBack);
   historyManager.listen();
-  await historyManager.pushByName("Test", { test: 1 });
+
+  historyManager.pushByName("Test", { test: 1 });
 
   const location = historyManager.getLocation();
   t.is(location.pathname, "/test/1");
 });
 
-test.serial("create path", (t) => {
+test("Create pathname", (t) => {
+  // HistoryManager test
   const historyManager = new HistoryManager();
   historyManager.initialHistory(createMemoryHistory());
   t.is(historyManager.createHref("/create_href"), "/create_href");
 });
 
-test.serial("listen silent", async (t) => {
+test("listen silent", (t) => {
+  // Create history callback
   const historyCallBack = (pathname) => {
     t.fail();
   };
@@ -54,6 +63,7 @@ test.serial("listen silent", async (t) => {
     pathname: "/test"
   };
 
+  // HistoryManager test
   const historyManager = new HistoryManager();
   historyManager.setRequestCallback(historyCallBack);
   historyManager.changeSilent();
@@ -61,7 +71,7 @@ test.serial("listen silent", async (t) => {
   t.pass();
 });
 
-test.serial("listen unsilent", async (t) => {
+test("listen unsilent", (t) => {
   const historyCallBack = (pathname) => {
     t.is(pathname, "/unsilent");
   };
@@ -77,7 +87,7 @@ test.serial("listen unsilent", async (t) => {
   historyManager.listenCallback(location);
 });
 
-test.serial("create path by name", (t) => {
+test("Create path by name", (t) => {
   class RouteMatcherMock {
     compileByName(name, parameters = {}) {
       t.is(name, "create_href_by_name");

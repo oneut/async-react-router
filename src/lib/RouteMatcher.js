@@ -20,11 +20,7 @@ class RouteMatcher {
     }
   }
 
-  getRenderer() {
-    return this.renderer;
-  }
-
-  fetchRenderer(pathname) {
+  createRenderer(pathname) {
     const normalizedPathname = this.normalizePathname(pathname);
     for (let i = 0; this.routes.length > i; i++) {
       let keys = [];
@@ -49,12 +45,13 @@ class RouteMatcher {
           params,
           this.renderer
         );
-        return this;
+
+        return this.renderer;
       });
     }
 
     this.renderer = null;
-    return Promise.resolve(this);
+    return Promise.resolve(this.renderer);
   }
 
   resolveComponent(route) {
