@@ -1,120 +1,34 @@
 import React from "react";
-import RouteNormalizer from "./RouteNormalizer";
-import { Subject } from "rxjs";
-import { switchMap } from "rxjs/operators";
-import { createHashHistory } from "history";
+import RootComponent from "./RootComponent";
 
-export default class Router extends React.Component {
-  constructor(props) {
-    super(props);
-
-    this.state = {
-      component: null
-    };
-
-    this.stream = null;
-
-    // Settings HistoryManager.
-    this.initHistory(props.historyManager);
-
-    // Settings RxJS Stream.
-    this.initStream();
-
-    this.initRouteMatcher(props.routeMatcher, props.children);
+export default class Router {
+  constructor(connector) {
+    this.connector = connector;
   }
 
-  initHistory(historyManager) {
-    historyManager.initialHistory(this.props.history);
-    historyManager.setRequestCallback(this.request.bind(this));
-    historyManager.listen();
+  route(path, component, name) {
+    this.connector.routeMatcher.addRoute(path, component, name, false);
   }
 
-  initStream() {
-    this.stream = new Subject();
-    this.stream
-      .pipe(switchMap((pathname) => this.renderer(pathname)))
-      .subscribe((component) => this.setComponent(component));
+  asyncRoute(path, component, name) {
+    this.connector.routeMatcher.addRoute(path, component, name, true);
   }
 
-  renderer(pathname) {
-    return this.props.routeMatcher
-      .fetchRenderer(pathname)
-      .then((resolvedFetchRenderer) => {
-        const renderer = resolvedFetchRenderer.getRenderer();
+  setFirstComponent(component) {
+    this.connector.componentResolver.setComponent(component);
+  }
 
-        if (!!renderer) {
-          renderer.fireInitialPropsWillGet();
-          return renderer.fireGetInitialProps().then(() => {
-            return renderer;
-          });
-        }
+  run(callback) {
+    // Request current route component.
+    const location = this.connector.historyManager.getLocation();
+    this.connector.request(location.pathname);
 
-        return null;
-      })
-      .then((renderer) => {
-        if (!renderer) {
-          return null;
-        }
-
-        renderer.fireInitialPropsDidGet();
-        return React.createElement(renderer.getComponent(), {
-          ...renderer.getComponentProps(),
-          ...this.props
-        });
+    // Create root component.
+    callback((props) => {
+      return React.createElement(RootComponent, {
+        connector: this.connector,
+        ...props
       });
-  }
-
-  initRouteMatcher(routeMatcher, routes) {
-    routeMatcher.init();
-
-    // Settings Routes.
-    const normalizedRoutes = RouteNormalizer.make()
-      .addRoutes(routes)
-      .get();
-    normalizedRoutes.map((route) => {
-      routeMatcher.addRoute(
-        route.normalizedPath,
-        route.component,
-        route.name,
-        !!route.isAsync
-      );
     });
   }
-
-  componentWillMount() {
-    const location = this.props.historyManager.getLocation();
-    this.stream.next(location.pathname);
-  }
-
-  request(pathname) {
-    this.stream.next(pathname);
-  }
-
-  setComponent(component) {
-    this.setState({
-      component: component
-    });
-  }
-
-  /**
-   * Render the matching route.
-   */
-
-  render() {
-    return this.state.component;
-  }
-}
-
-export function createRouter(historyManager, routeMatcher) {
-  return (props) => {
-    const history = createHashHistory();
-    return (
-      <Router
-        history={history}
-        historyManager={historyManager}
-        routeMatcher={routeMatcher}
-        {...props}
-      />
-    );
-  };
 }

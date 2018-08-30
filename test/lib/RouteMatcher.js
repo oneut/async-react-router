@@ -29,7 +29,7 @@ test("Add Route with url params", (t) => {
   t.is(routeMatcher.nameRoutes["test"], "/Test/:id");
 });
 
-test("Fetch renderer on index", async (t) => {
+test.serial("Fetch renderer on index", async (t) => {
   class TestComponent extends React.Component {
     render() {
       return <div>Hello, World</div>;
@@ -38,13 +38,13 @@ test("Fetch renderer on index", async (t) => {
 
   const routeMatcher = new RouteMatcher();
   routeMatcher.addRoute("/index", TestComponent);
-  const renderer = (await routeMatcher.fetchRenderer("/index")).getRenderer();
+  const renderer = await routeMatcher.createRenderer("/index");
   const prams = renderer.getProps().params;
   t.is(renderer.getComponent(), TestComponent);
   t.true(Object.keys(prams).length === 0 && typeof prams === "object");
 });
 
-test("Fetch renderer on show", async (t) => {
+test.serial("Fetch renderer on show", async (t) => {
   class TestComponent extends React.Component {
     render() {
       return <div>Hello, World</div>;
@@ -53,13 +53,13 @@ test("Fetch renderer on show", async (t) => {
 
   const routeMatcher = new RouteMatcher();
   routeMatcher.addRoute("/show/:id", TestComponent);
-  const renderer = (await routeMatcher.fetchRenderer("/show/1")).getRenderer();
+  const renderer = await routeMatcher.createRenderer("/show/1");
   const prams = renderer.getProps().params;
   t.is(renderer.getComponent(), TestComponent);
   t.is(prams.id, 1);
 });
 
-test("Fetch renderer with int params", async (t) => {
+test.serial("Fetch renderer with int params", async (t) => {
   class TestComponent extends React.Component {
     render() {
       return <div>Hello, World</div>;
@@ -68,13 +68,13 @@ test("Fetch renderer with int params", async (t) => {
 
   const routeMatcher = new RouteMatcher();
   routeMatcher.addRoute("/show/:id", TestComponent);
-  const renderer = (await routeMatcher.fetchRenderer("/show/1")).getRenderer();
+  const renderer = await routeMatcher.createRenderer("/show/1");
   const prams = renderer.getProps().params;
   t.is(renderer.getComponent(), TestComponent);
   t.is(prams.id, 1);
 });
 
-test("Fetch renderer with string params", async (t) => {
+test.serial("Fetch renderer with string params", async (t) => {
   class TestComponent extends React.Component {
     render() {
       return <div>Hello, World</div>;
@@ -83,15 +83,13 @@ test("Fetch renderer with string params", async (t) => {
 
   const routeMatcher = new RouteMatcher();
   routeMatcher.addRoute("/string/:name", TestComponent);
-  const renderer = (await routeMatcher.fetchRenderer(
-    "/string/name"
-  )).getRenderer();
+  const renderer = await routeMatcher.createRenderer("/string/name");
   const prams = renderer.getProps().params;
   t.is(renderer.getComponent(), TestComponent);
   t.is(prams.name, "name");
 });
 
-test("Fetch renderer on not found", async (t) => {
+test.serial("Fetch renderer on not found", async (t) => {
   class TestComponent extends React.Component {
     render() {
       return <div>Hello, World</div>;
@@ -100,13 +98,11 @@ test("Fetch renderer on not found", async (t) => {
 
   const routeMatcher = new RouteMatcher();
   routeMatcher.addRoute("/show/:id", TestComponent);
-  const renderer = (await routeMatcher.fetchRenderer(
-    "/show/1/test"
-  )).getRenderer();
+  const renderer = await routeMatcher.createRenderer("/show/1/test");
   t.is(renderer, null);
 });
 
-test("Fetch renderer with __esModule on dynamic imports", async (t) => {
+test.serial("Fetch renderer with __esModule on dynamic imports", async (t) => {
   class EsModuleComponent extends React.Component {
     render() {
       return <div>Hello, esModule.</div>;
@@ -124,38 +120,37 @@ test("Fetch renderer with __esModule on dynamic imports", async (t) => {
 
   const routeMatcher = new RouteMatcher();
   routeMatcher.addRoute("/esmodule", importMock, "esmodule", true);
-  const renderer = (await routeMatcher.fetchRenderer(
-    "/esmodule"
-  )).getRenderer();
+  const renderer = await routeMatcher.createRenderer("/esmodule");
   const prams = renderer.getProps().params;
   t.is(renderer.getComponent(), EsModuleComponent);
   t.true(Object.keys(prams).length === 0 && typeof prams === "object");
 });
 
-test("Fetch renderer without __esModule on dynamic imports", async (t) => {
-  class EsModuleComponent extends React.Component {
-    render() {
-      return <div>Hello, esModule.</div>;
+test.serial(
+  "Fetch renderer without __esModule on dynamic imports",
+  async (t) => {
+    class EsModuleComponent extends React.Component {
+      render() {
+        return <div>Hello, esModule.</div>;
+      }
     }
+
+    function importMock() {
+      return new Promise((resolve) => {
+        resolve(EsModuleComponent);
+      });
+    }
+
+    const routeMatcher = new RouteMatcher();
+    routeMatcher.addRoute("/unesmodule", importMock, "unesmodule", true);
+    const renderer = await routeMatcher.createRenderer("/unesmodule");
+    const prams = renderer.getProps().params;
+    t.is(renderer.getComponent(), EsModuleComponent);
+    t.true(Object.keys(prams).length === 0 && typeof prams === "object");
   }
+);
 
-  function importMock() {
-    return new Promise((resolve) => {
-      resolve(EsModuleComponent);
-    });
-  }
-
-  const routeMatcher = new RouteMatcher();
-  routeMatcher.addRoute("/unesmodule", importMock, "unesmodule", true);
-  const renderer = (await routeMatcher.fetchRenderer(
-    "/unesmodule"
-  )).getRenderer();
-  const prams = renderer.getProps().params;
-  t.is(renderer.getComponent(), EsModuleComponent);
-  t.true(Object.keys(prams).length === 0 && typeof prams === "object");
-});
-
-test("Compile by name", (t) => {
+test.serial("Compile by name", (t) => {
   class TestComponent extends React.Component {
     render() {
       return <div>Hello, World</div>;

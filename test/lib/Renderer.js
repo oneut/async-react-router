@@ -3,6 +3,7 @@ import React from "react";
 import Renderer from "../../src/lib/Renderer";
 
 test("Get default data", async (t) => {
+  // Create test component
   class Component extends React.Component {
     static async getInitialProps(props, prevProps) {
       return {
@@ -23,13 +24,13 @@ test("Get default data", async (t) => {
   };
   const renderer = new Renderer(pathname, component, params);
 
-  // Renderer Setup. Important to the order!.
   t.is(renderer.getPathname(), pathname);
   t.is(renderer.getComponent(), component);
   t.is(renderer.getParams().parameter1, params.parameter1);
 });
 
 test("Fire component method", async (t) => {
+  // Create test component
   class PrevComponent extends React.Component {
     static async getInitialProps() {
       return {
@@ -104,6 +105,7 @@ test("Fire component method", async (t) => {
 });
 
 test("Get initial props", async (t) => {
+  // Create test component
   class Component extends React.Component {
     static async getInitialProps(props, prevProps) {
       return {
@@ -128,6 +130,7 @@ test("Get initial props", async (t) => {
 });
 
 test("Get initial props with undefined", async (t) => {
+  // Create test component
   class Component extends React.Component {
     static async getInitialProps(props, prevProps) {
       return undefined;
@@ -153,6 +156,7 @@ test("Get initial props with undefined", async (t) => {
 });
 
 test("Get initial props without `getInitialProps`", async (t) => {
+  // Create test component
   class Component extends React.Component {
     render() {
       return <div>Hello, World</div>;
@@ -174,6 +178,7 @@ test("Get initial props without `getInitialProps`", async (t) => {
 });
 
 test("setInitialProps args set object.", async (t) => {
+  // Create test component
   class Component extends React.Component {
     render() {
       return <div>Hello, World</div>;
@@ -198,6 +203,7 @@ test("setInitialProps args set object.", async (t) => {
 });
 
 test("setInitialProps args set `null`", (t) => {
+  // Create test component
   class Component extends React.Component {
     render() {
       return <div>Hello, World</div>;
@@ -220,6 +226,7 @@ test("setInitialProps args set `null`", (t) => {
 });
 
 test("getPrevComponentProps", (t) => {
+  // Create test component
   class PrevComponent extends React.Component {
     render() {
       return <div>Hello, Prev World</div>;
@@ -259,6 +266,7 @@ test("getPrevComponentProps", (t) => {
 });
 
 test("getPrevComponentProps of no having PrevRender", (t) => {
+  // Create test component
   class Component extends React.Component {
     render() {
       return <div>Hello, World</div>;

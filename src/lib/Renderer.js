@@ -46,12 +46,14 @@ export default class Renderer {
     if (this.isFunction(this.component.initialPropsWillGet)) {
       this.component.initialPropsWillGet(this.getProps(), this.getPrevProps());
     }
+
+    return this;
   }
 
   fireGetInitialProps() {
     if (!this.isFunction(this.component.getInitialProps)) {
       this.data = {};
-      return Promise.resolve();
+      return Promise.resolve(this);
     }
 
     return Promise.resolve(
@@ -59,9 +61,10 @@ export default class Renderer {
     ).then((params) => {
       if (!!params) {
         this.data = params;
-        return;
+        return this;
       }
       this.data = {};
+      return this;
     });
   }
 
@@ -76,6 +79,8 @@ export default class Renderer {
         this.getPrevComponentProps()
       );
     }
+
+    return this;
   }
 
   isFunction(func) {
@@ -86,7 +91,7 @@ export default class Renderer {
   setInitialProps(data) {
     if (!data) {
       this.data = {};
-      return;
+      return this;
     }
 
     this.data = data;

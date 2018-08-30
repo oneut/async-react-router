@@ -1,17 +1,12 @@
 export default class HistoryManager {
   constructor() {
     this.history = null;
-    this.routeMatcher = null;
     this.requestCallback = null;
     this.silent = false;
   }
 
-  initialHistory(history) {
+  setHistory(history) {
     this.history = history;
-  }
-
-  initialRouteMatcher(routeMatcher) {
-    this.routeMatcher = routeMatcher;
   }
 
   setRequestCallback(requestCallback) {
@@ -41,17 +36,8 @@ export default class HistoryManager {
     this.changeUnsilent();
   }
 
-  pushByName(name, parameters) {
-    this.push(this.routeMatcher.compileByName(name, parameters));
-  }
-
   createHref(pathname) {
     return this.history.createHref({ pathname });
-  }
-
-  createHrefByName(name, parameters) {
-    const pathname = this.routeMatcher.compileByName(name, parameters);
-    return this.createHref(pathname);
   }
 
   getLocation() {

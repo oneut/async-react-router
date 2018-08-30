@@ -1,9 +1,18 @@
-import RouteResolver from "./RouteResolver";
-import { createRouter } from "./Router";
-import { routeMatcher, historyManager } from "../lib/Facade";
+import ServerRouter from "./ServerRouter";
+import Router from "./Router";
+import { connector } from "../lib/Facade";
+import { createBrowserHistory, createMemoryHistory } from "history";
 
-const router = createRouter(historyManager, routeMatcher);
+function createRouter() {
+  // Settings HistoryManager.
+  return new Router(connector.newInitializedInstance(createBrowserHistory()));
+}
 
-const routeResolver = new RouteResolver(historyManager, routeMatcher);
+function createServerRouter() {
+  // Must define history. Because history is used in Request, URL, etc..
+  connector.initHistory(createMemoryHistory());
+  connector.initRouteMatcher();
+  return new ServerRouter(connector.routeMatcher);
+}
 
-export { router as Router, routeResolver as RouteResolver };
+export { createRouter, createServerRouter };
