@@ -49,8 +49,6 @@ test.cb("Index route", (t) => {
   router.route("/", IndexPage);
   router.setInitialProps({ message: "first rendering data" });
   router.run(async (RootComponent) => {
-    // The Router use RxJS to control async/await.
-    // So, First Mount is null.
     const actual = mount(React.createElement(RootComponent));
     const expected = mount(
       React.createElement(IndexPage, { message: "first rendering data" })
@@ -175,8 +173,8 @@ test.cb("Async route", (t) => {
   );
   const router = new Router(initializedConnector);
 
-  // Use promise instead of dynamic import
   router.setInitialProps({ message: "dynamic import" });
+  // Use promise instead of dynamic import
   router.asyncRoute("/", () => Promise.resolve(DynamicImportComponent));
   router.run((RootComponent) => {
     const actual = mount(<RootComponent />);

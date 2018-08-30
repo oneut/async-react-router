@@ -33,8 +33,6 @@ test.cb("Index route", (t) => {
 
   t.context.router.route("/", IndexPage);
   t.context.router.runUsingPathname("/", (RootComponent) => {
-    // The Router use RxJS to control async/await.
-    // So, First Mount is null.
     const actual = mount(React.createElement(RootComponent));
     const expected = mount(
       React.createElement(IndexPage, { message: "world" })

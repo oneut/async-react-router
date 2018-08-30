@@ -141,7 +141,6 @@ test.cb("First rendering", (t) => {
   );
   const router = new Router(initializedConnector);
 
-  // Location Settings
   router.route("/", IndexPage);
   router.run(async (RootComponent) => {
     // The Router use RxJS to control async/await.
@@ -205,7 +204,6 @@ test.cb("Next rendering from Request `to`", (t) => {
   );
   const router = new Router(initializedConnector);
 
-  // Location Settings
   router.route("/", IndexPage);
   router.route("/next", NextPage);
   router.run(async (RootComponent) => {
@@ -329,7 +327,7 @@ test.cb("Set first component", (t) => {
     }
 
     render() {
-      return <div>Hello, {this.props.name}</div>;
+      return <div>Hello, {this.props.message}</div>;
     }
   }
 
