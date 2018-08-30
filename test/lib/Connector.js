@@ -1,6 +1,5 @@
 import React from "react";
 import test from "ava";
-import { mount } from "enzyme";
 import createMemoryHistory from "history/createMemoryHistory";
 import Connector from "../../src/lib/Connector";
 import RouteMatcher from "../../src/lib/RouteMatcher";
@@ -15,98 +14,62 @@ class IndexPage extends React.Component {
 test.beforeEach((t) => {
   t.context.routeMatcher = new RouteMatcher();
   t.context.historyManager = new HistoryManager();
-  t.context.historyManager.initialRouteMatcher(t.context.routeMatcher);
-  t.context.routeMatcher.addRoute("/", IndexPage);
 });
 
 test.serial("Unregistered subscribe", (t) => {
-  // Set history
-  t.context.historyManager.initialHistory(createMemoryHistory());
-
-  // Connector test
+  // Create Connector object
   const connector = new Connector(
     t.context.historyManager,
     t.context.routeMatcher
   );
-  t.context.historyManager.push("/");
+
+  // Create initialized connector
+  const initializedConnector = connector.newInitializedInstance(
+    createMemoryHistory()
+  );
   t.notThrows(() => {
-    connector.onStateChange();
+    initializedConnector.onStateChange();
   });
 });
 
 test.cb("Subscribe", (t) => {
-  // Set history
-  t.context.historyManager.initialHistory(createMemoryHistory());
-
-  // Connector test
+  // Create Connector object
   const connector = new Connector(
     t.context.historyManager,
     t.context.routeMatcher
   );
-  connector.subscribe(() => {
+
+  // Create initialized connector
+  const initializedConnector = connector.newInitializedInstance(
+    createMemoryHistory()
+  );
+
+  initializedConnector.subscribe(() => {
     t.pass();
     t.end();
   });
 
-  connector.onStateChange();
+  initializedConnector.onStateChange();
 });
 
 test.cb("Request", (t) => {
-  // Set history
-  t.context.historyManager.initialHistory(createMemoryHistory());
-
-  // Connector test
+  // Create Connector object
   const connector = new Connector(
     t.context.historyManager,
     t.context.routeMatcher
   );
-  connector.subscribe(() => {
+
+  // Create initialized connector
+  const initializedConnector = connector.newInitializedInstance(
+    createMemoryHistory()
+  );
+
+  // Add route after initializing Route Matcher
+  t.context.routeMatcher.addRoute("/", IndexPage);
+
+  initializedConnector.subscribe(() => {
     t.pass();
     t.end();
   });
-  connector.request("/");
-});
-
-test("Set/Get component", (t) => {
-  // Set history
-  t.context.historyManager.initialHistory(createMemoryHistory());
-
-  // Create test component
-  class FirstPage extends React.Component {
-    render() {
-      return <div>First Page</div>;
-    }
-  }
-
-  // Connector test
-  const connector = new Connector(
-    t.context.historyManager,
-    t.context.routeMatcher
-  );
-  connector.componentResolver.setComponent(FirstPage);
-
-  const actual = mount(
-    React.createElement(connector.componentResolver.getComponent())
-  );
-  const expected = mount(React.createElement(FirstPage));
-  t.is(actual.html(), expected.html());
-});
-
-test.serial("Set component from renderer", async (t) => {
-  // Set history
-  t.context.historyManager.initialHistory(createMemoryHistory());
-
-  // Connector test
-  const connector = new Connector(
-    t.context.historyManager,
-    t.context.routeMatcher
-  );
-  const renderer = await t.context.routeMatcher.createRenderer("/");
-  connector.componentResolver.setComponentFromRenderer(renderer);
-
-  const actual = mount(
-    React.createElement(connector.componentResolver.getComponent())
-  );
-  const expected = mount(React.createElement(IndexPage));
-  t.is(actual.html(), expected.html());
+  initializedConnector.request("/");
 });

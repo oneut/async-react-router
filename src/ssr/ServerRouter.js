@@ -5,9 +5,7 @@ import ComponentResolver from "../lib/ComponentResolver";
 
 export default class ServerRouter {
   constructor(routeMatcher) {
-    this.history = null;
     this.routeMatcher = routeMatcher;
-    this.routeMatcher.init();
   }
 
   route(path, component, name) {

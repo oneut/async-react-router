@@ -7,25 +7,22 @@ import Request from "../../src/lib/Request";
 import RouteMatcher from "../../src/lib/RouteMatcher";
 import HistoryManager from "../../src/lib/HistoryManager";
 import { asyncFlush } from "../helpers/Utility";
+import Connector from "../../src/lib/Connector";
 
 test.beforeEach((t) => {
   const routeMatcher = new RouteMatcher();
-
   const historyManager = new HistoryManager();
-  historyManager.initialRouteMatcher(routeMatcher);
 
-  const request = new Request();
-  request.setHistoryManager(historyManager);
+  const connector = new Connector(historyManager, routeMatcher);
 
-  t.context.router = new Router(historyManager, routeMatcher);
+  const request = new Request(connector);
+
+  t.context.connector = connector;
   t.context.historyManager = historyManager;
   t.context.request = request;
 });
 
 test.cb("Match single route", (t) => {
-  // Location Settings
-  t.context.historyManager.initialHistory(createMemoryHistory());
-
   // Page Settings
   class IndexPage extends React.Component {
     render() {
@@ -33,8 +30,13 @@ test.cb("Match single route", (t) => {
     }
   }
 
-  t.context.router.route("/", IndexPage);
-  t.context.router.run(async (RootComponent) => {
+  const initializedConnector = t.context.connector.newInitializedInstance(
+    createMemoryHistory()
+  );
+  const router = new Router(initializedConnector);
+
+  router.route("/", IndexPage);
+  router.run(async (RootComponent) => {
     // The Router use RxJS to control async/await.
     // So, First Mount is null.
     const mountedActual = mount(<RootComponent />);
@@ -51,13 +53,6 @@ test.cb("Match single route", (t) => {
 });
 
 test.cb("Match multiple route", (t) => {
-  // Location Settings
-  t.context.historyManager.initialHistory(
-    createMemoryHistory({
-      initialEntries: ["/another"]
-    })
-  );
-
   // Page Settings
   class IndexPage extends React.Component {
     render() {
@@ -71,9 +66,16 @@ test.cb("Match multiple route", (t) => {
     }
   }
 
-  t.context.router.route("/", IndexPage);
-  t.context.router.route("/another", AnotherPage);
-  t.context.router.run(async (RootComponent) => {
+  const initializedConnector = t.context.connector.newInitializedInstance(
+    createMemoryHistory({
+      initialEntries: ["/another"]
+    })
+  );
+  const router = new Router(initializedConnector);
+
+  router.route("/", IndexPage);
+  router.route("/another", AnotherPage);
+  router.run(async (RootComponent) => {
     // The Router use RxJS to control async/await.
     // So, First Mount is null.
     const mountedActual = mount(<RootComponent />);
@@ -90,9 +92,12 @@ test.cb("Match multiple route", (t) => {
 });
 
 test.cb("Unmatch route", (t) => {
-  // Location Settings
-  t.context.historyManager.initialHistory(createMemoryHistory());
-  t.context.router.run(async (RootComponent) => {
+  const initializedConnector = t.context.connector.newInitializedInstance(
+    createMemoryHistory()
+  );
+  const router = new Router(initializedConnector);
+
+  router.run(async (RootComponent) => {
     // The Router use RxJS to control async/await.
     // So, First Mount is null.
     const mountedActual = mount(<RootComponent />);
@@ -109,8 +114,6 @@ test.cb("Unmatch route", (t) => {
 });
 
 test.cb("First rendering", (t) => {
-  t.context.historyManager.initialHistory(createMemoryHistory());
-
   // Page Settings
   class IndexPage extends React.Component {
     static initialPropsWillGet(props) {
@@ -133,9 +136,14 @@ test.cb("First rendering", (t) => {
     }
   }
 
+  const initializedConnector = t.context.connector.newInitializedInstance(
+    createMemoryHistory()
+  );
+  const router = new Router(initializedConnector);
+
   // Location Settings
-  t.context.router.route("/", IndexPage);
-  t.context.router.run(async (RootComponent) => {
+  router.route("/", IndexPage);
+  router.run(async (RootComponent) => {
     // The Router use RxJS to control async/await.
     // So, First Mount is null.
     const mountedActual = mount(<RootComponent />);
@@ -155,8 +163,6 @@ test.cb("First rendering", (t) => {
 });
 
 test.cb("Next rendering from Request `to`", (t) => {
-  t.context.historyManager.initialHistory(createMemoryHistory());
-
   // Page Settings
   class IndexPage extends React.Component {
     static async getInitialProps(props, prevProps) {
@@ -194,11 +200,15 @@ test.cb("Next rendering from Request `to`", (t) => {
     }
   }
 
-  // Location Settings
-  t.context.router.route("/", IndexPage);
-  t.context.router.route("/next", NextPage);
+  const initializedConnector = t.context.connector.newInitializedInstance(
+    createMemoryHistory()
+  );
+  const router = new Router(initializedConnector);
 
-  t.context.router.run(async (RootComponent) => {
+  // Location Settings
+  router.route("/", IndexPage);
+  router.route("/next", NextPage);
+  router.run(async (RootComponent) => {
     // The Router use RxJS to control async/await.
     // Test up to call renderer.
     const mountedActual = mount(<RootComponent />);
@@ -224,8 +234,6 @@ test.cb("Next rendering from Request `to`", (t) => {
 });
 
 test.cb("Router props", (t) => {
-  t.context.historyManager.initialHistory(createMemoryHistory());
-
   // Page Settings
   class IndexPage extends React.Component {
     render() {
@@ -242,8 +250,13 @@ test.cb("Router props", (t) => {
     }
   }
 
-  t.context.router.route("/", IndexPage);
-  t.context.router.run(async (RootComponent) => {
+  const initializedConnector = t.context.connector.newInitializedInstance(
+    createMemoryHistory()
+  );
+  const router = new Router(initializedConnector);
+
+  router.route("/", IndexPage);
+  router.run(async (RootComponent) => {
     // The Router use RxJS to control async/await.
     // So, First Rendering is null.
     const mountedActual = mount(
@@ -262,8 +275,6 @@ test.cb("Router props", (t) => {
 });
 
 test.cb("Async route", (t) => {
-  t.context.historyManager.initialHistory(createMemoryHistory());
-
   // Page Settings
   class DynamicImportComponent extends React.Component {
     static async getInitialProps(props, prevProps) {
@@ -277,11 +288,14 @@ test.cb("Async route", (t) => {
     }
   }
 
-  // Use promise instead of dynamic import
-  t.context.router.asyncRoute("/", () =>
-    Promise.resolve(DynamicImportComponent)
+  const initializedConnector = t.context.connector.newInitializedInstance(
+    createMemoryHistory()
   );
-  t.context.router.run(async (RootComponent) => {
+  const router = new Router(initializedConnector);
+
+  // Use promise instead of dynamic import
+  router.asyncRoute("/", () => Promise.resolve(DynamicImportComponent));
+  router.run(async (RootComponent) => {
     // The Router use RxJS to control async/await.
     // So, First Rendering is null.
     const mountedActual = mount(<RootComponent />);
@@ -300,8 +314,6 @@ test.cb("Async route", (t) => {
 });
 
 test.cb("Set first component", (t) => {
-  t.context.historyManager.initialHistory(createMemoryHistory());
-
   class FirstPage extends React.Component {
     render() {
       return <div>first page</div>;
@@ -321,9 +333,14 @@ test.cb("Set first component", (t) => {
     }
   }
 
-  t.context.router.setFirstComponent(FirstPage);
-  t.context.router.route("/", IndexPage);
-  t.context.router.run(async (RootComponent) => {
+  const initializedConnector = t.context.connector.newInitializedInstance(
+    createMemoryHistory()
+  );
+  const router = new Router(initializedConnector);
+
+  router.setFirstComponent(FirstPage);
+  router.route("/", IndexPage);
+  router.run(async (RootComponent) => {
     // The Router use RxJS to control async/await.
     // So, First Rendering is null.
     const mountedActual = mount(<RootComponent />);

@@ -1,17 +1,17 @@
 export default class URL {
-  constructor() {
-    this.historyManager = null;
-  }
-
-  setHistoryManager(historyManager) {
-    this.historyManager = historyManager;
+  constructor(connector) {
+    this.connector = connector;
   }
 
   to(pathname) {
-    return this.historyManager.createHref(pathname);
+    return this.connector.historyManager.createHref(pathname);
   }
 
   name(name, parameters = {}) {
-    return this.historyManager.createHrefByName(name, parameters);
+    const pathname = this.connector.routeMatcher.compileByName(
+      name,
+      parameters
+    );
+    return this.connector.historyManager.createHref(pathname);
   }
 }

@@ -4,24 +4,45 @@ import React from "react";
 import ComponentResolver from "./ComponentResolver";
 
 export default class Connector {
-  constructor(historyManager, routeMatcher) {
+  constructor(historyManager, routeMatcher, componentResolver = null) {
     this.stream = null;
     this.historyManager = historyManager;
     this.routeMatcher = routeMatcher;
+    this.componentResolver = componentResolver;
     this.onStateChange = () => {};
-
-    // Settings HistoryManager.
-    this.initHistory();
-
-    // Settings RxJS Stream.
-    this.initStream();
-
-    this.componentResolver = new ComponentResolver();
   }
 
-  initHistory() {
+  newInitializedInstance(history) {
+    const connector = new Connector(
+      this.historyManager,
+      this.routeMatcher,
+      new ComponentResolver()
+    );
+    connector.init(history);
+    return connector;
+  }
+
+  init(history) {
+    // Settings HistoryManager.
+    this.initHistory(history);
+
+    // Settings RxJS Stream.
+    this.initRouteMatcher();
+
+    // Initial RouteMatcher
+    this.initStream();
+
+    return this;
+  }
+
+  initHistory(history) {
+    this.historyManager.setHistory(history);
     this.historyManager.setRequestCallback(this.request.bind(this));
     this.historyManager.listen();
+  }
+
+  initRouteMatcher() {
+    this.routeMatcher.init();
   }
 
   initStream() {

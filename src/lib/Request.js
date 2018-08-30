@@ -1,22 +1,22 @@
 class Request {
-  constructor() {
-    this.historyManager = null;
-  }
-
-  setHistoryManager(historyManager) {
-    this.historyManager = historyManager;
+  constructor(connector) {
+    this.connector = connector;
   }
 
   to(to) {
-    this.historyManager.push(this.normarizeTo(to));
+    this.connector.historyManager.push(this.normarizeTo(to));
   }
 
   name(name, parameters = {}) {
-    this.historyManager.pushByName(name, parameters);
+    const pathname = this.connector.routeMatcher.compileByName(
+      name,
+      parameters
+    );
+    this.connector.historyManager.push(pathname);
   }
 
   isActive(pathname) {
-    const location = this.historyManager.getLocation();
+    const location = this.connector.historyManager.getLocation();
     return location.pathname === pathname;
   }
 

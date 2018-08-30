@@ -1,18 +1,18 @@
 import ServerRouter from "./ServerRouter";
 import Router from "./Router";
-import { routeMatcher, historyManager } from "../lib/Facade";
+import { connector } from "../lib/Facade";
 import { createBrowserHistory, createMemoryHistory } from "history";
 
 function createRouter() {
   // Settings HistoryManager.
-  historyManager.initialHistory(createBrowserHistory());
-  return new Router(historyManager, routeMatcher);
+  return new Router(connector.newInitializedInstance(createBrowserHistory()));
 }
 
 function createServerRouter() {
   // Must define history. Because history is used in Request, URL, etc..
-  historyManager.initialHistory(createMemoryHistory());
-  return new ServerRouter(routeMatcher);
+  connector.initHistory(createMemoryHistory());
+  connector.initRouteMatcher();
+  return new ServerRouter(connector.routeMatcher);
 }
 
 export { createRouter, createServerRouter };

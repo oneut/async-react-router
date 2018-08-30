@@ -1,18 +1,18 @@
 import test from "ava";
-const asyncReactRouter = require("../../src/lib");
+const lib = require("../../src/lib");
 
 test("Get object", (t) => {
-  t.true(!!asyncReactRouter.createRouter);
-  t.true(!!asyncReactRouter.createBrowserHistory());
-  t.true(!!asyncReactRouter.createHashHistory());
-  t.true(!!asyncReactRouter.createMemoryHistory());
-  t.true(!!asyncReactRouter.Link);
-  t.true(!!asyncReactRouter.Request);
-  t.true(!!asyncReactRouter.URL);
+  t.true(!!lib.createRouter);
+  t.true(!!lib.createBrowserHistory());
+  t.true(!!lib.createHashHistory());
+  t.true(!!lib.createMemoryHistory());
+  t.true(!!lib.Link);
+  t.true(!!lib.Request);
+  t.true(!!lib.URL);
 });
 
 test("Create router", (t) => {
-  const router = asyncReactRouter.createRouter();
+  const router = lib.createRouter();
   t.true(!!router.route);
   t.true(!!router.asyncRoute);
   t.true(!!router.run);

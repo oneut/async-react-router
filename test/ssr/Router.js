@@ -5,20 +5,18 @@ import createMemoryHistory from "history/createMemoryHistory";
 import Router from "../../src/ssr/Router";
 import RouteMatcher from "../../src/lib/RouteMatcher";
 import HistoryManager from "../../src/lib/HistoryManager";
+import Connector from "../../src/lib/Connector";
 
 test.beforeEach((t) => {
   const routeMatcher = new RouteMatcher();
-
   const historyManager = new HistoryManager();
-  historyManager.initialRouteMatcher(routeMatcher);
 
-  t.context.router = new Router(historyManager, routeMatcher);
-  t.context.historyManager = historyManager;
+  const connector = new Connector(historyManager, routeMatcher);
+
+  t.context.connector = connector;
 });
 
 test.cb("Index route", (t) => {
-  t.context.historyManager.initialHistory(createMemoryHistory());
-
   // Page Settings
   class IndexPage extends React.Component {
     static initialPropsWillGet() {
@@ -43,9 +41,14 @@ test.cb("Index route", (t) => {
     }
   }
 
-  t.context.router.route("/", IndexPage);
-  t.context.router.setInitialProps({ message: "first rendering data" });
-  t.context.router.run(async (RootComponent) => {
+  const initializedConnector = t.context.connector.newInitializedInstance(
+    createMemoryHistory()
+  );
+  const router = new Router(initializedConnector);
+
+  router.route("/", IndexPage);
+  router.setInitialProps({ message: "first rendering data" });
+  router.run(async (RootComponent) => {
     // The Router use RxJS to control async/await.
     // So, First Mount is null.
     const actual = mount(React.createElement(RootComponent));
@@ -58,8 +61,6 @@ test.cb("Index route", (t) => {
 });
 
 test.cb("Set initial props", (t) => {
-  t.context.historyManager.initialHistory(createMemoryHistory());
-
   // Page Settings
   class IndexPage extends React.Component {
     render() {
@@ -76,9 +77,14 @@ test.cb("Set initial props", (t) => {
     }
   }
 
-  t.context.router.route("/", IndexPage);
-  t.context.router.setInitialProps({ items: ["foo", "bar", "baz"] });
-  t.context.router.run(async (RootComponent) => {
+  const initializedConnector = t.context.connector.newInitializedInstance(
+    createMemoryHistory()
+  );
+  const router = new Router(initializedConnector);
+
+  router.route("/", IndexPage);
+  router.setInitialProps({ items: ["foo", "bar", "baz"] });
+  router.run(async (RootComponent) => {
     const actual = mount(React.createElement(RootComponent));
     const expected = mount(
       React.createElement(IndexPage, { items: ["foo", "bar", "baz"] })
@@ -90,12 +96,6 @@ test.cb("Set initial props", (t) => {
 });
 
 test("No match route", (t) => {
-  t.context.historyManager.initialHistory(
-    createMemoryHistory({
-      initialEntries: ["/unmatch"]
-    })
-  );
-
   // Page Settings
   class IndexPage extends React.Component {
     render() {
@@ -107,8 +107,15 @@ test("No match route", (t) => {
     }
   }
 
-  t.context.router.route("/", IndexPage);
-  t.context.router.run(async (RootComponent) => {
+  const initializedConnector = t.context.connector.newInitializedInstance(
+    createMemoryHistory({
+      initialEntries: ["/unmatch"]
+    })
+  );
+  const router = new Router(initializedConnector);
+
+  router.route("/", IndexPage);
+  router.run(async (RootComponent) => {
     t.fail();
   });
 
@@ -116,12 +123,6 @@ test("No match route", (t) => {
 });
 
 test.cb("Not found page", (t) => {
-  t.context.historyManager.initialHistory(
-    createMemoryHistory({
-      initialEntries: ["/notfound"]
-    })
-  );
-
   // Page Settings
   class IndexPage extends React.Component {
     render() {
@@ -144,9 +145,16 @@ test.cb("Not found page", (t) => {
     }
   }
 
-  t.context.router.route("/", IndexPage);
-  t.context.router.route("(.*)", NotFoundPage);
-  t.context.router.run(async (RootComponent) => {
+  const initializedConnector = t.context.connector.newInitializedInstance(
+    createMemoryHistory({
+      initialEntries: ["/not-found"]
+    })
+  );
+  const router = new Router(initializedConnector);
+
+  router.route("/", IndexPage);
+  router.route("(.*)", NotFoundPage);
+  router.run(async (RootComponent) => {
     const actual = mount(React.createElement(RootComponent));
     const expected = mount(React.createElement(NotFoundPage));
     t.is(actual.html(), expected.html());
@@ -155,8 +163,6 @@ test.cb("Not found page", (t) => {
 });
 
 test.cb("Async route", (t) => {
-  t.context.historyManager.initialHistory(createMemoryHistory());
-
   // Page Settings
   class DynamicImportComponent extends React.Component {
     render() {
@@ -164,13 +170,15 @@ test.cb("Async route", (t) => {
     }
   }
 
-  // Use promise instead of dynamic import
-  t.context.router.setInitialProps({ message: "dynamic import" });
-  t.context.router.asyncRoute("/", () =>
-    Promise.resolve(DynamicImportComponent)
+  const initializedConnector = t.context.connector.newInitializedInstance(
+    createMemoryHistory()
   );
+  const router = new Router(initializedConnector);
 
-  t.context.router.run((RootComponent) => {
+  // Use promise instead of dynamic import
+  router.setInitialProps({ message: "dynamic import" });
+  router.asyncRoute("/", () => Promise.resolve(DynamicImportComponent));
+  router.run((RootComponent) => {
     const actual = mount(<RootComponent />);
     const expected = mount(
       <DynamicImportComponent message={"dynamic import"} />

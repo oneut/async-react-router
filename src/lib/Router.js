@@ -1,45 +1,32 @@
 import React from "react";
-import Connector from "./Connector";
 import RootComponent from "./RootComponent";
 
 export default class Router {
-  constructor(historyManager, routeMatcher) {
-    this.firstComponent = null;
-    this.historyManager = historyManager;
-    this.routeMatcher = routeMatcher;
-
-    this.routeMatcher.init();
+  constructor(connector) {
+    this.connector = connector;
   }
 
   route(path, component, name) {
-    this.routeMatcher.addRoute(path, component, name, false);
+    this.connector.routeMatcher.addRoute(path, component, name, false);
   }
 
   asyncRoute(path, component, name) {
-    this.routeMatcher.addRoute(path, component, name, true);
+    this.connector.routeMatcher.addRoute(path, component, name, true);
   }
 
   setFirstComponent(component) {
-    this.firstComponent = component;
+    this.connector.componentResolver.setComponent(component);
   }
 
   run(callback) {
-    const connector = new Connector(this.historyManager, this.routeMatcher);
-
-    // Set first rendered component
-    if (!!this.firstComponent) {
-      connector.componentResolver.setComponent(this.firstComponent);
-    }
-
     // Request current route component.
-    const location = this.historyManager.getLocation();
-
-    connector.request(location.pathname);
+    const location = this.connector.historyManager.getLocation();
+    this.connector.request(location.pathname);
 
     // Create root component.
     callback((props) => {
       return React.createElement(RootComponent, {
-        connector: connector,
+        connector: this.connector,
         ...props
       });
     });

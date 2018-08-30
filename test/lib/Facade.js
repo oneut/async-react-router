@@ -6,6 +6,5 @@ test.serial("Get object", (t) => {
   t.true(!!facade.Link);
   t.true(!!facade.Request);
   t.true(!!facade.URL);
-  t.true(!!facade.historyManager);
-  t.true(!!facade.routeMatcher);
+  t.true(!!facade.connector);
 });
