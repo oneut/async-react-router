@@ -22,98 +22,7 @@ test.beforeEach((t) => {
   t.context.request = request;
 });
 
-test.cb("Match single route", (t) => {
-  // Page Settings
-  class IndexPage extends React.Component {
-    render() {
-      return <div>Hello, World</div>;
-    }
-  }
-
-  const initializedConnector = t.context.connector.newInitializedInstance(
-    createMemoryHistory()
-  );
-  const router = new Router(initializedConnector);
-
-  router.route("/", IndexPage);
-  router.run(async (RootComponent) => {
-    // The Router use RxJS to control async/await.
-    // So, First Mount is null.
-    const mountedActual = mount(<RootComponent />);
-    t.is(mountedActual.html(), null);
-
-    // wait to resolve promise.
-    await asyncFlush();
-
-    mountedActual.update();
-    const expected = mount(<IndexPage />);
-    t.is(mountedActual.html(), expected.html());
-    t.end();
-  });
-});
-
-test.cb("Match multiple route", (t) => {
-  // Page Settings
-  class IndexPage extends React.Component {
-    render() {
-      return <div>Hello, World</div>;
-    }
-  }
-
-  class AnotherPage extends React.Component {
-    render() {
-      return <div>Nest Page</div>;
-    }
-  }
-
-  const initializedConnector = t.context.connector.newInitializedInstance(
-    createMemoryHistory({
-      initialEntries: ["/another"]
-    })
-  );
-  const router = new Router(initializedConnector);
-
-  router.route("/", IndexPage);
-  router.route("/another", AnotherPage);
-  router.run(async (RootComponent) => {
-    // The Router use RxJS to control async/await.
-    // So, First Mount is null.
-    const mountedActual = mount(<RootComponent />);
-    t.is(mountedActual.html(), null);
-
-    // wait to resolve promise.
-    await asyncFlush();
-
-    mountedActual.update();
-    const expected = mount(<AnotherPage />);
-    t.is(mountedActual.html(), expected.html());
-    t.end();
-  });
-});
-
-test.cb("Unmatch route", (t) => {
-  const initializedConnector = t.context.connector.newInitializedInstance(
-    createMemoryHistory()
-  );
-  const router = new Router(initializedConnector);
-
-  router.run(async (RootComponent) => {
-    // The Router use RxJS to control async/await.
-    // So, First Mount is null.
-    const mountedActual = mount(<RootComponent />);
-    t.is(mountedActual.html(), null);
-
-    // wait to resolve promise.
-    await asyncFlush();
-
-    // renderer from componentWillMount
-    await mountedActual.update();
-    t.is(mountedActual.html(), null);
-    t.end();
-  });
-});
-
-test.cb("First rendering", (t) => {
+test.cb("Rendering", (t) => {
   // Page Settings
   class IndexPage extends React.Component {
     static initialPropsWillGet(props) {
@@ -143,20 +52,156 @@ test.cb("First rendering", (t) => {
 
   router.route("/", IndexPage);
   router.run(async (RootComponent) => {
+    const actual = mount(React.createElement(RootComponent));
+    const expected = mount(
+      React.createElement(IndexPage, { message: "world" })
+    );
+    t.is(actual.html(), expected.html());
+
+    t.plan(4);
+    t.end();
+  });
+});
+
+test.cb("Rendering with first component", (t) => {
+  class FirstPage extends React.Component {
+    render() {
+      return <div>first page</div>;
+    }
+  }
+
+  // Page Settings
+  class IndexPage extends React.Component {
+    static async getInitialProps(props, prevProps) {
+      return {
+        message: "world"
+      };
+    }
+
+    render() {
+      return <div>Hello, {this.props.message}</div>;
+    }
+  }
+
+  const initializedConnector = t.context.connector.newInitializedInstance(
+    createMemoryHistory()
+  );
+  const router = new Router(initializedConnector);
+
+  router.setFirstComponent(FirstPage);
+  router.route("/", IndexPage);
+  router.run(async (RootComponent) => {
     // The Router use RxJS to control async/await.
-    // So, First Mount is null.
+    // So, First Rendering is null.
     const mountedActual = mount(<RootComponent />);
-    t.is(mountedActual.html(), null);
+    const firstExpected = mount(<FirstPage />);
+    t.is(mountedActual.html(), firstExpected.html());
 
     // wait to resolve promise.
     await asyncFlush();
 
-    // renderer from componentWillMount
     mountedActual.update();
-    const expected = mount(<IndexPage message="world" />);
+    const expected = mount(<IndexPage message={"world"} />);
     t.is(mountedActual.html(), expected.html());
+    t.end();
+  });
+});
 
-    t.plan(5);
+test.cb("Rendering with initial props", (t) => {
+  // Page Settings
+  class IndexPage extends React.Component {
+    static initialPropsWillGet() {
+      t.fail();
+    }
+
+    static async getInitialProps() {
+      t.fail();
+    }
+
+    static initialPropsDidGet() {
+      t.fail();
+    }
+
+    render() {
+      return (
+        <div>
+          <h1>Index</h1>
+          <ul>
+            {this.props.items.map((item, index) => (
+              <li key={index}>{item}</li>
+            ))}
+          </ul>
+        </div>
+      );
+    }
+  }
+
+  const initializedConnector = t.context.connector.newInitializedInstance(
+    createMemoryHistory()
+  );
+  const router = new Router(initializedConnector);
+  router.setInitialProps({ items: ["foo", "bar", "baz"] });
+  router.route("/", IndexPage);
+  router.run(async (RootComponent) => {
+    const actual = mount(React.createElement(RootComponent));
+    const expected = mount(
+      React.createElement(IndexPage, { items: ["foo", "bar", "baz"] })
+    );
+
+    t.is(actual.html(), expected.html());
+    t.end();
+  });
+});
+
+test.cb("Match single route", (t) => {
+  // Page Settings
+  class IndexPage extends React.Component {
+    render() {
+      return <div>Hello, World</div>;
+    }
+  }
+
+  const initializedConnector = t.context.connector.newInitializedInstance(
+    createMemoryHistory()
+  );
+  const router = new Router(initializedConnector);
+
+  router.route("/", IndexPage);
+  router.run(async (RootComponent) => {
+    const actual = mount(<RootComponent />);
+    const expected = mount(<IndexPage />);
+    t.is(actual.html(), expected.html());
+    t.end();
+  });
+});
+
+test.cb("Match multiple route", (t) => {
+  // Page Settings
+  class IndexPage extends React.Component {
+    render() {
+      return <div>Hello, World</div>;
+    }
+  }
+
+  class AnotherPage extends React.Component {
+    render() {
+      return <div>Nest Page</div>;
+    }
+  }
+
+  const initializedConnector = t.context.connector.newInitializedInstance(
+    createMemoryHistory({
+      initialEntries: ["/another"]
+    })
+  );
+  const router = new Router(initializedConnector);
+
+  router.route("/", IndexPage);
+  router.route("/another", AnotherPage);
+  router.run(async (RootComponent) => {
+    const actual = mount(<RootComponent />);
+    const expected = mount(<AnotherPage />);
+    t.is(actual.html(), expected.html());
     t.end();
   });
 });
@@ -207,10 +252,12 @@ test.cb("Next rendering from Request `to`", (t) => {
   router.route("/", IndexPage);
   router.route("/next", NextPage);
   router.run(async (RootComponent) => {
-    // The Router use RxJS to control async/await.
     // Test up to call renderer.
-    const mountedActual = mount(<RootComponent />);
-    t.is(mountedActual.html(), null);
+    const mountedActual = mount(React.createElement(RootComponent));
+    const firstExpected = mount(
+      React.createElement(IndexPage, { message: "world" })
+    );
+    t.is(mountedActual.html(), firstExpected.html());
 
     // wait to resolve promise.
     await asyncFlush();
@@ -255,19 +302,9 @@ test.cb("Router props", (t) => {
 
   router.route("/", IndexPage);
   router.run(async (RootComponent) => {
-    // The Router use RxJS to control async/await.
-    // So, First Rendering is null.
-    const mountedActual = mount(
-      <RootComponent items={["foo", "bar", "baz"]} />
-    );
-    t.is(mountedActual.html(), null);
-
-    // wait to resolve promise.
-    await asyncFlush();
-
-    mountedActual.update();
+    const actual = mount(<RootComponent items={["foo", "bar", "baz"]} />);
     const expected = mount(<IndexPage items={["foo", "bar", "baz"]} />);
-    t.is(mountedActual.html(), expected.html());
+    t.is(actual.html(), expected.html());
     t.end();
   });
 });
@@ -294,63 +331,11 @@ test.cb("Async route", (t) => {
   // Use promise instead of dynamic import
   router.asyncRoute("/", () => Promise.resolve(DynamicImportComponent));
   router.run(async (RootComponent) => {
-    // The Router use RxJS to control async/await.
-    // So, First Rendering is null.
-    const mountedActual = mount(<RootComponent />);
-    t.is(mountedActual.html(), null);
-
-    // wait to resolve promise.
-    await asyncFlush();
-
-    mountedActual.update();
+    const actual = mount(React.createElement(RootComponent));
     const expected = mount(
       <DynamicImportComponent message={"Dynamic import"} />
     );
-    t.is(mountedActual.html(), expected.html());
-    t.end();
-  });
-});
-
-test.cb("Set first component", (t) => {
-  class FirstPage extends React.Component {
-    render() {
-      return <div>first page</div>;
-    }
-  }
-
-  // Page Settings
-  class IndexPage extends React.Component {
-    static async getInitialProps(props, prevProps) {
-      return {
-        message: "world"
-      };
-    }
-
-    render() {
-      return <div>Hello, {this.props.message}</div>;
-    }
-  }
-
-  const initializedConnector = t.context.connector.newInitializedInstance(
-    createMemoryHistory()
-  );
-  const router = new Router(initializedConnector);
-
-  router.setFirstComponent(FirstPage);
-  router.route("/", IndexPage);
-  router.run(async (RootComponent) => {
-    // The Router use RxJS to control async/await.
-    // So, First Rendering is null.
-    const mountedActual = mount(<RootComponent />);
-    const firstExpected = mount(<FirstPage />);
-    t.is(mountedActual.html(), firstExpected.html());
-
-    // wait to resolve promise.
-    await asyncFlush();
-
-    mountedActual.update();
-    const expected = mount(<IndexPage message={"world"} />);
-    t.is(mountedActual.html(), expected.html());
+    t.is(actual.html(), expected.html());
     t.end();
   });
 });

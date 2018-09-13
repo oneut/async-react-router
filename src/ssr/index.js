@@ -1,5 +1,5 @@
 import ServerRouter from "./ServerRouter";
-import Router from "./Router";
+import Router from "../lib/Router";
 import { connector } from "../lib/Facade";
 import { createBrowserHistory, createMemoryHistory } from "history";
 

@@ -1,9 +1,12 @@
-import React from "react";
-import RootComponent from "./RootComponent";
+import InitialPropsRunner from "./runner/InitialPropsRunner";
+import FirstComponentLoadRunner from "./runner/FirstComponentLoadRunner";
+import LoadRunner from "./runner/LoadRunner";
 
 export default class Router {
   constructor(connector) {
     this.connector = connector;
+    this.initialProps = null;
+    this.firstComponent = null;
   }
 
   route(path, component, name) {
@@ -15,20 +18,27 @@ export default class Router {
   }
 
   setFirstComponent(component) {
-    this.connector.componentResolver.setComponent(component);
+    this.firstComponent = component;
+  }
+
+  setInitialProps(initialProps) {
+    this.initialProps = initialProps;
   }
 
   run(callback) {
-    // Request current route component.
-    const location = this.connector.historyManager.getLocation();
-    this.connector.request(location.pathname);
+    const runner = this.getRunner();
+    runner.run(callback);
+  }
 
-    // Create root component.
-    callback((props) => {
-      return React.createElement(RootComponent, {
-        connector: this.connector,
-        ...props
-      });
-    });
+  getRunner() {
+    if (!!this.initialProps) {
+      return new InitialPropsRunner(this.connector, this.initialProps);
+    }
+
+    if (!!this.firstComponent) {
+      return new FirstComponentLoadRunner(this.connector, this.firstComponent);
+    }
+
+    return new LoadRunner(this.connector);
   }
 }
