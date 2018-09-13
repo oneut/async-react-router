@@ -2,10 +2,10 @@ import React from "react";
 import test from "ava";
 import { mount } from "enzyme";
 import createMemoryHistory from "history/createMemoryHistory";
-import Router from "../../src/ssr/Router";
-import RouteMatcher from "../../src/lib/RouteMatcher";
-import HistoryManager from "../../src/lib/HistoryManager";
-import Connector from "../../src/lib/Connector";
+import RouteMatcher from "../../../src/lib/RouteMatcher";
+import HistoryManager from "../../../src/lib/HistoryManager";
+import Connector from "../../../src/lib/Connector";
+import InitialPropsRunner from "../../../src/lib/runner/InitialPropsRunner";
 
 test.beforeEach((t) => {
   const routeMatcher = new RouteMatcher();
@@ -16,7 +16,54 @@ test.beforeEach((t) => {
   t.context.connector = connector;
 });
 
-test.cb("Index route", (t) => {
+test.cb("Rendering with initial props", (t) => {
+  // Page Settings
+  class IndexPage extends React.Component {
+    static initialPropsWillGet() {
+      t.fail();
+    }
+
+    static async getInitialProps() {
+      t.fail();
+    }
+
+    static initialPropsDidGet() {
+      t.fail();
+    }
+
+    render() {
+      return (
+        <div>
+          <h1>Index</h1>
+          <ul>
+            {this.props.items.map((item, index) => (
+              <li key={index}>{item}</li>
+            ))}
+          </ul>
+        </div>
+      );
+    }
+  }
+
+  const initializedConnector = t.context.connector.newInitializedInstance(
+    createMemoryHistory()
+  );
+  initializedConnector.routeMatcher.addRoute("/", IndexPage);
+  const runner = new InitialPropsRunner(initializedConnector, {
+    items: ["foo", "bar", "baz"]
+  });
+  runner.run(async (RootComponent) => {
+    const actual = mount(React.createElement(RootComponent));
+    const expected = mount(
+      React.createElement(IndexPage, { items: ["foo", "bar", "baz"] })
+    );
+
+    t.is(actual.html(), expected.html());
+    t.end();
+  });
+});
+
+test.cb("Rendering with empty initial props", (t) => {
   // Page Settings
   class IndexPage extends React.Component {
     static initialPropsWillGet() {
@@ -44,50 +91,11 @@ test.cb("Index route", (t) => {
   const initializedConnector = t.context.connector.newInitializedInstance(
     createMemoryHistory()
   );
-  const router = new Router(initializedConnector);
-
-  router.route("/", IndexPage);
-  router.setInitialProps({ message: "first rendering data" });
-  router.run(async (RootComponent) => {
+  initializedConnector.routeMatcher.addRoute("/", IndexPage);
+  const runner = new InitialPropsRunner(initializedConnector, {});
+  runner.run(async (RootComponent) => {
     const actual = mount(React.createElement(RootComponent));
-    const expected = mount(
-      React.createElement(IndexPage, { message: "first rendering data" })
-    );
-    t.is(actual.html(), expected.html());
-    t.end();
-  });
-});
-
-test.cb("Set initial props", (t) => {
-  // Page Settings
-  class IndexPage extends React.Component {
-    render() {
-      return (
-        <div>
-          <h1>Index</h1>
-          <ul>
-            {this.props.items.map((item, index) => (
-              <li key={index}>{item}</li>
-            ))}
-          </ul>
-        </div>
-      );
-    }
-  }
-
-  const initializedConnector = t.context.connector.newInitializedInstance(
-    createMemoryHistory()
-  );
-  const router = new Router(initializedConnector);
-
-  router.route("/", IndexPage);
-  router.setInitialProps({ items: ["foo", "bar", "baz"] });
-  router.run(async (RootComponent) => {
-    const actual = mount(React.createElement(RootComponent));
-    const expected = mount(
-      React.createElement(IndexPage, { items: ["foo", "bar", "baz"] })
-    );
-
+    const expected = mount(React.createElement(IndexPage, {}));
     t.is(actual.html(), expected.html());
     t.end();
   });
@@ -110,10 +118,9 @@ test("No match route", (t) => {
       initialEntries: ["/unmatch"]
     })
   );
-  const router = new Router(initializedConnector);
-
-  router.route("/", IndexPage);
-  router.run(async (RootComponent) => {
+  initializedConnector.routeMatcher.addRoute("/", IndexPage);
+  const runner = new InitialPropsRunner(initializedConnector, {});
+  runner.run(async (RootComponent) => {
     t.fail();
   });
 
@@ -132,7 +139,6 @@ test.cb("Not found page", (t) => {
     }
   }
 
-  // Page Settings
   class NotFoundPage extends React.Component {
     render() {
       return (
@@ -148,39 +154,12 @@ test.cb("Not found page", (t) => {
       initialEntries: ["/not-found"]
     })
   );
-  const router = new Router(initializedConnector);
-
-  router.route("/", IndexPage);
-  router.route("(.*)", NotFoundPage);
-  router.run(async (RootComponent) => {
+  initializedConnector.routeMatcher.addRoute("/", IndexPage);
+  initializedConnector.routeMatcher.addRoute("(.*)", NotFoundPage);
+  const runner = new InitialPropsRunner(initializedConnector, {});
+  runner.run(async (RootComponent) => {
     const actual = mount(React.createElement(RootComponent));
     const expected = mount(React.createElement(NotFoundPage));
-    t.is(actual.html(), expected.html());
-    t.end();
-  });
-});
-
-test.cb("Async route", (t) => {
-  // Page Settings
-  class DynamicImportComponent extends React.Component {
-    render() {
-      return <div>{this.props.message}</div>;
-    }
-  }
-
-  const initializedConnector = t.context.connector.newInitializedInstance(
-    createMemoryHistory()
-  );
-  const router = new Router(initializedConnector);
-
-  router.setInitialProps({ message: "dynamic import" });
-  // Use promise instead of dynamic import
-  router.asyncRoute("/", () => Promise.resolve(DynamicImportComponent));
-  router.run((RootComponent) => {
-    const actual = mount(<RootComponent />);
-    const expected = mount(
-      <DynamicImportComponent message={"dynamic import"} />
-    );
     t.is(actual.html(), expected.html());
     t.end();
   });

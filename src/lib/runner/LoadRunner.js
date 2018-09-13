@@ -1,24 +1,11 @@
-import React from "react";
-import RootComponent from "../lib/RootComponent";
-import { map, skipWhile, switchMap } from "rxjs/operators";
 import { of } from "rxjs";
+import { map, mergeMap, skipWhile, switchMap } from "rxjs/operators";
+import React from "react";
+import RootComponent from "../RootComponent";
 
-export default class Router {
+export default class LoadRunner {
   constructor(connector) {
     this.connector = connector;
-    this.initialProps = {};
-  }
-
-  route(path, component, name) {
-    this.connector.routeMatcher.addRoute(path, component, name, false);
-  }
-
-  asyncRoute(path, component, name) {
-    this.connector.routeMatcher.addRoute(path, component, name, true);
-  }
-
-  setInitialProps(initialProps) {
-    this.initialProps = initialProps;
   }
 
   run(callback) {
@@ -30,7 +17,9 @@ export default class Router {
           this.connector.routeMatcher.createRenderer(pathname)
         ),
         skipWhile((renderer) => renderer === null),
-        map((renderer) => renderer.setInitialProps(this.initialProps))
+        map((renderer) => renderer.fireInitialPropsWillGet()),
+        mergeMap((renderer) => renderer.fireGetInitialProps()),
+        map((renderer) => renderer.fireInitialPropsDidGet())
       )
       .subscribe((renderer) => {
         this.connector.componentResolver.setComponentFromRenderer(renderer);

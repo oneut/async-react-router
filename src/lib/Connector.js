@@ -23,15 +23,9 @@ export default class Connector {
   }
 
   init(history) {
-    // Settings HistoryManager.
     this.initHistory(history);
-
-    // Settings RxJS Stream.
     this.initRouteMatcher();
-
-    // Initial RouteMatcher
     this.initStream();
-
     return this;
   }
 
