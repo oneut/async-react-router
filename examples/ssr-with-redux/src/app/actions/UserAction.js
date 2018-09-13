@@ -1,7 +1,7 @@
 import { userActionType } from "../actionTypes/UserType";
 
 export const userAction = {
-  newInstance: attributes => {
+  newInstance: (attributes) => {
     return {
       type: userActionType.NEW_INSTANCE,
       attributes: attributes

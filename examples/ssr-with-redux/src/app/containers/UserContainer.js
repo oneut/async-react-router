@@ -26,6 +26,6 @@ class UserContainer extends React.Component {
   }
 }
 
-export default connect(state => ({
+export default connect((state) => ({
   user: state.user
 }))(UserContainer);
