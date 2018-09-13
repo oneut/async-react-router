@@ -22,6 +22,6 @@ class NewsContainer extends React.Component {
   }
 }
 
-export default connect(state => ({
+export default connect((state) => ({
   items: state.items
 }))(NewsContainer);

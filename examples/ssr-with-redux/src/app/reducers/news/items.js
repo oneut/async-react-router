@@ -6,8 +6,8 @@ export default function items(state = Immutable.List(), action) {
   switch (action.type) {
     case NewsActionTypes.ADD_ITEMS:
       const newState = Immutable.List();
-      return newState.withMutations(newState => {
-        action.items.map(itemAttributes =>
+      return newState.withMutations((newState) => {
+        action.items.map((itemAttributes) =>
           newState.push(new Item(itemAttributes))
         );
       });
