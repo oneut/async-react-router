@@ -1,11 +1,13 @@
 import React from "react";
-import { Link, URL } from "async-react-router";
+import { URL, Link } from "async-react-router";
 
 export default class CommentComponent extends React.Component {
   render() {
     const commentComponents = this.props.comment.comments
-      .filter(comment => !!comment.by)
-      .map(comment => <CommentComponent key={comment.id} comment={comment} />);
+      .filter((comment) => !!comment.by)
+      .map((comment) => (
+        <CommentComponent key={comment.id} comment={comment} />
+      ));
     return (
       <li>
         <dl>
