@@ -1,71 +1,46 @@
-import RouteMatcher from "./RouteMatcher";
+export default class HistoryManager {
+  constructor() {
+    this.history = null;
+    this.requestCallback = null;
+    this.silent = false;
+  }
 
-class HistoryManager {
-    constructor() {
-        this.init();
-    }
+  setHistory(history) {
+    this.history = history;
+  }
 
-    init() {
-        this.history         = null;
-        this.routeMatcher    = null;
-        this.requestCallback = null;
-        this.silent          = false;
-    }
+  setRequestCallback(requestCallback) {
+    this.requestCallback = requestCallback;
+  }
 
-    initialHistory(history) {
-        this.history = history;
-    }
+  changeSilent() {
+    this.silent = true;
+  }
 
-    initialRouteMatcher(routeMatcher) {
-        this.routeMatcher = routeMatcher;
-    }
+  changeUnsilent() {
+    this.silent = false;
+  }
 
-    setRequestCallback(requestCallback) {
-        this.requestCallback = requestCallback;
-    }
+  listen() {
+    this.history.listen(this.listenCallback.bind(this));
+  }
 
-    changeSilent() {
-        this.silent = true;
-    }
+  listenCallback(location) {
+    if (!this.silent) this.requestCallback(location.pathname);
+  }
 
-    changeUnsilent() {
-        this.silent = false;
-    }
+  push(pathname) {
+    this.changeSilent();
+    this.requestCallback(pathname);
+    this.history.push(pathname);
+    this.changeUnsilent();
+  }
 
-    listen() {
-        this.history.listen(this.listenCallback.bind(this));
-    }
+  createHref(pathname) {
+    return this.history.createHref({ pathname });
+  }
 
-    listenCallback(location) {
-        if (!(this.silent)) this.requestCallback(location.pathname);
-    }
-
-    push(pathname) {
-        this.changeSilent();
-        this.requestCallback(pathname);
-        this.history.push(pathname);
-        this.changeUnsilent();
-    }
-
-    pushByName(name, parameters) {
-        this.push(this.routeMatcher.compileByName(name, parameters));
-    }
-
-    createHref(pathname) {
-        return this.history.createHref({pathname});
-    }
-
-    createHrefByName(name, parameters) {
-        const pathname = this.routeMatcher.compileByName(name, parameters);
-        return this.createHref(pathname);
-    }
-
-    getLocation() {
-        return this.history.location;
-    }
+  getLocation() {
+    return this.history.location;
+  }
 }
-
-const historyManager = new HistoryManager();
-historyManager.initialRouteMatcher(RouteMatcher);
-
-export default historyManager;

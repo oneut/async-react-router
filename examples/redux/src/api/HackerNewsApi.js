@@ -1,13 +1,16 @@
-import Firebase from "firebase";
+import Firebase from "firebase/app";
+import "firebase/database";
 import LRU from "lru-cache";
 
 class HackerNewsApi {
   constructor() {
     this.displayNumber = 20;
 
-    Firebase.initializeApp({
-      databaseURL: "https://hacker-news.firebaseio.com"
-    });
+    if (!Firebase.apps.length) {
+      Firebase.initializeApp({
+        databaseURL: "https://hacker-news.firebaseio.com"
+      });
+    }
     this.api = Firebase.database().ref("/v0");
     this.cache = LRU({
       max: 500,
@@ -20,7 +23,7 @@ class HackerNewsApi {
     const offset = this.displayNumber * (page - 1);
     const limit = offset + this.displayNumber;
     return await Promise.all(
-      ids.slice(offset, limit).map(async id => await this.findItem(id))
+      ids.slice(offset, limit).map(async (id) => await this.findItem(id))
     );
   }
 
@@ -46,10 +49,10 @@ class HackerNewsApi {
     }
 
     const comments = await Promise.all(
-      ids.map(async id => await this.findItem(id))
+      ids.map(async (id) => await this.findItem(id))
     );
     return await Promise.all(
-      comments.map(async comment => {
+      comments.map(async (comment) => {
         comment.comments = await this.getComments(comment.kids);
         return comment;
       })

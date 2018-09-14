@@ -1,57 +1,105 @@
 import test from "ava";
+import Connector from "../../src/lib/Connector";
 import Request from "../../src/lib/Request";
 
-test('To', async (t) => {
-    class HistoryManagerMock {
-        push(pathname) {
-            t.is(pathname, '/Test');
-        }
+test("To", async (t) => {
+  // Create mock
+  class HistoryManagerMock {
+    push(pathname) {
+      t.is(pathname, "/test");
     }
+  }
 
-    Request.setHistoryManager(new HistoryManagerMock());
-    Request.to('/Test');
+  class RouteMatcherMock {}
+
+  const connector = new Connector(
+    new HistoryManagerMock(),
+    new RouteMatcherMock()
+  );
+
+  // Request test
+  const request = new Request(connector);
+  request.to("/test");
 });
 
-test('Name', async (t) => {
-    class HistoryManagerMock {
-        pushName(name, parameters) {
-            t.is(name, 'test');
-            t.true(Object.keys(parameters).length === 0 && typeof parameters === "object");
-        }
+test("Name", async (t) => {
+  // Create mock
+  class HistoryManagerMock {
+    push(pathname) {
+      t.is(pathname, "/test");
     }
+  }
 
-    Request.setHistoryManager(new HistoryManagerMock());
-    Request.name('test');
+  class RouteMatcherMock {
+    compileByName(name) {
+      t.is(name, "test");
+      return "/test";
+    }
+  }
+
+  const connector = new Connector(
+    new HistoryManagerMock(),
+    new RouteMatcherMock()
+  );
+
+  // Request test
+  const request = new Request(connector);
+  request.name("test");
 });
 
-test('Name with parameters', async (t) => {
-    class HistoryManagerMock {
-        pushName(name, parameters) {
-            t.is(name, 'test');
-            t.is(parameters.test, 1);
-        }
+test("Name with parameters", async (t) => {
+  // Create mock
+  class HistoryManagerMock {
+    push(pathname) {
+      t.is(pathname, "/test/1");
     }
+  }
 
-    Request.setHistoryManager(new HistoryManagerMock());
-    Request.name('test', {test: 1});
+  class RouteMatcherMock {
+    compileByName(name, parameters) {
+      t.is(name, "test");
+      t.is(parameters.test, 1);
+      return "/test/1";
+    }
+  }
+
+  const connector = new Connector(
+    new HistoryManagerMock(),
+    new RouteMatcherMock()
+  );
+
+  // Request test
+  const request = new Request(connector);
+  request.name("test", { test: 1 });
 });
 
-test('Request is active', async (t) => {
-    class HistoryManagerMock {
-        getLocation() {
-            return {
-                pathname: '/Test'
-            };
-        }
+test("isActive", async (t) => {
+  // Create mock
+  class HistoryManagerMock {
+    getLocation() {
+      return {
+        pathname: "/test"
+      };
     }
+  }
 
-    Request.setHistoryManager(new HistoryManagerMock());
-    t.true(Request.isActive('/Test'));
-    t.false(Request.isActive('/'));
+  class RouteMatcherMock {}
+
+  const connector = new Connector(
+    new HistoryManagerMock(),
+    new RouteMatcherMock()
+  );
+
+  // Request test
+  const request = new Request(connector);
+  t.true(request.isActive("/test"));
+  t.false(request.isActive("/"));
 });
 
-test('Request path normalized', async (t) => {
-    t.is(Request.normarizeTo('#/Test'), '/Test');
-    t.is(Request.normarizeTo('/Test'), '/Test');
-    t.is(Request.normarizeTo('/Test/1'), '/Test/1');
+test("Request path normalized", async (t) => {
+  // Request test
+  const request = new Request();
+  t.is(request.normarizeTo("#/test"), "/test");
+  t.is(request.normarizeTo("/test"), "/test");
+  t.is(request.normarizeTo("/test/1"), "/test/1");
 });

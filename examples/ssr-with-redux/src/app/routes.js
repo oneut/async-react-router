@@ -1,16 +1,26 @@
-import React from "react";
-import IndexPage from "./pages/IndexPage";
-import ItemPage from "./pages/ItemPage";
-import NewsPage from "./pages/NewsPage";
-import UserPage from "./pages/UserPage";
 import NotFoundPage from "./pages/NotFoundPage";
-import { Route } from "async-react-router";
 
-export default (
-  <Route path="/" component={IndexPage} name="IndexPage">
-    <Route path="/news/:page?" component={NewsPage} name="NewsPage" />
-    <Route path="/item/:itemId" component={ItemPage} name="ItemPage" />
-    <Route path="/user/:userId" component={UserPage} name="UserPage" />
-    <Route path="(.*)" component={NotFoundPage} />
-  </Route>
-);
+export default function setRoute(router) {
+  router.asyncRoute(
+    "/",
+    () => import(/* webpackChunkName: 'index' */ "./pages/IndexPage"),
+    "IndexPage"
+  );
+  router.asyncRoute(
+    "/news/:page?",
+    () => import(/* webpackChunkName: 'news' */ "./pages/NewsPage"),
+    "NewsPage"
+  );
+  router.asyncRoute(
+    "/item/:itemId",
+    () => import(/* webpackChunkName: 'item' */ "./pages/ItemPage"),
+    "ItemPage"
+  );
+  router.asyncRoute(
+    "/user/:userId",
+    () => import(/* webpackChunkName: 'user' */ "./pages/UserPage"),
+    "UserPage"
+  );
+
+  router.route("(.*)", NotFoundPage);
+}

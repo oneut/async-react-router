@@ -1,90 +1,44 @@
-import HistoryManager from "./HistoryManager";
-import React from "react";
-import RouteMatcher from "./RouteMatcher";
-import RouteNormalizer from "./RouteNormalizer";
-import { Subject } from "rxjs/Subject";
-import "rxjs/add/operator/switchMap";
-import "rxjs/add/observable/fromPromise";
+import InitialPropsRunner from "./runner/InitialPropsRunner";
+import FirstComponentLoadRunner from "./runner/FirstComponentLoadRunner";
+import LoadRunner from "./runner/LoadRunner";
 
-export default class Router extends React.Component {
-    constructor(props) {
-        super(props);
+export default class Router {
+  constructor(connector) {
+    this.connector = connector;
+    this.initialProps = null;
+    this.firstComponent = null;
+  }
 
-        this.state = {
-            component: null
-        };
+  route(path, component, name) {
+    this.connector.routeMatcher.addRoute(path, component, name, false);
+  }
 
-        this.stream = null;
+  asyncRoute(path, component, name) {
+    this.connector.routeMatcher.addRoute(path, component, name, true);
+  }
 
-        // Settings HistoryManager.
-        this.initHistory();
+  setFirstComponent(component) {
+    this.firstComponent = component;
+  }
 
-        // Settings RxJS Stream.
-        this.initStream();
+  setInitialProps(initialProps) {
+    this.initialProps = initialProps;
+  }
 
-        RouteMatcher.init();
+  run(callback) {
+    const runner = this.getRunner();
+    runner.run(callback);
+  }
 
-        // Settings Routes.
-        this.addRoutes(props.children);
+  getRunner() {
+    if (!!this.initialProps) {
+      return new InitialPropsRunner(this.connector, this.initialProps);
     }
 
-    initHistory() {
-        HistoryManager.initialHistory(this.getHistory());
-        HistoryManager.setRequestCallback(this.request.bind(this));
-        HistoryManager.listen();
+    if (!!this.firstComponent) {
+      return new FirstComponentLoadRunner(this.connector, this.firstComponent);
     }
 
-    getHistory() {
-        return !!this.props.history ? this.props.history : require("history").createHashHistory();
-    }
-
-    initStream() {
-        this.stream = new Subject();
-        this.stream
-            .switchMap((pathname) => this.renderer(pathname))
-            .subscribe((component) => this.setComponent(component));
-    }
-
-    async renderer(pathname) {
-        const renderer = RouteMatcher.fetchRenderer(pathname).getRenderer();
-        if (renderer) {
-            renderer.fireInitialPropsWillGet();
-            await renderer.fireGetInitialProps();
-            renderer.fireInitialPropsStoreHook();
-            renderer.fireInitialPropsDidGet();
-            return React.createElement(renderer.getComponent(), {...renderer.getComponentProps(), ...this.props});
-        }
-
-        return null;
-    }
-
-    addRoutes(routes) {
-        const normalizedRoutes = RouteNormalizer.make().addRoutes(routes).get();
-        normalizedRoutes.map((route) => {
-            RouteMatcher.addRoute(route.normalizedPath, route.component, route.name);
-        });
-    }
-
-    componentWillMount() {
-        const location = HistoryManager.getLocation();
-        this.stream.next(location.pathname);
-    }
-
-    async request(pathname) {
-        await this.stream.next(pathname);
-    }
-
-    setComponent(component) {
-        this.setState({
-            component: component
-        });
-    }
-
-    /**
-     * Render the matching route.
-     */
-
-    render() {
-        return this.state.component;
-    }
+    return new LoadRunner(this.connector);
+  }
 }

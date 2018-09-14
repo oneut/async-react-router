@@ -1,24 +1,17 @@
-import HistoryManager from "./HistoryManager";
+export default class URL {
+  constructor(connector) {
+    this.connector = connector;
+  }
 
-class URL {
-    constructor() {
-        this.historyManager = null;
-    }
+  to(pathname) {
+    return this.connector.historyManager.createHref(pathname);
+  }
 
-    setHistoryManager(historyManager) {
-        this.historyManager = historyManager;
-    }
-
-    to(pathname) {
-        return this.historyManager.createHref(pathname);
-    }
-
-    name(name, parameters = {}) {
-        return this.historyManager.createHrefByName(name, parameters);
-    }
+  name(name, parameters = {}) {
+    const pathname = this.connector.routeMatcher.compileByName(
+      name,
+      parameters
+    );
+    return this.connector.historyManager.createHref(pathname);
+  }
 }
-
-const url = new URL();
-url.setHistoryManager(HistoryManager);
-
-export default url;

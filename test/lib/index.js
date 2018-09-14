@@ -1,17 +1,19 @@
-import Test from "ava";
-import browserEnv from 'browser-env';
+import test from "ava";
+const lib = require("../../src/lib");
 
-browserEnv();
+test("Get object", (t) => {
+  t.true(!!lib.createRouter);
+  t.true(!!lib.createBrowserHistory());
+  t.true(!!lib.createHashHistory());
+  t.true(!!lib.createMemoryHistory());
+  t.true(!!lib.Link);
+  t.true(!!lib.Request);
+  t.true(!!lib.URL);
+});
 
-Test.serial('Get object', (t) => {
-    const asyncReactRouter = require("../../src/lib");
-
-    t.true(!!asyncReactRouter.createBrowserHistory());
-    t.true(!!asyncReactRouter.createHashHistory());
-    t.true(!!asyncReactRouter.createMemoryHistory());
-    t.true(!!asyncReactRouter.Link);
-    t.true(!!asyncReactRouter.Request);
-    t.true(!!asyncReactRouter.Route);
-    t.true(!!asyncReactRouter.Router);
-    t.true(!!asyncReactRouter.URL);
+test("Create router", (t) => {
+  const router = lib.createRouter();
+  t.true(!!router.route);
+  t.true(!!router.asyncRoute);
+  t.true(!!router.run);
 });

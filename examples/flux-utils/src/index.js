@@ -1,6 +1,6 @@
 import React from "react";
 import { render } from "react-dom";
-import { Route, Router } from "async-react-router";
+import { createRouter } from "async-react-router";
 import IndexPage from "./pages/IndexPage";
 import ItemPage from "./pages/ItemPage";
 import NewsPage from "./pages/NewsPage";
@@ -10,17 +10,22 @@ import "bootstrap/dist/css/bootstrap.css";
 import "font-awesome/css/font-awesome.min.css";
 import "nprogress/nprogress.css";
 
-function App() {
+function FirstComponent() {
   return (
-    <Router>
-      <Route path="/" component={IndexPage} name="IndexPage">
-        <Route path="/item/:itemId" component={ItemPage} name="ItemPage" />
-        <Route path="/news/:page?" component={NewsPage} name="NewsPage" />
-        <Route path="/user/:userId" component={UserPage} name="UserPage" />
-        <Route path="(.*)" component={NotFoundPage} />
-      </Route>
-    </Router>
-  );
+    <div className="text-center" style={{margin: "100px 0"}}>
+      <i className="fa fa-cog fa-spin fa-5x fa-fw"/>
+    </div>
+  )
 }
 
-render(<App />, document.getElementById("app"));
+const router = createRouter();
+router.setFirstComponent(FirstComponent);
+router.asyncRoute("/", () => import("./pages/IndexPage"), "IndexPage");
+router.asyncRoute("/news/:page?", () => import("./pages/NewsPage"), "NewsPage");
+router.asyncRoute("/item/:itemId", () => import("./pages/ItemPage"), "ItemPage");
+router.asyncRoute("/user/:userId", () => import("./pages/UserPage"), "UserPage");
+router.asyncRoute("(.*)", NotFoundPage);
+
+router.run((Root) => {
+  render(<Root />, document.getElementById("app"));
+});
