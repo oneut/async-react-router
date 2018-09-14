@@ -3,7 +3,6 @@
 [![Build Status](https://travis-ci.org/oneut/async-react-router.svg?branch=master)](https://travis-ci.org/oneut/async-react-router)
 [![npm version](https://img.shields.io/npm/v/async-react-router.svg?style=flat)](https://www.npmjs.com/package/async-react-router) 
 [![Coverage Status](https://coveralls.io/repos/github/oneut/async-react-router/badge.svg?branch=master)](https://coveralls.io/github/oneut/async-react-router?branch=master)
-[![Code Climate](https://codeclimate.com/github/oneut/async-react-router/badges/gpa.svg)](https://codeclimate.com/github/oneut/async-react-router)
 [![dependencies Status](https://david-dm.org/oneut/async-react-router/status.svg)](https://david-dm.org/oneut/async-react-router)
 [![Commitizen friendly](https://img.shields.io/badge/commitizen-friendly-brightgreen.svg)](http://commitizen.github.io/cz-cli/)
 
