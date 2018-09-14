@@ -1,48 +1,46 @@
 # async-react-router
 
 [![Build Status](https://travis-ci.org/oneut/async-react-router.svg?branch=master)](https://travis-ci.org/oneut/async-react-router)
+[![npm version](https://img.shields.io/npm/v/async-react-router.svg?style=flat)](https://www.npmjs.com/package/async-react-router) 
 [![Coverage Status](https://coveralls.io/repos/github/oneut/async-react-router/badge.svg?branch=master)](https://coveralls.io/github/oneut/async-react-router?branch=master)
 [![Code Climate](https://codeclimate.com/github/oneut/async-react-router/badges/gpa.svg)](https://codeclimate.com/github/oneut/async-react-router)
 [![dependencies Status](https://david-dm.org/oneut/async-react-router/status.svg)](https://david-dm.org/oneut/async-react-router)
+[![Commitizen friendly](https://img.shields.io/badge/commitizen-friendly-brightgreen.svg)](http://commitizen.github.io/cz-cli/)
 
-## Attention
+Async-react-router is react router that can easily get initial props using async/await or promise.  
+If you use this library, You can get the initial props like Next.js.   
+And this library works only on client also.
 
-+ I created this package when Nest.js 2.x.
+## Version
 
-## Motivation
+|Version|React|RxJS|README|
+|:---:|:---:|:---:|:---:|
+|2.0|15.X or 16.X|6.X|[Link](https://github.com/oneut/async-react-router/tree/master)|
+|1.0|15.X or 16.X|5.X|[Link](https://github.com/oneut/async-react-router/tree/1.0-stable)|
 
-Next.js is wonderful.
-But I was dissatisfied with the following points.
-
-+ SSR required
-+ I can not decide the URL freely
-
-Therefore, I made a router like Next.js.
-
-The async-react-router can get the initial props from `getInitialProps` at the client in First Rendering.
-You can get initial props from `getInitialProps()` at client side in first rendering!
+In order to correspond to dynamic import, v2 has breaking change from v1.
 
 ## Features
-+ Support React version 15 and 16.
-+ Support async/await like next.js.
-+ Support client only.
++ Support `getInitialProps()` like Next.js.
++ Support only on client-side.
++ Support sever-side rendering.
 + Support URL parameters.
-+ Support [history](https://www.npmjs.com/package/history) package.The following history type is supported.
-    + Browser History
-    + Hash History
-    + Memory History
-+ Support SSR.
-+ Depend on [rxjs@5.x.x](https://github.com/Reactive-Extensions/RxJS).
++ Support [history](https://www.npmjs.com/package/history) package. The following history type is supported.
+    + Hash history
+    + Browser history
+    + Memory history
++ Support dynamic import.
 + No depend on react-router.
 
 ## Demo
 + [Basic Example.](https://oneut.github.io/async-react-router/basic/)
 + [Redux Example.](https://oneut.github.io/async-react-router/redux/)
 + [Flux Utils Example.](https://oneut.github.io/async-react-router/flux-utils/)
++ Server-side rendering (only [example source](https://github.com/oneut/async-react-router/tree/master/examples/ssr-with-redux))
 
 ## Installation
 
-async-react-router has peer dependencies of [rxjs@5.x.x](https://github.com/Reactive-Extensions/RxJS) which will have to be installed.
+Async-react-router has peer dependencies of [rxjs@6.x.x](https://github.com/Reactive-Extensions/RxJS) which will have to be installed.
 
 ```
 npm install async-react-router react react-dom rxjs --save
@@ -51,8 +49,8 @@ npm install async-react-router react react-dom rxjs --save
 ## Example
 ```javascript
 import React from 'react';
-import { render } from 'react-dom';
-import { Router, Route, Link } from 'async-react-router';
+import { render } from "react-dom";
+import { createRouter } from "async-react-router";
 
 function sleep(ms) {
     return new Promise((resolve) => setTimeout(resolve, ms));
@@ -91,68 +89,151 @@ class Home extends React.Component {
     };
 }
 
-hydrate(
-    (
-        <Router>
-            <Route path="/" component={Home}/>
-            <Route path="/page" component={PageIndex}>
-                <Route path="/:pageId" component={Page}/>
-            </Route>
-        </Router>
-    ),
-    document.getElementById('app')
-);
+const router = createRouter();
+router.route("/", Home);
+router.run((Root) => {
+  render(<Root/>, document.getElementById("app"));
+});
 ```
 
 # API
-## Routing
-### `<Router>`
+## createRouter()
 
-`<Router>` manages `<Route>`.
-
-async-react-router supports [history](https://www.npmjs.com/package/history) package.  
-Default history type is **Hash History**.  
-If you want to change history type to browser history, you can use `history` property.
+`createRouter()` generates router instance. Default history type is **Hash history**. 
 
 ```javascript
-import { Router, Route, createBrowserHistory } from 'async-react-router';
+import { createRouter } from "async-react-router";
 
-hydrate(
-    (
-        <Router history={createBrowserHistory()}>
-            // Any <Route>.
-        </Router>
-    ),
-    document.getElementById('app')
-);
+const router = createRouter();
 ```
 
-### `<Route>`
+If you want to change history type to browser history or memory history, you can define below.
 
-`<Route>` manages paths and react components.  
-`<Route>` has the following properties.
+```javascript
+// Browser history
+import { createRouter, createBrowserHistory } from "async-react-router";
+const router = createRouter(createBrowserHistory());
+
+// Memory history
+import { createRouter, createMemoryHistory } from "async-react-router";
+const router = createRouter(createMemoryHistory());
+```
+
+### router.route(path, component, name)
+
+Route links a path and a component.
 
 + `path` - Any valid URL path that [path-to-regexp](https://github.com/pillarjs/path-to-regexp) understands. Required.
 + `component` - A react component to render only when the location matches. Required.
-+ `name` - Name of `<Route>`. You can use `name` at Request API, or URL API. Optional.
++ `name` - Route name. You can use at `Request.name(name)`, or `URL.name(name)`. Optional.
 
 ```javascript
-import { Router, Route } from 'async-react-router';
+import React from 'react';
+import { createRouter } from 'async-react-router';
+import Home from "./components/Home";
 
-hydrate(
-    (
-        <Router>
-            <Route path="/" component={Home}/>
-            <Route path="/user/:userId" component={User} name="User"/>
-        </Router>
-    ),
-    document.getElementById('app')
-);
+const router = createRouter();
+router.route("/", Home, "Home");
+router.run((Root) => {
+  render(<Root/>, document.getElementById("app"));
+});
 ```
 
-### `<Link>`
+### router.asyncRoute(path, () => promise, name)
 
-`<Link>` makes a request and renders component matching `<Route>`.
+If you want to use dynamic import, You can define using `asyncRoute()`. 
+
++ `path` - Any valid URL path that [path-to-regexp](https://github.com/pillarjs/path-to-regexp) understands. Required.
++ `component` - A react component to render only when the location matches. Required.
++ `name` - Route name. You can use `Request.name(name)`, or `URL.name(name)`. Optional.
+
+```javascript
+import { createRouter } from 'async-react-router';
+
+const router = createRouter();
+router.asyncRoute("/", () => import("./components/Home"), "Home");
+router.run((Root) => {
+  hydrate(<Root />, document.getElementById("app"));
+});
+```
+
+### router.run((RootComponent) => void)
+
+`run` generates the root component.
+
+```javascript
+import { createRouter } from 'async-react-router';
+import Home from "./components/Home";
+
+const router = createRouter();
+router.route("/", Home, "Home");
+router.run((Root) => {
+  render(<Root />, document.getElementById("app"));
+});
+```
+
+If you want to add parameters, you can define parameters with the root component parameters.
+
+```javascript
+import { createRouter } from 'async-react-router';
+import Home from "./components/Home";
+
+const router = createRouter();
+router.route("/", Home, "Home");
+router.run((Root) => {
+  render(<Root any={"any"}/>, document.getElementById("app"));
+});
+```
+
+### router.setFirstComponent(component)
+
+If you want to render any component at first rendering, you can define component.
+
+```javascript
+import { createRouter } from 'async-react-router';
+function FirstComponent() {
+  return (
+    <div className="text-center" style={{margin: "100px 0"}}>
+      <i className="fa fa-cog fa-spin fa-5x fa-fw"/>
+    </div>
+  )
+}
+
+const router = createRouter();
+
+// Set first rendered component.
+router.setFirstComponent(FirstComponent);
+
+router.run((Root) => {
+  hydrate(<Root />, document.getElementById("app"));
+});
+```
+
+### router.setInitialProps(parameters)
+
+If you want to render server-side, you will want to give initial data. 
+In that case, you can set initial data with `setInitialProps()`.  
+When you use `setInitialProps()`, `initialPropsWillGet()` and `initialPropsDidGet()` are not called for the first time.  
+Only `getInitialProps()` is called.
+
+```javascript
+import { createRouter } from 'async-react-router';
+
+const router = createRouter();
+
+// Set data from server.
+router.setInitialProps(
+  JSON.parse(document.getElementById("initial-props").innerText);
+);
+
+router.run((Root) => {
+  hydrate(<Root/>, document.getElementById("app"));
+});
+```
+
+## Link
+
+`<Link>` makes a request event and renders component matching route path.
 
 ```javascript
 import { Link } from 'async-react-router';
@@ -160,43 +241,49 @@ import { Link } from 'async-react-router';
 <Link to="/">Home</Link>
 ```
 
-## `Component` defined at `<Route>`
-### `initialPropsWillGet(attributes, prevAttributes)`
+## Route component
+### `component.initialPropsWillGet(attributes, prevAttributes): void`
 
-`Component` defined at `<Route>` can have `initialPropsWillGet`.  
-`initialPropsWillGet` is invoked immediately before mounting occurs. It is called before `getInitialProps()`
+Route component can have `initialPropsWillGet()`.  
+`initialPropsWillGet()` is invoked immediately before mounting occurs. It is called before `getInitialProps()`
+This method is static.
 
-`initialPropsWillGet` has arguments.
+`initialPropsWillGet()` has arguments below.
 
-+ `attributes` - Current Route Attributes. 
++ `attributes` - Current route attributes. 
     + `pathname` - String of the current path.
     + `params` - Object with the parsed url parameter. Defaults to {}.
-+ `prevAttributes` - Previous Route Attributes. First rendering to {}.
++ `prevAttributes` - Previous route attributes. Defaults to {}.
     + `pathname` - String of the previous path.
     + `params` - Object with the parsed url parameter at previous page. Defaults to {}.
 
 **async/await is not supported.**
 
-### `getInitialProps(attributes, prevAttributes): Object`
 
-`Component` defined at `<Route>` can have `getInitialProps` that can use async/await.  
-`getInitialProps` perform the rendering after promise has been resolved,　Using `return`, you can pass data to the component defined for the route.
+### `component.getInitialProps(attributes, prevAttributes): Object`
 
-And `getInitialProps` has arguments.
+Route component can have `getInitialProps()` that can use async/await.  
+`getInitialProps()` perform the rendering after promise has been resolved, The resolved data can be retrieved as props of component.
+This method is static.
 
-+ `attributes` - Current Route Attributes. 
+And `getInitialProps()` has arguments below.
+
++ `attributes` - Current route attributes. 
     + `pathname` - String of the current path.
     + `params` - Object with the parsed url parameter. Defaults to {}.
-+ `prevAttributes` - Previous Route Attributes. First rendering to {}.
++ `prevAttributes` - Previous route attributes. Defaults to {}.
     + `pathname` - String of the previous path.
     + `params` - Object with the parsed url parameter at previous page. Defaults to {}.
 
-
 ```javascript
+import { createRouter } from 'async-react-router';
+
 class User extends React.Component {
-    static async getInitialProps({ pathname, params }) {
-        console.log(params.userId);
-        return { data: "Get Inital Props!!" };
+    static async getInitialProps(attributes, prevAttributes) {
+        console.log(attributes.params.userId);
+        return { 
+          data: "Get initial props!!" 
+        };
     }
     
     render() {
@@ -209,57 +296,39 @@ class User extends React.Component {
     }
 }
 
-hydrate(
-    (
-        <Router>
-            <Route path="/user/:userId" component={User}/>
-        </Router>
-    ),
-    document.getElementById('app')
-);
+const router = createrRouter();
+router.route("/user/:userId", User);
+router.run((Root) => {
+  render(<Root/>, document.getElementById("app"));
+});
 ```
 
-### `initialPropsStoreHook(props, prevProps)`
 
-`Component` defined at `<Route>` can have `initialPropsStoreHook`.  
-`initialPropsStoreHook` is used for setting store of redux or flux-utils after calling `getInitialProps`.
-It can also be set with `getInitialProps`. However, it is implemented to separate responsibility.
+### `component.initialPropsDidGet(props, prevProps): void`
 
-+ `props` - Current props of components defined at `<Route>`. 
+Route component can have `initialPropsDidGet()`.  
+`initialPropsDidGet()` is called after `getInitialProps()`.  
+If more than one promise is pending, Async-react-router gets only data of last executed promise.  
+For this reason, `initialPropsDidGet()` is executed only when the last promise is resolved.
+This method is static.
+
+`initialPropsDidGet()` has arguments.
+
++ `props` - Current props of components defined at route. 
     + `pathname` - String of the current path.
     + `params` - Object with the parsed url parameter. Defaults to {}.
-    + `{data}` - Data retrieved using `getInitialProps`. 
-+ `prevProps` - Previous props of components defined at `<Route>`. First rendering to {}.
+    + `{data}` - Data retrieved using `getInitialProps()`. 
++ `prevProps` - Previous props of components defined at route. First rendering to {}.
     + `pathname` - String of the previous path.
     + `params` - Object with the parsed url parameter at previous page. Defaults to {}.
-    + `{data}` - Data retrieved using `getInitialProps`. 
-
-**async/await is not supported.**
-
-### `initialPropsDidGet(props, prevProps)`
-
-`Component` defined at `<Route>` can have `initialPropsDidGet`.  
-`initialPropsDidGet` is called after the promise is resolved.  
-If more than one promise is pending, async-react-router gets only the last executed promise.  
-For this, in that case, `initialPropsDidGet` is executed only when the last promise is resolved.
-
-`initialPropsDidGet` has arguments.
-
-+ `props` - Current props of components defined at `<Route>`. 
-    + `pathname` - String of the current path.
-    + `params` - Object with the parsed url parameter. Defaults to {}.
-    + `{data}` - Data retrieved using `getInitialProps`. 
-+ `prevProps` - Previous props of components defined at `<Route>`. First rendering to {}.
-    + `pathname` - String of the previous path.
-    + `params` - Object with the parsed url parameter at previous page. Defaults to {}.
-    + `{data}` - Data retrieved using `getInitialProps`. 
+    + `{data}` - Data retrieved using `getInitialProps()`. 
     
 **async/await is not supported.**
 
 ## Request
-### `to(path)`
+### `Request.to(path)`
 
-When you want to push the next history-based request, you can use `to` of `Request`.
+When you want to push next request, you can use `to` of `Request`.
 
 + `path` - String of next path.
 
@@ -269,37 +338,35 @@ import { Request } from 'async-react-router';
 Request.to('/next'); // Change url to `#/next`.
 ```
 
-### `name(routeName, urlParameters)`
 
-You can make the history-based request from the `name` defined at `<Route>`.
+### `Request.name(routeName, urlParameters)`
 
-+ `routeName` - Name defined at `<Route>` for next request.
-+ `urlParameters` - Object of next url parameter, if it requires.
+You can make next request from the `name` defined at route.
+
++ `routeName` - Route name for next request.
++ `urlParameters` - Object of next url parameters. Optional.
 
 ```javascript
 import React from 'react';
 import { render } from 'react-dom';
-import { Router, Route, Request } from 'async-react-router';
+import { createRouter, Request } from 'async-react-router';
 
 class User extends React.Component {
     render() { return (<div>{this.props.params.userId}</div>); };
 }
 
-hydrate(
-    (
-        <Router>
-            <Route path="/user/:userId" component={User} name="User"/>
-        </Router>
-    ),
-    document.getElementById('app')
-);
+const router = createRouter();
+router.route("/user/:userId", User, "User");
+router.run((Root) => {
+  render(<Root/>, document.getElementById("app"));
+});
 
 Request.name("User", {userId: 1}); // Change url to `#/user/1`.
 ```
 
-### `isActive(path)`
+### `Request.isActive(path)`
 
-When you want to know the current path, you can use `isActive` of `Request`.
+When you want to check path, you can use `isActive()` of `Request`.
 
 ```javascript
 import { Request } from 'async-react-router';
@@ -309,10 +376,11 @@ Request.isActive('/');     // true
 Request.isActive('/path'); // false
 ```
 
-## URL
-### ```to(path)```
 
-When you want to make history-based URL, you can use `to` of `URL`.
+## URL
+### `URL.to(path)`
+
+When you want to make path, you can use `to` of `URL`.
 
 + `path` - String of path.
 
@@ -322,98 +390,147 @@ import { URL } from 'async-react-router';
 URL.to('/next'); // String `#/next`.
 ```
 
-### ```name(routeName, urlParameters)```
+### `URL.name(routeName, urlParameters)`
 
-You can make history-based URL from the `name` property of route defined at `<Route>`.
+You can make URL from the `name` defined at route.
 
-+ `routeName` - Name defined at `<Route>`.
++ `routeName` - Route name.
 + `urlParameters` - Object of url parameter, if it requires.
 
 ```javascript
 import React from 'react';
 import { render } from 'react-dom';
-import { Router, Route, URL } from 'async-react-router';
+import { createRouter, URL } from 'async-react-router';
 
 class User extends React.Component {
     render() { return (<div>{this.props.params.userId}</div>); };
 }
 
-hydrate(
-    (
-        <Router>
-            <Route path="/user/:userId" component={User} name="User"/>
-        </Router>
-    ),
-    document.getElementById('app')
-);
+const router = createRouter();
+router.route("/user/:userId", User, "User");
+router.run((Root) => {
+  render(<Root/>, document.getElementById("app"));
+});
 
 URL.name("User", {userId: 1}); // String `#/user/1`.
 ```
 
 # Server Side Rendering
 
-Async React Router supports Server Side Rendering.
-Server-Side Rendering is easy.
+Async-react-router supports server-side rendering.
 
-+ `RouteResolver` will solve the route very easily on the server side.
-+ you can deal with SSR just by changing `<Router>` to `<Router>` of SSR on Client-Side.
-+ It is also possible to obtain resolved data on the server side via HTML.
++ `createServerRouter` generates server-side router instance.
++ You can deal with SSR just by changing `async-react-router/createRouter` to `async-react-router/ssr/createRouter` on client side.
++ It is also possible to obtain resolved data on the server side via HTML on client-side.
 
 ## Server Side
-### `RouteResolver`
+### `createServerRouter()`
 
-`RouteResolver` can solve the route on the server side.
-
-+ `routes` - Route information consisting only of `<Route>`. Required.
+`createServerRouter()` generates server-side router instance. Supported history type is only **memory history**. 
+`createServerRouter()` has `route()` and `asyncRoute()` also.
 
 ```javascript
-import { RouteResolver } from "async-react-router/ssr";
+import { createServerRouter } from "async-react-router/ssr";
 
-const routes = (
-    <Route path="/" component="IndexPage">
-        <Route path="/user" component="UserPage"/>
-    </Route
-);
+app.get("*", function(req, res) {
+  function setRoutes(router) {
+    router.route("/", IndexPage);
+    router.asyncRoute("/user", () => import("./UserPage"));
+  }
+  
+  const serverRouter = createServerRouter();
+  setRoutes(serverRouter);
+}
+```
 
-RouteResolver
-    .make(routes)
-    .resolve(req.url, (component, data) => {
-        // View Rendering
-    });
+
+### serverRouter.runUsingPathname(pathname, callback(RootComponent, data) => void)
+
+`serverRouter.runUsingPathname()` generates root component and initial data.  
+`getInitialProps` and `initialPropsWillGet`, `initialPropsDidGet` are not called for the first time.
+
+```javascript
+import ejs from "ejs";
+import React from "react";
+import ReactDOMServer from "react-dom/server";
+import express from "express";
+import { createServerRouter } from "async-react-router/ssr";
+import fs from "fs";
+
+const app = express();
+
+app.get("*", function(req, res) {
+  // Please make another file and import.
+  function setRoutes(router) {
+    router.route("/", IndexPage);
+    router.asyncRoute("/user", () => import("./UserPage"));
+  }
+  
+  const serverRouter = createServerRouter();
+  setRoutes(serverRouter);
+  serverRouter.runUsingPathname(req.url, (Root, data) => {
+    fs.readFile("index.html", function(err, result) {
+          const compiled = ejs.compile(result.toString("utf8"), "utf8");
+          const html = compiled({
+            component: ReactDOMServer.renderToString(<Root/>),
+            data: data
+          });
+    
+          res.write(html);
+          res.end();
+        });
+  });
+}
 ```
 
 ## Client Side
-### `<Router>` for SSR
+### `createRouter()`
 
-`<Router>` for SSR manages `<Route>`.
-
-Basically, it has the same function as `<Router>` for Client.  
-`getInitialProps` and `initialPropsWillGet`, `initialPropsDidGet` are not called for the first time.  
-However, there is a parameter called `firstRendererdInitialProps`, so we can pass the initial value.
-`initialPropsStoreHook` is called every time.
+You can use `async-react-router/ssr/createrRouter`.
+`async-react-router/ssr/createrRouter` has the same function as `async-react-router/createrRouter`.  
+The only difference is history type.  
+Supported history type is only **browser history**.
+**Hash History** and **Memory History** cannot be used.
 
 ```javascript
 import React from "react";
 import { hydrate } from "react-dom";
-import { Router } from "async-react-router/ssr";
-import routes from "./routes";
+import { createRouter } from "async-react-router/ssr";
 
-function App() {
-    return (
-        <Router firstRenderedInitialProps={JSON.parse(document.getElementById("initial-props").innerText)}>
-            {routes}
-        </Router>
-    );
+// Please make another file and import.
+function setRoutes(router) {
+    router.route("/", IndexPage);
+    router.asyncRoute("/user", () => import("./UserPage"));
 }
 
-hydrate(
-    (<App/>),
-    document.getElementById('app')
-);
+const router = createRouter();
+setRoutes(router);
+router.setInitialProps(JSON.parse(document.getElementById("initial-props").innerText));
+router.run((Root) => {
+  hydrate(<Root/>, document.getElementById("app"));
+});
 ```
 
-The history that can be used is **Browser History** only.
-**Hash History**, **Memory History** cannot be used.
+This is the same process as below.
+
+```javascript
+import React from "react";
+import { hydrate } from "react-dom";
+import { createRouter, createBrowserHistory } from "async-react-router";
+
+// Please make another file and import.
+function setRoutes(router) {
+    router.route("/", IndexPage);
+    router.asyncRoute("/user", () => import("./UserPage"));
+}
+
+const router = createRouter(createBrowserHistory());
+setRoutes(router);
+router.setInitialProps(JSON.parse(document.getElementById("initial-props").innerText));
+router.run((Root) => {
+  hydrate(<Root/>, document.getElementById("app"));
+});
+```
 
 ## Thanks for the inspiration
 + [next.js](https://github.com/zeit/next.js/)
