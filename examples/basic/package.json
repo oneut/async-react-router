@@ -23,5 +23,6 @@
     "test": "react-scripts test",
     "lint": "eslint ./src",
     "lint:fix": "eslint --fix ./src"
-  }
+  },
+  "homepage": "."
 }
