@@ -4,10 +4,6 @@ import Header from "../components/common/Header";
 import ItemsComponent from "../components/index/ItemsComponent";
 
 class IndexContainer extends React.Component {
-  constructor(props) {
-    super(props);
-  }
-
   componentDidMount() {
     window.scrollTo(0, 0);
   }
@@ -26,6 +22,6 @@ class IndexContainer extends React.Component {
   }
 }
 
-export default connect(state => ({
+export default connect((state) => ({
   items: state.items
 }))(IndexContainer);

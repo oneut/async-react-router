@@ -1,5 +1,5 @@
 import React from "react";
-import { Observable } from "rxjs";
+import { from } from "rxjs";
 import HackerNewsApi from "../../api/HackerNewsApi";
 import CommentComponent from "./CommentComponent";
 import { URL, Link } from "async-react-router";
@@ -9,18 +9,16 @@ export default class ItemComponent extends React.Component {
     super(props);
 
     this.state = {
-      isLoading: false
+      isLoading: true
     };
 
     this.commentApiStream = null;
   }
 
   componentDidMount() {
-    this.setState({ isLoading: true });
-
-    this.commentApiStream = Observable.fromPromise(
+    this.commentApiStream = from(
       HackerNewsApi.getComments(this.props.item.kids)
-    ).subscribe(comments => {
+    ).subscribe((comments) => {
       this.props.actions.comments.sync(comments);
       this.setState({ isLoading: false });
     });
@@ -73,8 +71,10 @@ export default class ItemComponent extends React.Component {
     }
 
     return this.props.comments
-      .filter(comment => !!comment.by)
-      .map(comment => <CommentComponent key={comment.id} comment={comment} />);
+      .filter((comment) => !!comment.by)
+      .map((comment) => (
+        <CommentComponent key={comment.id} comment={comment} />
+      ));
   }
 
   getLoadingComponent() {
