@@ -1,6 +1,6 @@
 {
   "name": "async-react-router",
-  "version": "2.0.1",
+  "version": "2.0.0-beta.1",
   "description": "Client side react router with async. It like next.js!",
   "main": "lib/index.js",
   "scripts": {
