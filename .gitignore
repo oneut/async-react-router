@@ -58,7 +58,7 @@ typings/
 .env
 
 # For Module
-build
+examples/**/build
 /lib
 /ssr
 .DS_Store

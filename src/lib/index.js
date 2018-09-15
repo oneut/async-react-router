@@ -1,6 +1,8 @@
-import createBrowserHistory from "history/createBrowserHistory";
-import createHashHistory from "history/createHashHistory";
-import createMemoryHistory from "history/createMemoryHistory";
+import {
+  createBrowserHistory,
+  createHashHistory,
+  createMemoryHistory
+} from "history";
 import { Link, Request, URL, connector } from "./Facade";
 import Router from "./Router";
 
