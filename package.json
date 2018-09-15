@@ -4,9 +4,7 @@
   "description": "Client side react router with async. It like next.js!",
   "main": "lib/index.js",
   "scripts": {
-    "build": "npm run build:lib && npm run build:ssr",
-    "build:lib": "rimraf lib && cross-env NODE_ENV=production rollup -c build/rollup.lib.config.js",
-    "build:ssr": "rimraf ssr && cross-env NODE_ENV=production rollup -c build/rollup.ssr.config.js",
+    "build": "rimraf lib && cross-env NODE_ENV=production rollup -c build/rollup.lib.config.js",
     "lint": "eslint ./src ./test ./build",
     "lint:fix": "eslint --fix ./src ./test ./build",
     "prepare": "npm run build",
