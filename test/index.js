@@ -1,5 +1,5 @@
 import test from "ava";
-const lib = require("../../src/lib");
+const lib = require("../src");
 
 test("Get object", (t) => {
   t.true(!!lib.createRouter);

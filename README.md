@@ -418,18 +418,18 @@ URL.name("User", {userId: 1}); // String `#/user/1`.
 
 Async-react-router supports server-side rendering.
 
-+ `createServerRouter` generates server-side router instance.
-+ You can deal with SSR just by changing `async-react-router/createRouter` to `async-react-router/ssr/createRouter` on client side.
++ `SSR.createServerRouter()` generates server-side router instance.
++ You can deal with SSR just by changing `createRouter()` to `SSR.createRouter()` on client side.
 + It is also possible to obtain resolved data on the server side via HTML on client-side.
 
 ## Server Side
-### `createServerRouter()`
+### `SSR.createServerRouter()`
 
-`createServerRouter()` generates server-side router instance. Supported history type is only **memory history**. 
-`createServerRouter()` has `route()` and `asyncRoute()` also.
+`SSR.createServerRouter()` generates server-side router instance. Supported history type is only **memory history**. 
+`serverRouter` instance has `route()` and `asyncRoute()` also.
 
 ```javascript
-import { createServerRouter } from "async-react-router/ssr";
+import { SSR } from "async-react-router";
 
 app.get("*", function(req, res) {
   function setRoutes(router) {
@@ -437,7 +437,7 @@ app.get("*", function(req, res) {
     router.asyncRoute("/user", () => import("./UserPage"));
   }
   
-  const serverRouter = createServerRouter();
+  const serverRouter = SSR.createServerRouter();
   setRoutes(serverRouter);
 }
 ```
@@ -446,14 +446,14 @@ app.get("*", function(req, res) {
 ### serverRouter.runUsingPathname(pathname, callback(RootComponent, data) => void)
 
 `serverRouter.runUsingPathname()` generates root component and initial data.  
-`getInitialProps` and `initialPropsWillGet`, `initialPropsDidGet` are not called for the first time.
+`getInitialProps()` and `initialPropsWillGet()`, `initialPropsDidGet()` are not called for the first time.
 
 ```javascript
 import ejs from "ejs";
 import React from "react";
 import ReactDOMServer from "react-dom/server";
 import express from "express";
-import { createServerRouter } from "async-react-router/ssr";
+import { SSR } from "async-react-router";
 import fs from "fs";
 
 const app = express();
@@ -465,7 +465,7 @@ app.get("*", function(req, res) {
     router.asyncRoute("/user", () => import("./UserPage"));
   }
   
-  const serverRouter = createServerRouter();
+  const serverRouter = SSR.createServerRouter();
   setRoutes(serverRouter);
   serverRouter.runUsingPathname(req.url, (Root, data) => {
     fs.readFile("index.html", function(err, result) {
@@ -483,10 +483,9 @@ app.get("*", function(req, res) {
 ```
 
 ## Client Side
-### `createRouter()`
+### `SSR.createRouter()`
 
-You can use `async-react-router/ssr/createrRouter`.
-`async-react-router/ssr/createrRouter` has the same function as `async-react-router/createrRouter`.  
+`SSR.createrRouter ()` generates a router instance with the same functionality as `createrRouter ()`.
 The only difference is history type.  
 Supported history type is only **browser history**.
 **Hash History** and **Memory History** cannot be used.
@@ -494,7 +493,7 @@ Supported history type is only **browser history**.
 ```javascript
 import React from "react";
 import { hydrate } from "react-dom";
-import { createRouter } from "async-react-router/ssr";
+import { SSR } from "async-react-router";
 
 // Please make another file and import.
 function setRoutes(router) {
@@ -502,7 +501,7 @@ function setRoutes(router) {
     router.asyncRoute("/user", () => import("./UserPage"));
 }
 
-const router = createRouter();
+const router = SSR.createRouter();
 setRoutes(router);
 router.setInitialProps(JSON.parse(document.getElementById("initial-props").innerText));
 router.run((Root) => {
