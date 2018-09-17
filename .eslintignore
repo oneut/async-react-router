@@ -3,5 +3,5 @@ coverage
 node_modules
 ./docs
 ./examples
-./lib
+./dist
 ./ssr

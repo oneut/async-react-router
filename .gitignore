@@ -59,7 +59,7 @@ typings/
 
 # For Module
 examples/**/build
-/lib
+/dist
 /ssr
 .DS_Store
 

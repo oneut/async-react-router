@@ -3,9 +3,9 @@ import {
   createHashHistory,
   createMemoryHistory
 } from "history";
-import { Link, Request, URL, connector } from "./Facade";
-import Router from "./Router";
-import * as SSR from "../ssr/index";
+import { Link, Request, URL, connector } from "./lib/Facade";
+import Router from "./lib/Router";
+import * as SSR from "./ssr";
 
 function createRouter(history = createHashHistory()) {
   return new Router(connector.newInitializedInstance(history));
