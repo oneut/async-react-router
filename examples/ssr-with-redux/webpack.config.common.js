@@ -19,7 +19,10 @@ module.exports = {
   optimization: {
     splitChunks: {
       chunks: "all",
-      name: "vendors"
+      name: "vendors",
+      minChunks: 2,
+      maxSize: 244000,
+      minSize: 200000,
     },
     runtimeChunk: true,
     minimizer: [

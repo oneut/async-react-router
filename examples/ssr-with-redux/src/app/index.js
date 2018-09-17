@@ -1,13 +1,13 @@
 import React from "react";
 import { hydrate } from "react-dom";
-import { createRouter } from "async-react-router/ssr";
+import { SSR } from "async-react-router";
 import setRoute from "./routes";
 import "bootstrap/dist/css/bootstrap.css";
 import "font-awesome/css/font-awesome.min.css";
 import "nprogress/nprogress.css";
 
 // Create route object.
-const router = createRouter();
+const router = SSR.createRouter();
 
 // Set data from server
 router.setInitialProps(
@@ -26,7 +26,7 @@ if (module.hot) {
   module.hot.accept("./routes", () => {
     const setRoute = require("./routes").default;
 
-    const router = createRouter();
+    const router = SSR.createRouter();
 
     // Set route.
     setRoute(router);
