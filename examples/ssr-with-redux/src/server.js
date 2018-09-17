@@ -1,7 +1,7 @@
 import ejs from "ejs";
 import path from "path";
 import React from "react";
-import { createServerRouter } from "async-react-router/ssr";
+import { SSR } from "async-react-router";
 import ReactDOMServer from "react-dom/server";
 import compress from "compression";
 import http from "http";
@@ -77,7 +77,7 @@ app.use("/static", express.static(path.join(__dirname, "static")));
 
 app.get("*", function(req, res) {
   const setRoute = require("./app/routes").default;
-  const serverRouter = createServerRouter();
+  const serverRouter = SSR.createServerRouter();
   setRoute(serverRouter);
 
   serverRouter.runUsingPathname(req.url, (Root, data) => {
