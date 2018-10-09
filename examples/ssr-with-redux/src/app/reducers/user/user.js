@@ -1,11 +1,10 @@
-import Immutable from "immutable";
 import User from "../../models/User";
-import UserActionTypes from "../../actionTypes/UserActionTypes";
+import { userActionType } from "../../actionTypes/UserActionType";
 
-export default function user(state = Immutable.List(), action) {
+export default function user(state = null, action) {
   switch (action.type) {
-    case UserActionTypes.NEW_USER:
-      return new User(action.user);
+    case userActionType.NEW_INSTANCE:
+      return new User(action.attributes);
     default:
       return state;
   }

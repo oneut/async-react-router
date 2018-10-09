@@ -13,9 +13,9 @@ export default class ItemComponent extends React.Component {
             <li className="score">{this.props.item.score} points</li>
             <li className="by">
               by{" "}
-              <a href={URL.name("UserPage", { userId: this.props.item.by })}>
+              <Link to={URL.name("UserPage", { userId: this.props.item.by })}>
                 {this.props.item.by}
-              </a>
+              </Link>
             </li>
             <li className="time">{this.props.item.getTimeAgo()}</li>
             <li className="comments-link">

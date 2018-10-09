@@ -2,7 +2,7 @@ import NProgress from "nprogress";
 import React from "react";
 import { createStore } from "redux";
 import { Provider } from "react-redux";
-import itemRootReducer from "../rootReducers/item";
+import itemRootReducer from "../reducers/item";
 import ItemContainer from "../containers/ItemContainer";
 import HackerNewsApi from "../api/HackerNewsApi";
 import NotFoundPage from "./NotFoundPage";

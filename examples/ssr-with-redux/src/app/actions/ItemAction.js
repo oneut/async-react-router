@@ -1,4 +1,4 @@
-import { itemActionType } from "../actionTypes/ItemType";
+import { itemActionType } from "../actionTypes/ItemActionType";
 
 export const itemAction = {
   newInstance: (attributes) => {
