@@ -44,7 +44,6 @@ export default class ItemComponent extends React.Component {
                 by{" "}
                 <Link
                   to={URL.name("UserPage", { userId: this.props.item.by })}
-                  className=""
                 >
                   {this.props.item.by}
                 </Link>

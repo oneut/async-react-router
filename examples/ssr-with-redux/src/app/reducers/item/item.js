@@ -1,10 +1,10 @@
 import Item from "../../models/Item";
-import ItemActionTypes from "../../actionTypes/ItemActionTypes";
+import { itemActionType } from "../../actionTypes/ItemActionType";
 
 export default function item(state = null, action) {
   switch (action.type) {
-    case ItemActionTypes.NEW_ITEM:
-      return new Item(action.item);
+    case itemActionType.NEW_INSTANCE:
+      return new Item(action.attributes);
     default:
       return state;
   }

@@ -1,4 +1,4 @@
-import { userActionType } from "../actionTypes/UserType";
+import { userActionType } from "../actionTypes/UserActionType";
 
 export const userAction = {
   newInstance: (attributes) => {
