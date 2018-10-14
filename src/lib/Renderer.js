@@ -1,8 +1,9 @@
 export default class Renderer {
-  constructor(pathname, component, params, prevRenderer) {
+  constructor(pathname, component, params, requestCallback, prevRenderer) {
     this.data = {};
     this.component = component;
     this.params = params;
+    this.requestCallback = requestCallback;
     this.pathname = pathname;
     this.prevRenderer = prevRenderer;
   }
@@ -83,9 +84,13 @@ export default class Renderer {
     return this;
   }
 
+  fireRequestCallback() {
+    this.requestCallback();
+    return this;
+  }
+
   isFunction(func) {
-    if (!!func && typeof func === "function") return true;
-    return false;
+    return !!func && typeof func === "function";
   }
 
   setInitialProps(data) {

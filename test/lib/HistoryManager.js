@@ -11,7 +11,7 @@ test("Push pathname", (t) => {
   // HistoryManager test
   const historyManager = new HistoryManager();
   historyManager.setHistory(createMemoryHistory());
-  historyManager.setRequestCallback(historyCallBack);
+  historyManager.setHistoryCallback(historyCallBack);
   historyManager.listen();
 
   historyManager.push("/test");
@@ -41,7 +41,7 @@ test("Listen silent", (t) => {
 
   // HistoryManager test
   const historyManager = new HistoryManager();
-  historyManager.setRequestCallback(historyCallBack);
+  historyManager.setHistoryCallback(historyCallBack);
   historyManager.changeSilent();
   historyManager.listenCallback(location);
   t.pass();
@@ -61,7 +61,7 @@ test("Listen unsilent", (t) => {
 
   // HistoryManager test
   const historyManager = new HistoryManager();
-  historyManager.setRequestCallback(historyCallBack);
+  historyManager.setHistoryCallback(historyCallBack);
   historyManager.changeSilent();
   historyManager.changeUnsilent();
   historyManager.listenCallback(location);

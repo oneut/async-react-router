@@ -9,7 +9,7 @@ export default class FirstComponentLoadRunner {
 
   run(callback) {
     const location = this.connector.historyManager.getLocation();
-    this.connector.request(location.pathname);
+    this.connector.request(location.pathname, () => {});
 
     this.connector.componentResolver.setComponent(this.firstComponent);
 

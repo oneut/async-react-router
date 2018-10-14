@@ -1,7 +1,7 @@
 export default class HistoryManager {
   constructor() {
     this.history = null;
-    this.requestCallback = null;
+    this.historyCallback = null;
     this.silent = false;
   }
 
@@ -9,8 +9,8 @@ export default class HistoryManager {
     this.history = history;
   }
 
-  setRequestCallback(requestCallback) {
-    this.requestCallback = requestCallback;
+  setHistoryCallback(historyCallback) {
+    this.historyCallback = historyCallback;
   }
 
   changeSilent() {
@@ -26,12 +26,12 @@ export default class HistoryManager {
   }
 
   listenCallback(location) {
-    if (!this.silent) this.requestCallback(location.pathname);
+    if (!this.silent) this.historyCallback(location.pathname, () => {});
   }
 
-  push(pathname) {
+  push(pathname, callback) {
     this.changeSilent();
-    this.requestCallback(pathname);
+    this.historyCallback(pathname, callback);
     this.history.push(pathname);
     this.changeUnsilent();
   }
