@@ -4,14 +4,6 @@ import Header from "../components/common/Header";
 import ItemComponent from "../components/item/ItemComponent";
 
 class ItemContainer extends React.Component {
-  componentDidMount() {
-    window.scrollTo(0, 0);
-  }
-
-  componentDidUpdate() {
-    window.scrollTo(0, 0);
-  }
-
   render() {
     if (!this.props.item) {
       return null;

@@ -3,27 +3,27 @@
   "version": "0.0.1",
   "private": true,
   "dependencies": {
-    "async-react-router": "^2.0.0-rc.4",
+    "async-react-router": "^2.1.1-rc.1",
     "bootstrap": "^3.3.7",
-    "firebase": "^4.6.0",
+    "firebase": "^5.5.4",
     "font-awesome": "^4.7.0",
     "immutable": "^3.8.2",
     "lru-cache": "^4.1.1",
     "nprogress": "^0.2.0",
     "prop-types": "^15.6.0",
-    "react": "^16.0.0",
-    "react-dom": "^16.0.0",
+    "react": "^16.5.2",
+    "react-dom": "^16.5.2",
     "react-redux": "^5.0.6",
-    "redux": "^3.7.2",
-    "rxjs": "^6.3.2",
-    "timeago.js": "^3.0.2"
+    "redux": "^4.0.1",
+    "rxjs": "^6.3.3",
+    "timeago.js": "^4.0.0-beta.1"
   },
   "devDependencies": {
-    "eslint": "^5.2.0",
-    "eslint-config-prettier": "^2.9.0",
-    "eslint-plugin-prettier": "^2.6.2",
-    "prettier": "^1.14.0",
-    "react-scripts": "^1.0.14"
+    "eslint": "5.6.0",
+    "eslint-config-prettier": "^3.1.0",
+    "eslint-plugin-prettier": "^3.0.0",
+    "prettier": "^1.14.3",
+    "react-scripts": "^2.0.4"
   },
   "scripts": {
     "start": "react-scripts start",
@@ -33,5 +33,11 @@
     "eslint:fix": "eslint --fix ./src",
     "test": "react-scripts test"
   },
-  "homepage": "."
+  "homepage": ".",
+  "browserslist": [
+    ">0.2%",
+    "not dead",
+    "not ie <= 11",
+    "not op_mini all"
+  ]
 }

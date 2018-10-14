@@ -1,4 +1,4 @@
-import { itemsActionType } from "../actionTypes/ItemsType";
+import { itemsActionType } from "../actionTypes/ItemsActionType";
 
 export const itemsAction = {
   sync: (items) => {

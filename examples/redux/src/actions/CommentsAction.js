@@ -1,4 +1,4 @@
-import { commentsActionType } from "../actionTypes/CommentsType";
+import { commentsActionType } from "../actionTypes/CommentsActionType";
 
 export const commentsAction = {
   sync: (comments) => {

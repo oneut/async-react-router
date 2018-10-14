@@ -4,14 +4,6 @@ import Header from "../components/common/Header";
 import ItemsComponent from "../components/index/ItemsComponent";
 
 class IndexContainer extends React.Component {
-  componentDidMount() {
-    window.scrollTo(0, 0);
-  }
-
-  componentDidUpdate() {
-    window.scrollTo(0, 0);
-  }
-
   render() {
     return (
       <div>
