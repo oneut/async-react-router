@@ -71,5 +71,5 @@ test.cb("Request", (t) => {
     t.pass();
     t.end();
   });
-  initializedConnector.request("/");
+  initializedConnector.request("/", () => {});
 });

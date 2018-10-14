@@ -3,7 +3,9 @@ import React from "react";
 class Link extends React.Component {
   click(e) {
     e.preventDefault();
-    this.props.request.to(this.props.to);
+    this.props.request.to(this.props.to, () => {
+      window.scrollTo(0, 0);
+    });
   }
 
   render() {

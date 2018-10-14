@@ -94,7 +94,13 @@ test("Fire component method", async (t) => {
   const params = {
     parameter1: "parameter1"
   };
-  const renderer = new Renderer(pathname, component, params, prevRenderer);
+  const renderer = new Renderer(
+    pathname,
+    component,
+    params,
+    () => {},
+    prevRenderer
+  );
 
   // Renderer Setup. Important to the order!.
   renderer.fireInitialPropsWillGet();
@@ -253,7 +259,13 @@ test("getPrevComponentProps", (t) => {
   };
 
   // Make Renderer
-  const renderer = new Renderer(pathname, Component, params, prevRenderer);
+  const renderer = new Renderer(
+    pathname,
+    Component,
+    params,
+    () => {},
+    prevRenderer
+  );
 
   const prevComponentProps = renderer.getPrevComponentProps();
   // initialProps is empty object.
@@ -287,4 +299,15 @@ test("getPrevComponentProps of no having PrevRender", (t) => {
     Object.keys(prevComponentProps).length === 0 &&
       typeof prevComponentProps === "object"
   );
+});
+
+test.cb("fireRequestCallback", (t) => {
+  const requestCallback = () => {
+    t.pass();
+    t.end();
+  };
+
+  // Make Renderer
+  const renderer = new Renderer("/", null, {}, requestCallback);
+  renderer.fireRequestCallback();
 });

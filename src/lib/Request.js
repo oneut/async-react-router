@@ -3,16 +3,16 @@ class Request {
     this.connector = connector;
   }
 
-  to(to) {
-    this.connector.historyManager.push(this.normarizeTo(to));
+  to(to, callback = () => {}) {
+    this.connector.historyManager.push(this.normarizeTo(to), callback);
   }
 
-  name(name, parameters = {}) {
+  name(name, parameters = {}, callback = () => {}) {
     const pathname = this.connector.routeMatcher.compileByName(
       name,
       parameters
     );
-    this.connector.historyManager.push(pathname);
+    this.connector.historyManager.push(pathname, callback);
   }
 
   isActive(pathname) {

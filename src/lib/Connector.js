@@ -31,7 +31,7 @@ export default class Connector {
 
   initHistory(history) {
     this.historyManager.setHistory(history);
-    this.historyManager.setRequestCallback(this.request.bind(this));
+    this.historyManager.setHistoryCallback(this.request.bind(this));
     this.historyManager.listen();
   }
 
@@ -43,11 +43,15 @@ export default class Connector {
     this.stream = new Subject();
     this.stream
       .pipe(
-        switchMap((pathname) => this.routeMatcher.createRenderer(pathname)),
+        switchMap((request) =>
+          this.routeMatcher.createRenderer(request.pathname, request.callback)
+        ),
         skipWhile((renderer) => renderer === null),
         map((renderer) => renderer.fireInitialPropsWillGet()),
         mergeMap((renderer) => renderer.fireGetInitialProps()),
-        map((renderer) => renderer.fireInitialPropsDidGet())
+        map((renderer) =>
+          renderer.fireInitialPropsDidGet().fireRequestCallback()
+        )
       )
       .subscribe((renderer) => {
         this.componentResolver.setComponentFromRenderer(renderer);
@@ -59,7 +63,10 @@ export default class Connector {
     this.onStateChange = onStateChange;
   }
 
-  request(pathname) {
-    this.stream.next(pathname);
+  request(pathname, callback) {
+    this.stream.next({
+      pathname: pathname,
+      callback: callback
+    });
   }
 }

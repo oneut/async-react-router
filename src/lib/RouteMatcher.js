@@ -20,7 +20,7 @@ class RouteMatcher {
     }
   }
 
-  createRenderer(pathname) {
+  createRenderer(pathname, requestCallback) {
     const normalizedPathname = this.normalizePathname(pathname);
     for (let i = 0; this.routes.length > i; i++) {
       let keys = [];
@@ -43,6 +43,7 @@ class RouteMatcher {
           normalizedPathname,
           component,
           params,
+          requestCallback,
           this.renderer
         );
 
