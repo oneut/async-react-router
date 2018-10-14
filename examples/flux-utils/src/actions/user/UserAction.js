@@ -1,4 +1,4 @@
-import { userType } from "../../storeTypes/UserType";
+import { userType } from "../../actionTypes/UserType";
 
 class UserAction {
   constructor(dispatcher) {

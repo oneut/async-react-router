@@ -1,4 +1,4 @@
-import { commentsType } from "../../storeTypes/CommentsType";
+import { commentsType } from "../../actionTypes/CommentsType";
 
 class CommentsAction {
   constructor(dispatcher) {
