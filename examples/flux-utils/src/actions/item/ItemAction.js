@@ -1,4 +1,4 @@
-import { itemType } from "../../storeTypes/ItemType";
+import { itemType } from "../../actionTypes/ItemType";
 
 class ItemAction {
   constructor(dispatcher) {

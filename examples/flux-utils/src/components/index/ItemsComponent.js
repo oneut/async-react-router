@@ -4,7 +4,7 @@ import { Link, URL } from "async-react-router";
 
 export default class ItemsComponent extends React.Component {
   render() {
-    const itemComponents = this.props.items.map(item => (
+    const itemComponents = this.props.items.map((item) => (
       <ItemComponent key={item.id} item={item} />
     ));
     return (

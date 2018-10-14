@@ -1,5 +1,5 @@
 import { ReduceStore } from "flux/utils";
-import { itemType } from "../storeTypes/ItemType";
+import { itemType } from "../actionTypes/ItemType";
 import Item from "../models/Item";
 
 class ItemStore extends ReduceStore {

@@ -14,8 +14,8 @@ const CommentRecord = Immutable.Record({
 export default class Comment extends CommentRecord {
   constructor(attributes) {
     const newCommentList = Immutable.List();
-    attributes.comments = newCommentList.withMutations(newCommentList => {
-      attributes.comments.map(commentAttributes =>
+    attributes.comments = newCommentList.withMutations((newCommentList) => {
+      attributes.comments.map((commentAttributes) =>
         newCommentList.push(new Comment(commentAttributes))
       );
     });

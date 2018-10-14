@@ -1,7 +1,7 @@
 import Immutable from "immutable";
 import { ReduceStore } from "flux/utils";
 import Comment from "../models/Comment";
-import { commentsType } from "../storeTypes/CommentsType";
+import { commentsType } from "../actionTypes/CommentsType";
 
 class CommentsStore extends ReduceStore {
   getInitialState() {
@@ -12,8 +12,8 @@ class CommentsStore extends ReduceStore {
     switch (action.type) {
       case commentsType.SYNC:
         const newState = Immutable.List();
-        return newState.withMutations(newState => {
-          action.comments.forEach(commentAttributes =>
+        return newState.withMutations((newState) => {
+          action.comments.forEach((commentAttributes) =>
             newState.push(new Comment(commentAttributes))
           );
         });

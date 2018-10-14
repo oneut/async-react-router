@@ -1,6 +1,6 @@
 import Immutable from "immutable";
 import { ReduceStore } from "flux/utils";
-import { itemsType } from "../storeTypes/ItemsType";
+import { itemsType } from "../actionTypes/ItemsType";
 import Item from "../models/Item";
 
 class ItemsStore extends ReduceStore {
@@ -12,8 +12,8 @@ class ItemsStore extends ReduceStore {
     switch (action.type) {
       case itemsType.SYNC:
         const newState = Immutable.List();
-        return newState.withMutations(newState => {
-          action.items.map(itemAttributes =>
+        return newState.withMutations((newState) => {
+          action.items.map((itemAttributes) =>
             newState.push(new Item(itemAttributes))
           );
         });
